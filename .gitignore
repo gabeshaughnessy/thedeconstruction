@@ -1,0 +1,51 @@
+# Configuration Files
+.htaccess
+local-config.php
+sitemap.xml
+sitemap.xml.gz
+cgi-bin/
+default.html
+readme.html
+license.txt
+index.php
+*.log
+400.shtml
+401.shtml
+403.shtml
+404.shtml
+500.php
+500.shtml
+
+# Wordpress core files
+wp-*.php
+xmlrpc.php
+wp-admin/
+wp-includes/
+
+# wp-content
+wp-content/uploads/
+wp-content/blogs.dir/
+wp-content/upgrade/
+wp-content/backup-db/
+wp-content/backups
+wp-content/1646ad5c0a-backups
+wp-content/advanced-cache.php
+wp-content/wp-cache-config.php
+wp-content/cache/
+wp-content/backups/
+
+# Default Themes
+wp-content/themes/twentyten
+wp-content/themes/twentyeleven
+wp-content/themes/twentytwelve
+
+# Plugins
+wp-content/plugins/backupwordpress
+wp-content/plugins/akismet
+wp-content/plugins/jetpack
+wp-content/plugins/*.php
+
+
+
+
+
