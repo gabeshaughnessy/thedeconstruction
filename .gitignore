@@ -57,7 +57,7 @@ wp-content/themes/twentytwelve
 wp-content/plugins/backupwordpress
 wp-content/plugins/akismet
 wp-content/plugins/jetpack
-wp-content/plugins/*.php
+wp-content/plugins/hello.php
 
 
 
