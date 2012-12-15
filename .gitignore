@@ -15,6 +15,9 @@ index.php
 404.shtml
 500.php
 500.shtml
+decon-staging.esproj/
+.sass-cache/
+
 
 # Wordpress core files
 wp-*.php

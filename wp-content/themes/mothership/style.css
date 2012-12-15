@@ -1,0 +1,15 @@
+/*
+Theme Name: The Deconstruction Mothership
+Theme URI: http://thedeconstruction.org
+Author: Gabe's Imagination
+Author URI: http://gabesimagination.com
+Description: The main theme for The Deconstruction
+Version: 1.0
+License: GNU General Public License v2 or later
+License URI: http://www.gnu.org/licenses/gpl-2.0.html
+Tags: deconstruction
+Text Domain: mothership
+*/
+
+/* The Default Stylesheet, required for WordPress themes. 
+Instead of editing this, use app.sass located in the css/sass directory because its all set up to overwrite the zurb foundation default styles */
