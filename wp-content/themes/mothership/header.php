@@ -20,7 +20,7 @@
 <![endif]-->
 <!--[if !(IE 6) | !(IE 7) | !(IE 8)  ]><!-->
 <html <?php language_attributes(); ?>>
-<!--<![endif]-->
+<!--[endif] -->
 <head>
 <meta charset="<?php bloginfo( 'charset' ); ?>" />
 <meta name="viewport" content="width=device-width" />
@@ -42,10 +42,24 @@
 
 	?></title>
 <link rel="profile" href="http://gmpg.org/xfn/11" />
-<link rel="stylesheet" type="text/css" media="all" href="<?php bloginfo( 'stylesheet_directory/foundation/stylesheets/foundation.css' ); ?>" />
-<link rel="stylesheet" type="text/css" media="all" href="<?php bloginfo( 'stylesheet_directory/css/app.css' ); ?>" />
-<link rel="pingback" href="<?php bloginfo( 'pingback_url' ); ?>" />
+<link rel="stylesheet" type="text/css" media="all" href="<?php echo get_bloginfo( 'stylesheet_directory'); ?>/foundation/stylesheets/foundation.css" />
+<link rel="stylesheet" type="text/css" media="all" href="<?php echo get_bloginfo( 'stylesheet_directory'); ?>/css/app.css" />
 
+<link rel="pingback" href="<?php bloginfo( 'pingback_url' ); ?>" />
+<?php //get the theme options to an array
+$theme_options = get_option('mothership_options');
+//access each field by its id
+//echo $theme_options['field_id'];
+?>
 <?php wp_head(); //goes right before the closing head tag for plugin support  ?>
 </head>
 <body <?php body_class(); ?>>
+
+<?php get_template_part('topbar'); ?>
+<header class="row">
+	<div class="logo twelve columns last"><h1><?php bloginfo('name'); ?></h1></div>
+	<div class="description twelve columns last"><p><?php bloginfo('description'); ?></p></div>
+</header>
+<div id="main-content-area" class="row">
+
+	

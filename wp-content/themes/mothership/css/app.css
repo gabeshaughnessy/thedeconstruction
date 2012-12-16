@@ -1,0 +1,12 @@
+/* Variables */
+/* Navigation */
+/* line 5, sass/app.scss */
+.logged-in .top-bar-container {
+  top: 27px;
+}
+
+/* Sidebar */
+/* line 12, sass/app.scss */
+.sidebar > li {
+  list-style: none;
+}

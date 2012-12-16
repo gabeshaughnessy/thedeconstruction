@@ -9,7 +9,8 @@
  * @since The Deconstruction Mothership 1.0
  */
 ?>
-
+<footer class="row">
 <?php wp_footer(); ?>
+</footer>
 </body>
 </html>
