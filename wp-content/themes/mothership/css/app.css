@@ -10,3 +10,8 @@
 .sidebar > li {
   list-style: none;
 }
+
+/* line 16, sass/app.scss */
+body {
+  color: red !important;
+}
