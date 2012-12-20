@@ -5,8 +5,13 @@
   top: 27px;
 }
 
+/* line 9, sass/app.scss */
+#menu-main-menu.nav-bar {
+  margin-top: 0;
+}
+
 /* Sidebar */
-/* line 12, sass/app.scss */
+/* line 15, sass/app.scss */
 .sidebar > li {
   list-style: none;
 }

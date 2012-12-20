@@ -55,7 +55,9 @@ $theme_options = get_option('mothership_options');
 </head>
 <body <?php body_class(); ?>>
 
-<?php get_template_part('topbar'); ?>
+<?php 
+foundation_nav_bar(); //switch this with the template-part 'topbar' function below to change to a topbar
+//get_template_part('topbar'); ?>
 <header class="row">
 	<div class="logo twelve columns last"><h1><?php bloginfo('name'); ?></h1></div>
 	<div class="description twelve columns last"><p><?php bloginfo('description'); ?></p></div>
