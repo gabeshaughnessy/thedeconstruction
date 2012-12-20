@@ -54,10 +54,11 @@ $theme_options = get_option('mothership_options');
 <?php wp_head(); //goes right before the closing head tag for plugin support  ?>
 </head>
 <body <?php body_class(); ?>>
-
-<?php 
-foundation_nav_bar(); //switch this with the template-part 'topbar' function below to change to a topbar
-//get_template_part('topbar'); ?>
+<div id="top-nav">
+	<?php 
+	foundation_nav_bar(); //switch this with the template-part 'topbar' function below to change to a topbar
+	//get_template_part('topbar'); ?>
+</div>
 <header class="row">
 	<div class="logo twelve columns last"><h1><?php bloginfo('name'); ?></h1></div>
 	<div class="description twelve columns last"><p><?php bloginfo('description'); ?></p></div>
