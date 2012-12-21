@@ -32,6 +32,9 @@ function decon_enqueue_scripts() {
 }
 add_action('wp_enqueue_scripts', 'decon_enqueue_scripts');
 
+/* USER PROFILES */
+require_once('user-fields.php');
+
 /* ------ MENUS ----------*/
 require_once('foundation/foundation-topbar-menu.php');
 require_once('foundation/foundation-topbar-walker.php');
