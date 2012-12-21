@@ -13,8 +13,6 @@ function activateModal(modal_id, modal_btn){
 		 context: document.body
 		 
 		  }).done(function() { 
-		  console.log(modalContent.responseText);
-		  console.log(modal.find('#main-modal'));
 		    modal.find('.modal-content').html(modalContent.responseText);
 			modal.reveal({
 		     close: function(){}

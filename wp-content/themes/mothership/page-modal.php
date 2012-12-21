@@ -6,6 +6,8 @@
  * @package WordPress
  * @subpackage 1H1H
  */
+get_header(); 
+
 global $post;
  if ( have_posts() ) : ?>
 

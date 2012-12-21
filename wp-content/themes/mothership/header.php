@@ -53,6 +53,8 @@ $theme_options = get_option('mothership_options');
 ?>
 <?php wp_head(); //goes right before the closing head tag for plugin support  ?>
 </head>
+<?php if(!is_page_template('page-modal.php')){ // no containers for the modals
+?>
 <body <?php body_class(); ?>>
 <div id="top-nav">
 	<?php 
@@ -64,5 +66,5 @@ $theme_options = get_option('mothership_options');
 	<div class="description twelve columns last"><p><?php bloginfo('description'); ?></p></div>
 </header>
 <div id="main-content-area" class="row">
-
+<?php } ?>
 	
