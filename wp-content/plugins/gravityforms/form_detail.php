@@ -2549,11 +2549,15 @@ class GFFormDetail{
     public static function save_form_info($id, $form_json){
         global $wpdb;
         $form_json = stripslashes($form_json);
-
-        //$form_json = preg_replace('|\r\n?|', '\n', $form_json);
         $form_json = nl2br($form_json);
 
-        $form_meta = GFCommon::json_decode($form_json, true);
+        GFCommon::log_debug("form meta json:" . $form_json);
+
+        $form_meta = json_decode($form_json, true);
+
+        GFCommon::log_debug("form meta:");
+        GFCommon::log_debug(print_r($form_json, true));
+
         if(!$form_meta)
             return array("status" => "invalid_json", "meta"=> null);
 

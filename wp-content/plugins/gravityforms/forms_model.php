@@ -2570,9 +2570,9 @@ class GFFormsModel{
                                                     SELECT
                                                          lead_id, meta_value as $sort_field
                                                          from $lead_meta_table_name
-                                                         WHERE meta_key = '$sort_field'
+                                                         WHERE meta_key=%s
                                                     ) lead_meta_data ON lead_meta_data.lead_id = l.id
-                                                    ");
+                                                    ", $sort_field);
             $is_numeric_sort = $entry_meta[$sort_field]['is_numeric'];
         }
         $grid_columns = RGFormsModel::get_grid_columns($form_id);
@@ -2940,20 +2940,19 @@ function gform_get_meta_values_for_entries($entry_ids, $meta_keys){
     $meta_key_select_array = array();
 
     foreach($meta_keys as $meta_key){
-        $meta_key_select_array[] = "max(case when meta_key = '$meta_key' then meta_value end) as $meta_key";
+        $meta_key_select_array[] = $wpdb->prepare("max(case when meta_key=%s then meta_value end) as $meta_key", $meta_key);
     }
 
     $entry_ids_str = join(",", $entry_ids);
 
     $meta_key_select = join(",", $meta_key_select_array);
 
-    $sql_query = $wpdb->prepare("
-                    SELECT
+    $sql_query = "  SELECT
                     lead_id, $meta_key_select
                     FROM $table_name
                     WHERE lead_id IN ($entry_ids_str)
                     GROUP BY lead_id
-                    ");
+                    ";
 
     $results = $wpdb->get_results($sql_query);
 

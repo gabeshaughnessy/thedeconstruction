@@ -1,4 +1,9 @@
 -------------------------------------------------------------------------------------------------------------------
+Version 1.6.11
+    - Fixed warnings messages thrown by $wpdb->prepare()
+    - Fixed issue with sorting choices that prevents form from being saved
+
+-------------------------------------------------------------------------------------------------------------------
 Version 1.6.10.1
     - Fixed issue with wpList script in WP 3.5 causing entry list trash and spam links not to work
     - Updated form button UI to include text on WP 3.5+

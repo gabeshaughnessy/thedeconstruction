@@ -1,0 +1,12 @@
+[21-Dec-2012 00:10:42] WordPress database error Table 'livlivem_wrd4.wp_rg_userregistration' doesn't exist for query SELECT s.id, s.is_active, s.form_id, s.meta, f.title as form_title
+                FROM wp_rg_userregistration s
+                INNER JOIN wp_rg_form f ON s.form_id = f.id
+                WHERE 1 = 1 AND s.form_id = 1 AND s.is_active = 1 made by require('wp-blog-header.php'), wp, WP->main, do_action_ref_array, call_user_func_array, RGForms::process_exterior_pages, require_once('/plugins/gravityforms/preview.php'), RGForms::get_form, GFFormDisplay::get_form, apply_filters('gform_pre_render'), call_user_func_array, GFUser::maybe_prepopulate_form, GFUserData::get_update_feed, GFUserData::get_feeds
+[21-Dec-2012 00:12:00] WordPress database error Table 'livlivem_wrd4.wp_rg_userregistration' doesn't exist for query SELECT s.id, s.is_active, s.form_id, s.meta, f.title as form_title
+                FROM wp_rg_userregistration s
+                INNER JOIN wp_rg_form f ON s.form_id = f.id
+                WHERE 1 = 1 AND s.form_id = 1 AND s.is_active = 1 made by require('wp-blog-header.php'), wp, WP->main, do_action_ref_array, call_user_func_array, RGForms::process_exterior_pages, require_once('/plugins/gravityforms/preview.php'), RGForms::get_form, GFFormDisplay::get_form, apply_filters('gform_pre_render'), call_user_func_array, GFUser::maybe_prepopulate_form, GFUserData::get_update_feed, GFUserData::get_feeds
+[21-Dec-2012 00:12:24] WordPress database error Table 'livlivem_wrd4.wp_rg_userregistration' doesn't exist for query SELECT s.id, s.is_active, s.form_id, s.meta, f.title as form_title
+                FROM wp_rg_userregistration s
+                INNER JOIN wp_rg_form f ON s.form_id = f.id
+                WHERE 1 = 1 AND s.form_id = 1 AND s.is_active = 1 made by require('wp-blog-header.php'), wp, WP->main, do_action_ref_array, call_user_func_array, RGForms::process_exterior_pages, require_once('/plugins/gravityforms/preview.php'), RGForms::get_form, GFFormDisplay::get_form, apply_filters('gform_pre_render'), call_user_func_array, GFUser::maybe_prepopulate_form, GFUserData::get_update_feed, GFUserData::get_feeds
