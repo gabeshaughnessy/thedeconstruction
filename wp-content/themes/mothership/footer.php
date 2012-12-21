@@ -12,5 +12,6 @@
 <footer class="row">
 <?php wp_footer(); ?>
 </footer>
+<?php get_template_part('modal'); ?>
 </body>
 </html>

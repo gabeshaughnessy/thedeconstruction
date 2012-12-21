@@ -7,18 +7,27 @@ require_once('admin-page-class/theme-options.php');
 //enqueue foundation js
 function decon_enqueue_scripts() {
 	
+	//jQuery
 	wp_enqueue_script(
 		'jquery'
 	);
+	//Foundation
 	wp_enqueue_script(
 		'foundation',
 		get_template_directory_uri() . '/foundation/javascripts/foundation.min.js',
 		array('jquery')
 	);
+	//Foundation App
 	wp_enqueue_script(
 		'foundation-app',
 		get_template_directory_uri() . '/foundation/javascripts/app.js',
 		array('foundation')
+	);
+	//Global JS
+	wp_enqueue_script(
+		'global_scripts',
+		get_template_directory_uri() . '/js/global.js',
+		array('foundation', 'jquery')
 	);
 }
 add_action('wp_enqueue_scripts', 'decon_enqueue_scripts');
