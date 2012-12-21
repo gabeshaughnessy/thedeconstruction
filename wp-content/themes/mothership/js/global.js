@@ -35,5 +35,5 @@ jQuery(document).ready(function($){
 
 /* --------- WINDOW LOAD --------- */
 jQuery(window).load(function(){
-	activateModal('#main-modal', '.modal_btn');
+	activateModal('#main-modal', '.modal_btn, .modal_btn_container a');
 }); //end window load
