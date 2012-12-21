@@ -1,9 +1,29 @@
 /* Global Javascripts */
 
 //Modals
-function activateModal(modal, modal_btn){
-	jQuery(modal_btn).click(function() {
-	     jQuery(modal).reveal();
+function activateModal(modal_id, modal_btn){
+	jQuery(modal_btn).click(function(e) {
+	 var target = jQuery(this);
+	 var targetID = target.attr('href');
+	 var modal = jQuery(modal_id);
+	 //load modal template into modal content with ajax
+	 
+	 var modalContent =  $.ajax({
+		 url: targetID,
+		 context: document.body
+		 
+		  }).done(function() { 
+		  console.log(modalContent.responseText);
+		  console.log(modal.find('#main-modal'));
+		    modal.find('.modal-content').html(modalContent.responseText);
+			modal.reveal({
+		     close: function(){}
+		     });
+		    
+		  		  }); 
+		  		 
+  		 // modal.reveal();
+		 e.preventDefault(); 
 	   });
 }//end activateModal()
 
