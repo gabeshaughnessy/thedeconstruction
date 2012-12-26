@@ -56,12 +56,13 @@ $theme_options = get_option('mothership_options');
 <?php if(!is_page_template('page-modal.php')){ // no containers for the modals
 ?>
 <body <?php body_class(); ?>>
-<div id="top-nav">
-	<?php 
-	foundation_nav_bar(); //switch this with the template-part 'topbar' function below to change to a topbar
-	//get_template_part('topbar'); ?>
-</div>
+
 <header class="row">
+	<div id="top-nav">
+		<?php 
+		foundation_nav_bar(); //switch this with the template-part 'topbar' function below to change to a topbar
+		//get_template_part('topbar'); ?>
+	</div>
 	<div class="logo twelve columns last"><h1><?php bloginfo('name'); ?></h1></div>
 	<div class="description twelve columns last"><p><?php bloginfo('description'); ?></p></div>
 </header>
