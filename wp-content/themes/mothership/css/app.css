@@ -15,3 +15,66 @@
 .sidebar > li {
   list-style: none;
 }
+
+/* line 21, sass/app.scss */
+#top-nav .menu_home a, #top-nav .menu_home a:focus, #top-nav .menu_home a:hover, #top-nav .menu_faq a, #top-nav .menu_faq a:focus, #top-nav .menu_faq a:hover, #top-nav .menu_register a, #top-nav .menu_register a:focus, #top-nav .menu_register a:hover, #top-nav .menu_manifesto a, #top-nav .menu_manifesto a:focus, #top-nav .menu_manifesto a:hover, #top-nav .menu_news a, #top-nav .menu_news a:focus, #top-nav .menu_news a:hover, #top-nav .menu_contact a, #top-nav .menu_contact a:focus, #top-nav .menu_contact a:hover {
+  width: 130px;
+  height: 150px;
+  background-repeat: no-repeat;
+  background-color: #ffffff;
+  padding: 0px 10px;
+  color: #000000;
+}
+
+/* line 36, sass/app.scss */
+#top-nav .menu_home a, #top-nav .menu_home a:focus, #top-nav .menu_home a:hover {
+  background-image: url("http://localhost:8888/decon_staging/wp-content/uploads/2013/01/catscra130x130.jpg");
+}
+
+/* line 44, sass/app.scss */
+#top-nav .menu_faq a, #top-nav .menu_faq a:focus, #top-nav .menu_faq a:hover {
+  background-image: url("http://localhost:8888/decon_staging/wp-content/uploads/2013/01/unicorn_faq130x130.jpg");
+}
+
+/* line 52, sass/app.scss */
+#top-nav .menu_register a, #top-nav .menu_register a:focus, #top-nav .menu_register a:hover {
+  background-image: url("http://localhost:8888/decon_staging/wp-content/uploads/2013/01/crane_register130x130.jpg");
+}
+
+/* line 60, sass/app.scss */
+#top-nav .menu_manifesto a, #top-nav .menu_manifesto a:focus, #top-nav .menu_manifesto a:hover {
+  background-image: url("http://localhost:8888/decon_staging/wp-content/uploads/2013/01/manifesto130x130.jpg");
+}
+
+/* line 68, sass/app.scss */
+#top-nav .menu_news a, #top-nav .menu_news a:focus, #top-nav .menu_news a:hover {
+  background-image: url("http://localhost:8888/decon_staging/wp-content/uploads/2013/01/bike_news130x130.jpg");
+}
+
+/* line 76, sass/app.scss */
+#top-nav .menu_contact a, #top-nav .menu_contact a:focus, #top-nav .menu_contact a:hover {
+  background-image: url("http://localhost:8888/decon_staging/wp-content/uploads/2013/01/keyboard_contact130x130.jpg");
+}
+
+/* line 83, sass/app.scss */
+.nav-bar {
+  background: none;
+}
+
+/* line 89, sass/app.scss */
+.nav-bar > li {
+  margin-right: 25px;
+  border: none;
+}
+
+/* line 95, sass/app.scss */
+.nav-bar > li:last-child {
+  border: none;
+}
+
+/* line 101, sass/app.scss */
+.nav-bar .menu_text {
+  padding-top: 130px;
+  font-size: 1.5em;
+  text-align: center;
+}
