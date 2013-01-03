@@ -28,32 +28,32 @@
 
 /* line 36, sass/app.scss */
 #top-nav .menu_home a, #top-nav .menu_home a:focus, #top-nav .menu_home a:hover {
-  background-image: url("http://localhost:8888/decon_staging/wp-content/uploads/2013/01/catscra130x130.jpg");
+  background-image: url("//wp-content/themes/monthership/images/catscra130x130.jpg");
 }
 
 /* line 44, sass/app.scss */
 #top-nav .menu_faq a, #top-nav .menu_faq a:focus, #top-nav .menu_faq a:hover {
-  background-image: url("http://localhost:8888/decon_staging/wp-content/uploads/2013/01/unicorn_faq130x130.jpg");
+  background-image: url("/wp-content/themes/monthership/images/unicorn_faq130x130.jpg");
 }
 
 /* line 52, sass/app.scss */
 #top-nav .menu_register a, #top-nav .menu_register a:focus, #top-nav .menu_register a:hover {
-  background-image: url("http://localhost:8888/decon_staging/wp-content/uploads/2013/01/crane_register130x130.jpg");
+  background-image: url("/wp-content/themes/monthership/images/crane_register130x130.jpg");
 }
 
 /* line 60, sass/app.scss */
 #top-nav .menu_manifesto a, #top-nav .menu_manifesto a:focus, #top-nav .menu_manifesto a:hover {
-  background-image: url("http://localhost:8888/decon_staging/wp-content/uploads/2013/01/manifesto130x130.jpg");
+  background-image: url("/wp-content/themes/monthership/images/manifesto130x130.jpg");
 }
 
 /* line 68, sass/app.scss */
 #top-nav .menu_news a, #top-nav .menu_news a:focus, #top-nav .menu_news a:hover {
-  background-image: url("http://localhost:8888/decon_staging/wp-content/uploads/2013/01/bike_news130x130.jpg");
+  background-image: url("/wp-content/themes/monthership/images/bike_news130x130.jpg");
 }
 
 /* line 76, sass/app.scss */
 #top-nav .menu_contact a, #top-nav .menu_contact a:focus, #top-nav .menu_contact a:hover {
-  background-image: url("http://localhost:8888/decon_staging/wp-content/uploads/2013/01/keyboard_contact130x130.jpg");
+  background-image: url("/wp-content/themes/monthership/images/keyboard_contact130x130.jpg");
 }
 
 /* line 83, sass/app.scss */
