@@ -78,3 +78,13 @@
   font-size: 1.5em;
   text-align: center;
 }
+
+/* line 111, sass/app.scss */
+header .logo img {
+  margin-top: 20px;
+}
+
+/* line 119, sass/app.scss */
+header .description p {
+  font-size: 16px;
+}

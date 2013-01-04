@@ -63,8 +63,10 @@ $theme_options = get_option('mothership_options');
 		foundation_nav_bar(); //switch this with the template-part 'topbar' function below to change to a topbar
 		//get_template_part('topbar'); ?>
 	</div>
-	<div class="logo twelve columns last"><h1><?php bloginfo('name'); ?></h1></div>
-	<div class="description twelve columns last"><p><?php bloginfo('description'); ?></p></div>
+	
+	<!-- <div class="logo twelve columns last"><h1><?php bloginfo('name'); ?></h1></div> -->
+	<div class="logo seven columns centered"><h1><img src="wp-content/themes/mothership/images/deconlogo528x101.jpg"/></h1></div>
+	<div class="description nine columns centered"><p><?php bloginfo('description'); ?></p></div>
 </header>
 <div id="main-content-area" class="row">
 <?php } ?>
