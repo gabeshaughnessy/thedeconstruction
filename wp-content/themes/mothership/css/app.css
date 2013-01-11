@@ -133,3 +133,10 @@ header .logo img {
 header .description p {
   font-size: 18px;
 }
+
+/* line 175, sass/app.scss */
+.social_widget img {
+  float: left;
+  width: 90px;
+  margin: 5px;
+}
