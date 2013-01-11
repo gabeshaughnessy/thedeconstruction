@@ -178,14 +178,67 @@ header {
 
 /*Social */
 
-.social_widget {
-	img {
-	float: left;
-	width: 90px;
-	margin: 5px;
-	
-	}
+ul.menu {
+clear: both;
 }
+
+	ul.menu {
+		li {
+			float: left;
+			margin: 5px;
+			list-style: none;
+			height: 75px;
+			width: 75px;
+		}
+	}	
+
+
+
+
+ul.menu {
+		li.facebook {	
+			a 	{
+				display: block;
+				text-indent: -9999px;
+				width: 75px;
+				height: 75px;
+		  		background-image: url(../images/facebook75x75.png);
+				}
+		}
+}
+
+ul.menu {
+		li.google {
+			a {
+				display: block;
+				text-indent: -9999px;
+				width: 75px;
+		  		height: 75px;
+		  		background-image: url('../images/google-plus75x75.png');
+			}
+		}
+}
+
+ul.menu {
+		li.twitter {
+			a {
+				display: block;
+				text-indent: -9999px;
+				width: 75px;
+		  		height: 75px;
+		  		background-image: url('../images/twitter75x75.png');
+			}
+		}
+}
+
+ul.menu {
+		li.email {
+			a {
+				display: none;
+			}
+		}
+}
+		
 
 /*End Social*/
 
