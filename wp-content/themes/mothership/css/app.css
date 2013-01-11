@@ -56,35 +56,80 @@
   background-image: url("../images/keyboard_contact130x130.jpg");
 }
 
-/* line 83, sass/app.scss */
+/* Options for Navigation on Small Screens */
+@media only screen and (max-width: 767px) {
+  /* line 87, sass/app.scss */
+  #top-nav .menu_home a, #top-nav .menu_home a:focus, #top-nav .menu_home a:hover, #top-nav .menu_faq a, #top-nav .menu_faq a:focus, #top-nav .menu_faq a:hover, #top-nav .menu_register a, #top-nav .menu_register a:focus, #top-nav .menu_register a:hover, #top-nav .menu_manifesto a, #top-nav .menu_manifesto a:focus, #top-nav .menu_manifesto a:hover, #top-nav .menu_news a, #top-nav .menu_news a:focus, #top-nav .menu_news a:hover, #top-nav .menu_contact a, #top-nav .menu_contact a:focus, #top-nav .menu_contact a:hover {
+    background-image: none;
+    width: 130px;
+    height: 50px;
+    background-repeat: no-repeat;
+    background-color: #ffffff;
+    padding: 0px 10px;
+    color: #000000;
+  }
+}
+@media only screen and (max-width: 767px) {
+  /* line 102, sass/app.scss */
+  .nav-bar .menu_text {
+    padding-top: 0px;
+    font-size: 1.5em;
+    text-align: center;
+  }
+}
+/* line 111, sass/app.scss */
 .nav-bar {
   background: none;
 }
 
-/* line 89, sass/app.scss */
+/* line 117, sass/app.scss */
 .nav-bar > li {
   margin-right: 25px;
   border: none;
 }
 
-/* line 95, sass/app.scss */
+/* line 123, sass/app.scss */
+.nav-bar > li.active {
+  background: none;
+  border-color: none;
+}
+
+/* line 128, sass/app.scss */
+.nav-bar > li.hover {
+  background: none;
+  border-color: none;
+}
+
+/* line 133, sass/app.scss */
+.nav-bar > li.active:hover {
+  background: none;
+  border-color: none;
+}
+
+/* line 138, sass/app.scss */
+.nav-bar > li:hover {
+  background: none;
+  border-color: none;
+}
+
+/* line 144, sass/app.scss */
 .nav-bar > li:last-child {
   border: none;
 }
 
-/* line 101, sass/app.scss */
+/* line 150, sass/app.scss */
 .nav-bar .menu_text {
   padding-top: 130px;
   font-size: 1.5em;
   text-align: center;
 }
 
-/* line 111, sass/app.scss */
+/* line 160, sass/app.scss */
 header .logo img {
   margin-top: 20px;
 }
 
-/* line 119, sass/app.scss */
+/* line 168, sass/app.scss */
 header .description p {
   font-size: 16px;
 }
