@@ -19,72 +19,210 @@
 /* line 21, sass/app.scss */
 #top-nav .menu_home a, #top-nav .menu_home a:focus, #top-nav .menu_home a:hover, #top-nav .menu_faq a, #top-nav .menu_faq a:focus, #top-nav .menu_faq a:hover, #top-nav .menu_register a, #top-nav .menu_register a:focus, #top-nav .menu_register a:hover, #top-nav .menu_manifesto a, #top-nav .menu_manifesto a:focus, #top-nav .menu_manifesto a:hover, #top-nav .menu_news a, #top-nav .menu_news a:focus, #top-nav .menu_news a:hover, #top-nav .menu_contact a, #top-nav .menu_contact a:focus, #top-nav .menu_contact a:hover {
   width: 130px;
-  height: 150px;
+  height: 160px;
   background-repeat: no-repeat;
   background-color: #ffffff;
   padding: 0px 10px;
   color: #000000;
 }
 
-/* line 36, sass/app.scss */
+/* line 34, sass/app.scss */
 #top-nav .menu_home a, #top-nav .menu_home a:focus, #top-nav .menu_home a:hover {
   background-image: url("../images/catscra130x130.jpg");
 }
 
-/* line 44, sass/app.scss */
+/* line 42, sass/app.scss */
 #top-nav .menu_faq a, #top-nav .menu_faq a:focus, #top-nav .menu_faq a:hover {
   background-image: url("../images/unicorn_faq130x130.jpg");
 }
 
-/* line 52, sass/app.scss */
+/* line 50, sass/app.scss */
 #top-nav .menu_register a, #top-nav .menu_register a:focus, #top-nav .menu_register a:hover {
   background-image: url("../images/crane_register130x130.jpg");
 }
 
-/* line 60, sass/app.scss */
+/* line 58, sass/app.scss */
 #top-nav .menu_manifesto a, #top-nav .menu_manifesto a:focus, #top-nav .menu_manifesto a:hover {
   background-image: url("../images/manifesto130x130.jpg");
 }
 
-/* line 68, sass/app.scss */
+/* line 66, sass/app.scss */
 #top-nav .menu_news a, #top-nav .menu_news a:focus, #top-nav .menu_news a:hover {
   background-image: url("../images/bike_news130x130.jpg");
 }
 
-/* line 76, sass/app.scss */
+/* line 74, sass/app.scss */
 #top-nav .menu_contact a, #top-nav .menu_contact a:focus, #top-nav .menu_contact a:hover {
   background-image: url("../images/keyboard_contact130x130.jpg");
 }
 
-/* line 83, sass/app.scss */
+/* Options for Navigation on Small Screens */
+@media only screen and (max-width: 767px) {
+  /* line 85, sass/app.scss */
+  #top-nav .menu_home a, #top-nav .menu_home a:focus, #top-nav .menu_home a:hover, #top-nav .menu_faq a, #top-nav .menu_faq a:focus, #top-nav .menu_faq a:hover, #top-nav .menu_register a, #top-nav .menu_register a:focus, #top-nav .menu_register a:hover, #top-nav .menu_manifesto a, #top-nav .menu_manifesto a:focus, #top-nav .menu_manifesto a:hover, #top-nav .menu_news a, #top-nav .menu_news a:focus, #top-nav .menu_news a:hover, #top-nav .menu_contact a, #top-nav .menu_contact a:focus, #top-nav .menu_contact a:hover {
+    background-image: none;
+    width: 130px;
+    background-repeat: no-repeat;
+    background-color: #ffffff;
+    padding: 0px 10px;
+    color: #000000;
+  }
+}
+@media only screen and (max-width: 767px) {
+  /* line 100, sass/app.scss */
+  .nav-bar .menu_text {
+    padding-top: 0px;
+    font-size: 1.5em;
+    text-align: center;
+  }
+}
+/* line 109, sass/app.scss */
 .nav-bar {
   background: none;
+  height: 160px;
 }
 
-/* line 89, sass/app.scss */
+/* line 116, sass/app.scss */
 .nav-bar > li {
   margin-right: 25px;
   border: none;
 }
 
-/* line 95, sass/app.scss */
+/* line 122, sass/app.scss */
+.nav-bar > li.active {
+  background: none;
+  border-color: none;
+}
+
+/* line 127, sass/app.scss */
+.nav-bar > li.hover {
+  background: none;
+  border-color: none;
+}
+
+/* line 132, sass/app.scss */
+.nav-bar > li.active:hover {
+  background: none;
+  border-color: none;
+}
+
+/* line 137, sass/app.scss */
+.nav-bar > li:hover {
+  background: none;
+  border-color: none;
+}
+
+/* line 143, sass/app.scss */
 .nav-bar > li:last-child {
   border: none;
 }
 
-/* line 101, sass/app.scss */
+/* line 149, sass/app.scss */
 .nav-bar .menu_text {
   padding-top: 130px;
   font-size: 1.5em;
   text-align: center;
 }
 
-/* line 111, sass/app.scss */
+/*End Navigation */
+/* Header */
+/* line 163, sass/app.scss */
 header .logo img {
   margin-top: 20px;
 }
 
-/* line 119, sass/app.scss */
-header .description p {
-  font-size: 16px;
+/* line 171, sass/app.scss */
+header .header_description p {
+  font-family: 'Eagle Lake', cursive;
+  font-size: 18px;
 }
+
+/*End Header*/
+/*Social */
+/* line 181, sass/app.scss */
+ul.menu {
+  clear: both;
+}
+
+/* line 186, sass/app.scss */
+ul.menu li {
+  margin: 5px;
+  list-style: none;
+  height: 50px;
+  width: 50px;
+}
+
+/* line 199, sass/app.scss */
+ul.menu li.facebook a {
+  display: block;
+  text-indent: -9999px;
+  width: 50px;
+  height: 50px;
+  background-image: url(../images/facebook50x50.png);
+}
+
+/* line 211, sass/app.scss */
+ul.menu li.google a {
+  display: block;
+  text-indent: -9999px;
+  width: 50px;
+  height: 50px;
+  background-image: url("../images/google-plus50x50.png");
+}
+
+/* line 223, sass/app.scss */
+ul.menu li.twitter a {
+  display: block;
+  text-indent: -9999px;
+  width: 50px;
+  height: 50px;
+  background-image: url("../images/twitter50x50.png");
+}
+
+/* line 235, sass/app.scss */
+ul.menu li.email a {
+  display: none;
+}
+
+/*End Social*/
+/*Modal Buttons */
+/* line 245, sass/app.scss */
+.modal_btn {
+  -moz-box-shadow: inset 0px 1px 0px 0px #858585;
+  -webkit-box-shadow: inset 0px 1px 0px 0px #858585;
+  box-shadow: inset 0px 1px 0px 0px #858585;
+  background: -webkit-gradient(linear, left top, left bottom, color-stop(0.05, #3d3d3d), color-stop(1, black));
+  background: -moz-linear-gradient(center top, #3d3d3d 5%, black 100%);
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#3d3d3d', endColorstr='#000000');
+  background-color: #3d3d3d;
+  -moz-border-radius: 6px;
+  -webkit-border-radius: 6px;
+  border-radius: 6px;
+  border: 1px solid #949494;
+  display: inline-block;
+  color: #ffffff;
+  font-family: arial;
+  font-size: 18px;
+  font-weight: bold;
+  padding: 9px 24px;
+  text-decoration: none;
+  text-shadow: 1px 1px 0px #949494;
+}
+
+/* line 265, sass/app.scss */
+.classname:hover {
+  background: -webkit-gradient(linear, left top, left bottom, color-stop(0.05, black), color-stop(1, #3d3d3d));
+  background: -moz-linear-gradient(center top, black 5%, #3d3d3d 100%);
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#000000', endColorstr='#3d3d3d');
+  background-color: #000000;
+}
+
+/* line 270, sass/app.scss */
+.classname:active {
+  position: relative;
+  top: 1px;
+}
+
+/* This imageless css button was generated by CSSButtonGenerator.com */
+/*End Modals */
+/*Home Page*/

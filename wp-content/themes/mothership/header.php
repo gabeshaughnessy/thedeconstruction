@@ -46,6 +46,7 @@
 <link rel="stylesheet" type="text/css" media="all" href="<?php echo get_bloginfo( 'stylesheet_directory'); ?>/css/app.css" />
 
 <link rel="pingback" href="<?php bloginfo( 'pingback_url' ); ?>" />
+<link href='http://fonts.googleapis.com/css?family=Eagle+Lake' rel='stylesheet' type='text/css'>
 <?php //get the theme options to an array
 $theme_options = get_option('mothership_options');
 //access each field by its id
@@ -65,8 +66,8 @@ $theme_options = get_option('mothership_options');
 	</div>
 	
 	<!-- <div class="logo twelve columns last"><h1><?php bloginfo('name'); ?></h1></div> -->
-	<div class="logo seven columns centered"><h1><img src="wp-content/themes/mothership/images/deconlogo528x101.jpg"/></h1></div>
-	<div class="description nine columns centered"><p><?php bloginfo('description'); ?></p></div>
+	<div class="logo ten columns centered"><h1><img src="wp-content/themes/mothership/images/deconstruction_logo_1200x196.jpg"/></h1></div>
+	<div class="header_description ten columns centered"><p><?php bloginfo('description'); ?></p></div>
 </header>
 <div id="main-content-area" class="row">
 <?php } ?>
