@@ -243,31 +243,31 @@ ul.menu {
 
 /*Modal Buttons */
 .modal_btn {
-	-moz-box-shadow:inset 0px 1px 0px 0px #fcfcfc;
-	-webkit-box-shadow:inset 0px 1px 0px 0px #fcfcfc;
-	box-shadow:inset 0px 1px 0px 0px #fcfcfc;
-	background:-webkit-gradient( linear, left top, left bottom, color-stop(0.05, #0088ad), color-stop(1, #2ba6cb) );
-	background:-moz-linear-gradient( center top, #0088ad 5%, #2ba6cb 100% );
-	filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#0088ad', endColorstr='#2ba6cb');
-	background-color:#0088ad;
+	-moz-box-shadow:inset 0px 1px 0px 0px #858585;
+	-webkit-box-shadow:inset 0px 1px 0px 0px #858585;
+	box-shadow:inset 0px 1px 0px 0px #858585;
+	background:-webkit-gradient( linear, left top, left bottom, color-stop(0.05, #3d3d3d), color-stop(1, #000000) );
+	background:-moz-linear-gradient( center top, #3d3d3d 5%, #000000 100% );
+	filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#3d3d3d', endColorstr='#000000');
+	background-color:#3d3d3d;
 	-moz-border-radius:6px;
 	-webkit-border-radius:6px;
 	border-radius:6px;
-	border:1px solid #dcdcdc;
+	border:1px solid #949494;
 	display:inline-block;
 	color:#ffffff;
 	font-family:arial;
-	font-size:19px;
+	font-size:18px;
 	font-weight:bold;
-	padding:10px 29px;
+	padding:9px 24px;
 	text-decoration:none;
-	text-shadow:1px 1px 0px #454545;
-}.modal_btn:hover {
-	background:-webkit-gradient( linear, left top, left bottom, color-stop(0.05, #2ba6cb), color-stop(1, #0088ad) );
-	background:-moz-linear-gradient( center top, #2ba6cb 5%, #0088ad 100% );
-	filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#2ba6cb', endColorstr='#0088ad');
-	background-color:#2ba6cb;
-}.modal_btn:active {
+	text-shadow:1px 1px 0px #949494;
+}.classname:hover {
+	background:-webkit-gradient( linear, left top, left bottom, color-stop(0.05, #000000), color-stop(1, #3d3d3d) );
+	background:-moz-linear-gradient( center top, #000000 5%, #3d3d3d 100% );
+	filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#000000', endColorstr='#3d3d3d');
+	background-color:#000000;
+}.classname:active {
 	position:relative;
 	top:1px;
 }
