@@ -184,7 +184,6 @@ clear: both;
 
 	ul.menu {
 		li {
-			float: left;
 			margin: 5px;
 			list-style: none;
 			height: 75px;
@@ -279,43 +278,8 @@ ul.menu {
 
 .home_content {
 
-		background: url('../images/jetbike_552x363.jpg') no-repeat top right;
+
 }
 
-.home_content {
-	p:first-child {
-	padding-right: 112px;
-	}
-}
 
-.home_content {
-	p:nth-child(2) {
-		padding-right: 484px;
-	}
-}
-
-@media only screen and (max-width: 767px) {
-		.home_content {
-			background: none;
-
-			}
-		}
-
-@media only screen and (max-width: 767px) {
-		.home_content {
-			p:first-child {
-				padding: 0;
-
-			}
-		}
-	}
-
-@media only screen and (max-width: 767px) {
-		.home_content {
-			p:nth-child(2) {
-				padding: 0;
-
-			}
-		}
-	}	
 	
