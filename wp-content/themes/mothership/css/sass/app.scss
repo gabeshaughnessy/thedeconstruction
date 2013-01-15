@@ -77,35 +77,6 @@
 	}
 }
 
-/* Options for Navigation on Small Screens */
-
-@media only screen and (max-width: 767px) {
-	#top-nav {
-		.menu_home, .menu_faq, .menu_register, .menu_manifesto, .menu_news, .menu_contact {
-			a, a:focus, a:hover{
-				background-image: none;
-				width: 130px; 
-				background-repeat: no-repeat;
-				background-color: #ffffff;
-				padding: 0px 10px;
-				color: #000000;
-					} 
-				}
-			}
-  		}
-
-
-@media only screen and (max-width: 767px) {
-		.nav-bar {
-			.menu_text {
-				padding-top: 0px;
-				font-size: 1.5em;
-				text-align: center;
-
-			}
-		}
-	}
-
 .nav-bar {
 background: none;
 height: 160px;
@@ -281,5 +252,33 @@ ul.menu {
 
 }
 
+/* Options for Navigation on Small Screens */
+
+@media only screen and (max-width: 767px) {
+	#top-nav {
+		.menu_home, .menu_faq, .menu_register, .menu_manifesto, .menu_news, .menu_contact {
+			a, a:focus, a:hover{
+				background-image: none;
+				width: 130px; 
+				height:  auto;
+				margin: 0 auto;
+				background-repeat: no-repeat;
+				background-color: #ffffff;
+				padding: 0px 10px;
+				color: #000000;
+					} 
+				}
+			}
+
+		.nav-bar {
+			height: auto;
+			.menu_text {
+				padding-top: 0px;
+				font-size: 1.5em;
+				text-align: center;
+
+			}
+		}
+	}
 
 	
