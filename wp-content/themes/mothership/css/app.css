@@ -17,87 +17,88 @@
 }
 
 /* line 21, sass/app.scss */
-#top-nav .menu_home a, #top-nav .menu_home a:focus, #top-nav .menu_home a:hover, #top-nav .menu_faq a, #top-nav .menu_faq a:focus, #top-nav .menu_faq a:hover, #top-nav .menu_register a, #top-nav .menu_register a:focus, #top-nav .menu_register a:hover, #top-nav .menu_manifesto a, #top-nav .menu_manifesto a:focus, #top-nav .menu_manifesto a:hover, #top-nav .menu_news a, #top-nav .menu_news a:focus, #top-nav .menu_news a:hover, #top-nav .menu_contact a, #top-nav .menu_contact a:focus, #top-nav .menu_contact a:hover {
+#top-nav .menu-item a, #top-nav .menu-item a:focus, #top-nav .menu-item a:hover {
   width: 130px;
   height: 160px;
   background-repeat: no-repeat;
   background-color: #ffffff;
-  padding: 0px 10px;
+  padding: 122px 10px;
+  margin: 0 auto -160px;
   color: #000000;
 }
 
-/* line 34, sass/app.scss */
-#top-nav .menu_home a, #top-nav .menu_home a:focus, #top-nav .menu_home a:hover {
+/* line 35, sass/app.scss */
+.menu_home a, .menu_home a:focus, .menu_home a:hover {
   background-image: url("../images/catscra130x130.jpg");
 }
 
-/* line 42, sass/app.scss */
-#top-nav .menu_faq a, #top-nav .menu_faq a:focus, #top-nav .menu_faq a:hover {
+/* line 43, sass/app.scss */
+.menu_faq a, .menu_faq a:focus, .menu_faq a:hover {
   background-image: url("../images/unicorn_faq130x130.jpg");
 }
 
-/* line 50, sass/app.scss */
-#top-nav .menu_register a, #top-nav .menu_register a:focus, #top-nav .menu_register a:hover {
+/* line 49, sass/app.scss */
+.menu_register a, .menu_register a:focus, .menu_register a:hover {
   background-image: url("../images/crane_register130x130.jpg");
 }
 
-/* line 58, sass/app.scss */
-#top-nav .menu_manifesto a, #top-nav .menu_manifesto a:focus, #top-nav .menu_manifesto a:hover {
+/* line 55, sass/app.scss */
+.menu_manifesto a, .menu_manifesto a:focus, .menu_manifesto a:hover {
   background-image: url("../images/manifesto130x130.jpg");
 }
 
-/* line 66, sass/app.scss */
-#top-nav .menu_news a, #top-nav .menu_news a:focus, #top-nav .menu_news a:hover {
+/* line 61, sass/app.scss */
+.menu_news a, .menu_news a:focus, .menu_news a:hover {
   background-image: url("../images/bike_news130x130.jpg");
 }
 
-/* line 74, sass/app.scss */
-#top-nav .menu_contact a, #top-nav .menu_contact a:focus, #top-nav .menu_contact a:hover {
+/* line 67, sass/app.scss */
+.menu_contact a, .menu_contact a:focus, .menu_contact a:hover {
   background-image: url("../images/keyboard_contact130x130.jpg");
 }
 
-/* line 80, sass/app.scss */
+/* line 72, sass/app.scss */
 .nav-bar {
   background: none;
   height: 160px;
 }
 
-/* line 87, sass/app.scss */
+/* line 79, sass/app.scss */
 .nav-bar > li {
   margin-right: 25px;
   border: none;
 }
 
-/* line 93, sass/app.scss */
+/* line 85, sass/app.scss */
 .nav-bar > li.active {
   background: none;
   border-color: none;
 }
 
-/* line 98, sass/app.scss */
+/* line 90, sass/app.scss */
 .nav-bar > li.hover {
   background: none;
   border-color: none;
 }
 
-/* line 103, sass/app.scss */
+/* line 95, sass/app.scss */
 .nav-bar > li.active:hover {
   background: none;
   border-color: none;
 }
 
-/* line 108, sass/app.scss */
+/* line 100, sass/app.scss */
 .nav-bar > li:hover {
   background: none;
   border-color: none;
 }
 
-/* line 114, sass/app.scss */
+/* line 106, sass/app.scss */
 .nav-bar > li:last-child {
   border: none;
 }
 
-/* line 120, sass/app.scss */
+/* line 112, sass/app.scss */
 .nav-bar .menu_text {
   padding-top: 130px;
   font-size: 1.5em;
@@ -106,12 +107,12 @@
 
 /*End Navigation */
 /* Header */
-/* line 134, sass/app.scss */
+/* line 126, sass/app.scss */
 header .logo img {
   margin-top: 20px;
 }
 
-/* line 142, sass/app.scss */
+/* line 134, sass/app.scss */
 header .header_description p {
   font-family: 'Eagle Lake', cursive;
   font-size: 18px;
@@ -119,12 +120,12 @@ header .header_description p {
 
 /*End Header*/
 /*Social */
-/* line 152, sass/app.scss */
+/* line 144, sass/app.scss */
 ul.menu {
   clear: both;
 }
 
-/* line 157, sass/app.scss */
+/* line 149, sass/app.scss */
 ul.menu li {
   margin: 5px;
   list-style: none;
@@ -132,7 +133,7 @@ ul.menu li {
   width: 50px;
 }
 
-/* line 170, sass/app.scss */
+/* line 162, sass/app.scss */
 ul.menu li.facebook a {
   display: block;
   text-indent: -9999px;
@@ -141,7 +142,7 @@ ul.menu li.facebook a {
   background-image: url(../images/facebook50x50.png);
 }
 
-/* line 182, sass/app.scss */
+/* line 174, sass/app.scss */
 ul.menu li.google a {
   display: block;
   text-indent: -9999px;
@@ -150,7 +151,7 @@ ul.menu li.google a {
   background-image: url("../images/google-plus50x50.png");
 }
 
-/* line 194, sass/app.scss */
+/* line 186, sass/app.scss */
 ul.menu li.twitter a {
   display: block;
   text-indent: -9999px;
@@ -159,14 +160,14 @@ ul.menu li.twitter a {
   background-image: url("../images/twitter50x50.png");
 }
 
-/* line 206, sass/app.scss */
+/* line 198, sass/app.scss */
 ul.menu li.email a {
   display: none;
 }
 
 /*End Social*/
 /*Modal Buttons */
-/* line 216, sass/app.scss */
+/* line 208, sass/app.scss */
 .modal_btn {
   -moz-box-shadow: inset 0px 1px 0px 0px #858585;
   -webkit-box-shadow: inset 0px 1px 0px 0px #858585;
@@ -189,7 +190,7 @@ ul.menu li.email a {
   text-shadow: 1px 1px 0px #949494;
 }
 
-/* line 236, sass/app.scss */
+/* line 228, sass/app.scss */
 .classname:hover {
   background: -webkit-gradient(linear, left top, left bottom, color-stop(0.05, black), color-stop(1, #3d3d3d));
   background: -moz-linear-gradient(center top, black 5%, #3d3d3d 100%);
@@ -197,7 +198,7 @@ ul.menu li.email a {
   background-color: #000000;
 }
 
-/* line 241, sass/app.scss */
+/* line 233, sass/app.scss */
 .classname:active {
   position: relative;
   top: 1px;
@@ -206,7 +207,7 @@ ul.menu li.email a {
 /* This imageless css button was generated by CSSButtonGenerator.com */
 /*End Modals */
 /*Content area*/
-/* line 250, sass/app.scss */
+/* line 242, sass/app.scss */
 #main-content-area {
   padding-bottom: 40px;
 }
@@ -214,7 +215,7 @@ ul.menu li.email a {
 /*Home Page*/
 /* Options for Navigation on Small Screens */
 @media only screen and (max-width: 767px) {
-  /* line 266, sass/app.scss */
+  /* line 258, sass/app.scss */
   #top-nav .menu_home a, #top-nav .menu_home a:focus, #top-nav .menu_home a:hover, #top-nav .menu_faq a, #top-nav .menu_faq a:focus, #top-nav .menu_faq a:hover, #top-nav .menu_register a, #top-nav .menu_register a:focus, #top-nav .menu_register a:hover, #top-nav .menu_manifesto a, #top-nav .menu_manifesto a:focus, #top-nav .menu_manifesto a:hover, #top-nav .menu_news a, #top-nav .menu_news a:focus, #top-nav .menu_news a:hover, #top-nav .menu_contact a, #top-nav .menu_contact a:focus, #top-nav .menu_contact a:hover {
     background-image: none;
     width: 130px;
@@ -226,11 +227,11 @@ ul.menu li.email a {
     color: #000000;
   }
 
-  /* line 279, sass/app.scss */
+  /* line 271, sass/app.scss */
   .nav-bar {
     height: auto;
   }
-  /* line 281, sass/app.scss */
+  /* line 273, sass/app.scss */
   .nav-bar .menu_text {
     padding-top: 0px;
     font-size: 1.5em;

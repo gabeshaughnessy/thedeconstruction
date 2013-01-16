@@ -17,64 +17,56 @@
 }
 
 #top-nav {
-	.menu_home, .menu_faq, .menu_register, .menu_manifesto, .menu_news, .menu_contact {
+	.menu-item {
 		a, a:focus, a:hover{
 			width: 130px; 
 			height: 160px;
 			background-repeat: no-repeat;
 			background-color: #ffffff;
-			padding: 0px 10px;
+			padding: 122px 10px;
+			margin: 0 auto -160px;
 			color: #000000;
 		} 
 	}
 }
 
-#top-nav {
+
 	.menu_home {
 		a, a:focus, a:hover{
 		background-image: url('../images/catscra130x130.jpg');
 		}
 	}
-}
 
-#top-nav {
+
+
 	.menu_faq {
 		a, a:focus, a:hover{
 		background-image: url('../images/unicorn_faq130x130.jpg');
 		}
 	}
-}
 
-#top-nav {
 	.menu_register {
 		a, a:focus, a:hover{
 		background-image: url('../images/crane_register130x130.jpg');
 		}
 	}
-}
 
-#top-nav {
 	.menu_manifesto {
 		a, a:focus, a:hover{
 		background-image: url('../images/manifesto130x130.jpg');
 		}
 	}
-}
 
-#top-nav {
 	.menu_news {
 		a, a:focus, a:hover{
 		background-image: url('../images/bike_news130x130.jpg');
 		}
 	}
-}
 
-#top-nav {
 	.menu_contact {
 		a, a:focus, a:hover{
 		background-image: url('../images/keyboard_contact130x130.jpg');
 		}
-	}
 }
 
 .nav-bar {
