@@ -9,7 +9,7 @@
  */
 ?>
 <?php get_header(); ?>
-<div id="content" class="nine columns">
+<div id="content" class="eleven columns">
 <?php if(have_posts()) : while(have_posts()) : the_post(); ?>
 <article>
 	<div class="post-content">

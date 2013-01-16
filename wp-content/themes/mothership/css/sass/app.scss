@@ -132,8 +132,9 @@ header {
 header {
  .header_description {
 	p {
-	font-family: 'Eagle Lake', cursive;
-	font-size: 18px;
+	font-family: 'Cinzel Decorative', cursive;
+	font-weight: bold;
+	font-size: 2.2em;
 		}
 	}
 }
@@ -245,8 +246,9 @@ ul.menu {
 }
 /*Home Page*/
 
-.home_content {
+.home_content p{
 
+	text-align: justify;
 
 }
 
