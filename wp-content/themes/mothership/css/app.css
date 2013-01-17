@@ -310,51 +310,11 @@ ul.accordion.social > li .content {
   ul.accordion.social {
     max-width: 330px;
     border: 0;
+    margin-left: 0px;
   }
   /* line 353, sass/app.scss */
-  ul.accordion.social > li {
-    border-top: 0;
-    border-bottom: 0;
-  }
-  /* line 358, sass/app.scss */
-  ul.accordion.social > li .title {
-    border-left: 0;
-    border-right: 0;
-    background: #fff;
-  }
-  /* line 362, sass/app.scss */
-  ul.accordion.social > li .title::after {
-    border-width: 14px;
-    top: 26px;
-    right: 25px;
-  }
-  /* line 367, sass/app.scss */
-  ul.accordion.social > li .title h5 {
-    display: block;
-    text-indent: 65px;
-    line-height: 1.7em;
-    font-family: 'Cinzel Decorative', cursive;
-    font-weight: bold;
-    font-size: 2.2em;
-    width: 50px;
-    height: 50px;
-  }
-  /* line 381, sass/app.scss */
-  ul.accordion.social > li.facebook h5 {
-    background-image: url("../images/facebook50x50.png");
-  }
-  /* line 386, sass/app.scss */
-  ul.accordion.social > li.google h5 {
-    background-image: url("../images/google-plus50x50.png");
-  }
-  /* line 391, sass/app.scss */
-  ul.accordion.social > li.twitter h5 {
-    background-image: url("../images/twitter50x50.png");
-  }
-  /* line 395, sass/app.scss */
-  ul.accordion.social > li .content {
-    border-left: 0;
-    border-right: 0;
+  ul.accordion.social:hover {
+    margin-left: 0px;
   }
 
   /*End Social*/

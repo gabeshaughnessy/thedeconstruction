@@ -349,58 +349,14 @@ ul.accordion {
 				&.social {
 					max-width:  330px;
 					border:  0;
-					
-					> li {
-					 border-top:  0;
-					 border-bottom: 0;
-						
-					
-				.title {
-					border-left: 0;
-					border-right:0;
-					background:  #fff;
-					&::after {
-						border-width: 14px;
-						top:  26px;
-						right:  25px;
-						}
-					h5 {
-						display: block;
-						text-indent: 65px;
-						line-height: 1.7em;
-						font-family: 'Cinzel Decorative', cursive;
-						font-weight: bold;
-						font-size: 2.2em;
-						width: 50px;
-						height: 50px;
-					
+					margin-left: 0px;
+					&:hover {
+					margin-left:0px;
 					}
-					
-				}
-				&.facebook{
-					h5{	
-						background-image: url("../images/facebook50x50.png");
-					}
-				}
-				&.google {
-					h5{
-						background-image: url("../images/google-plus50x50.png");
-					}
-				}
-				&.twitter {
-					h5{
-						background-image: url("../images/twitter50x50.png");
-					}
-				}
-				.content {
-					 border-left: 0;
-					 border-right:0;
-				}
 				}
 				
 			}
 			
-		}
 		/*End Social*/
 		
 		
