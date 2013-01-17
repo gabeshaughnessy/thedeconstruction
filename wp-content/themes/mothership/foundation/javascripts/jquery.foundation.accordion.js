@@ -10,8 +10,8 @@
           var p = $(this).parent(),
             flyout = $(this).children('.content').first();
 
-          $('.content', p).not(flyout).hide().parent('li').removeClass('active'); //changed this
-          flyout.show(0, function () {
+          $('.content', p).not(flyout).slideUp('slow').parent('li').removeClass('active'); //changed this
+          flyout.slideDown('slow', function () {
             flyout.parent('li').addClass('active');
           });
         }
@@ -23,10 +23,10 @@
             flyout = $(this).children('.content').first();
 
         if (li.hasClass('active')) {
-          p.find('li').removeClass('active').end().find('.content').hide();
+          p.find('li').removeClass('active').end().find('.content').slideUp('slow');
         } else {
-          $('.content', p).not(flyout).hide().parent('li').removeClass('active'); //changed this
-          flyout.show(0, function () {
+          $('.content', p).not(flyout).slideUp('slow').parent('li').removeClass('active'); //changed this
+          flyout.slideDown('slow', function () {
             flyout.parent('li').addClass('active');
           });
         }

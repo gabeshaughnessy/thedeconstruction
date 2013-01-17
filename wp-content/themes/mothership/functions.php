@@ -17,6 +17,11 @@ function decon_enqueue_scripts() {
 		get_template_directory_uri() . '/foundation/javascripts/foundation.min.js',
 		array('jquery')
 	);
+	wp_enqueue_script(
+		'accordion',
+		get_template_directory_uri() . '/foundation/javascripts/jquery.foundation.accordion.js',
+		array('jquery', 'foundation')
+	);
 	//Foundation App
 	wp_enqueue_script(
 		'foundation-app',

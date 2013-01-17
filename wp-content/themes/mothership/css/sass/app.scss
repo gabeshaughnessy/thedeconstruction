@@ -203,9 +203,72 @@ ul.menu {
 			}
 		}
 }
-		
 
+ul.accordion {
+
+		&.social {
+			-webkit-transition: all 1s ease-in-out;
+			min-width:  330px;
+			position: relative;
+			border:  0;
+			margin-left: -10px;
+			&:hover {
+			margin-left:-330px;
+			}
+			> li {
+			 border-top:  0;
+			 border-bottom: 0;
+				
+				
+			
+		.title {
+			border-left: 0;
+			border-right:0;
+			background:  #fff;
+			&::after {
+				border-width: 14px;
+				top:  26px;
+				right:  25px;
+				}
+			h5 {
+				display: block;
+				text-indent: 65px;
+				line-height: 1.7em;
+				font-family: 'Cinzel Decorative', cursive;
+				font-weight: bold;
+				font-size: 2.2em;
+				width: 50px;
+				height: 50px;
+			
+			}
+			
+		}
+		&.facebook{
+			h5{	
+				background-image: url("../images/facebook50x50.png");
+			}
+		}
+		&.google {
+			h5{
+				background-image: url("../images/google-plus50x50.png");
+			}
+		}
+		&.twitter {
+			h5{
+				background-image: url("../images/twitter50x50.png");
+			}
+		}
+		.content {
+			 border-left: 0;
+			 border-right:0;
+		}
+		}
+		
+	}
+	
+}
 /*End Social*/
+
 
 /*Modal Buttons */
 .modal_btn {
@@ -244,7 +307,7 @@ ul.menu {
 
 #main-content-area {
 	padding-bottom: 40px;
-	
+	overflow: hidden;
 }
 /*Home Page*/
 
@@ -276,11 +339,71 @@ ul.menu {
 			height: auto;
 			.menu_text {
 				padding-top: 0px;
-				font-size: 1.5em;
+				font-size: 1.1em;
 				text-align: center;
 
 			}
 		}
+		/* Social ACCORDION */
+		ul.accordion {
+				&.social {
+					max-width:  330px;
+					border:  0;
+					
+					> li {
+					 border-top:  0;
+					 border-bottom: 0;
+						
+					
+				.title {
+					border-left: 0;
+					border-right:0;
+					background:  #fff;
+					&::after {
+						border-width: 14px;
+						top:  26px;
+						right:  25px;
+						}
+					h5 {
+						display: block;
+						text-indent: 65px;
+						line-height: 1.7em;
+						font-family: 'Cinzel Decorative', cursive;
+						font-weight: bold;
+						font-size: 2.2em;
+						width: 50px;
+						height: 50px;
+					
+					}
+					
+				}
+				&.facebook{
+					h5{	
+						background-image: url("../images/facebook50x50.png");
+					}
+				}
+				&.google {
+					h5{
+						background-image: url("../images/google-plus50x50.png");
+					}
+				}
+				&.twitter {
+					h5{
+						background-image: url("../images/twitter50x50.png");
+					}
+				}
+				.content {
+					 border-left: 0;
+					 border-right:0;
+				}
+				}
+				
+			}
+			
+		}
+		/*End Social*/
+		
+		
 	}
 
 	
