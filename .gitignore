@@ -18,7 +18,7 @@ index.php
 decon-staging.esproj/
 .sass-cache/
 *pureftp*
-
+*DS.store
 # Wordpress core files
 wp-activate.php
 wp-blog-header.php
