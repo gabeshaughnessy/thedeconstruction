@@ -60,4 +60,20 @@ require_once('foundation/foundation-page-walker.php');
 	'after_title'   => '</h3>' ); 
 	
 register_sidebar( $main_sidebar);
+
+/* UTILITY FUNCTIONS */
+
+//get the current page URL
+function curPageURL() {
+ $pageURL = 'http';
+
+ $pageURL .= "://";
+ if ($_SERVER["SERVER_PORT"] != "80") {
+  $pageURL .= $_SERVER["SERVER_NAME"].":".$_SERVER["SERVER_PORT"].$_SERVER["REQUEST_URI"];
+ } else {
+  $pageURL .= $_SERVER["SERVER_NAME"].$_SERVER["REQUEST_URI"];
+ }
+ return $pageURL;
+}
+
 ?>
