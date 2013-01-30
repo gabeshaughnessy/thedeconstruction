@@ -18,9 +18,15 @@ get_header(); ?>
 <?php endwhile; ?>
 <?php endif; ?>
 </div><!-- end of content -->
-	<?php //get_template_part('sidebar'); 
+	<div class="eleven columns">
+	<?php 
+	//get_template_part('loop', 'news_feed');
+	?>
+	</div>
+	<div class="one columns offset-by-eleven">
+	<?php 
 	get_template_part('accordion', 'social');
-	 ?>
-</div><!-- end of main content container -->
+	?>
+	</div></div><!-- end of main content container -->
 
 <?php get_footer(); ?>

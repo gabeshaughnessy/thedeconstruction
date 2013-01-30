@@ -22,9 +22,13 @@
 <?php endwhile; ?>
 <?php endif; ?>
 </div><!-- end of content -->
-	<?php //get_template_part('sidebar'); 
-	get_template_part('accordion', 'social');
+
+	 <div class="one columns offset-by-eleven">
+	 <?php 
+	 //get_template_part('sidebar'); 
+	 get_template_part('accordion', 'social');
 	 ?>
+	 </div>
 </div><!-- end of main content container -->
 
 <?php get_footer(); ?>
