@@ -76,4 +76,91 @@ function curPageURL() {
  return $pageURL;
 }
 
+//Print a Widget in a Shortcode
+function widget($atts) {
+    
+    global $wp_widget_factory;
+    
+    extract(shortcode_atts(array(
+        'widget_name' => FALSE,
+        'widget_atts' => array()
+    ), $atts));
+    
+    $widget_name = esc_html($widget_name);
+    
+    if (!is_a($wp_widget_factory->widgets[$widget_name], 'WP_Widget')):
+        $wp_class = 'WP_Widget_'.ucwords(strtolower($class));
+        
+        if (!is_a($wp_widget_factory->widgets[$wp_class], 'WP_Widget')):
+            return '<p>'.sprintf(__("%s: Widget class not found. Make sure this widget exists and the class name is correct"),'<strong>'.$class.'</strong>').'</p>';
+        else:
+            $class = $wp_class;
+        endif;
+    endif;
+    
+    ob_start();
+    
+    the_widget($widget_name, array('widget_id'=>$widget_name,
+        'before_widget' => '',
+        'after_widget' => '',
+        'before_title' => '',
+        'after_title' => ''
+    ));
+    $output = ob_get_contents();
+    ob_end_clean();
+    return $output;
+    
+}
+add_shortcode('widget','widget'); 
+function like_widget($atts) {
+//settings here: https://developers.facebook.com/docs/reference/plugins/like/
+    
+    global $wp_widget_factory;
+    
+    extract(shortcode_atts(array(
+    'send' => FALSE,
+    'width' => '450',
+    'show_faces' => FALSE,
+    'font' => 'arial',
+    'colorscheme' => 'dark',
+    'ref' => FALSE,
+    'layout' => 'standard',
+    'action' => 'like'
+    
+    ), $atts));
+    
+     $widget_name="Facebook_Like_Button_Widget"; 
+       
+    if (!is_a($wp_widget_factory->widgets[$widget_name], 'WP_Widget')):
+        $wp_class = 'WP_Widget_'.ucwords(strtolower($class));
+        
+        if (!is_a($wp_widget_factory->widgets[$wp_class], 'WP_Widget')):
+            return '<p>'.sprintf(__("%s: Widget class not found. Make sure this widget exists and the class name is correct"),'<strong>'.$class.'</strong>').'</p>';
+        else:
+            $class = $wp_class;
+        endif;
+    endif;
+    
+    ob_start();
+    
+    the_widget($widget_name, array('widget_id'=>$widget_name,
+	    'send' => $send,
+	    'show_faces' => $show_faces,
+	    'ref' => $ref,
+	    'colorscheme' => $colorscheme,
+	    'font' => $font,
+	    'action' => $action,
+	    'layout' => $layout,
+	    'width' => $width,
+        'before_widget' => '',
+        'after_widget' => '',
+        'before_title' => '',
+        'after_title' => ''
+    ));
+    $output = ob_get_contents();
+    ob_end_clean();
+    return $output;
+    
+}
+add_shortcode('like_widget','like_widget'); 
 ?>

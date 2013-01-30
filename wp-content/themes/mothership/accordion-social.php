@@ -5,8 +5,7 @@
       <h5>Facebook</h5>
     </div>
     <div class="content">
-    
-    </div>
+    <?php echo do_shortcode('[like_widget action="recommend" width="300" send="true" layout="button_count"]'); ?>
   </li>
   <li class="google">
     <div class="title">

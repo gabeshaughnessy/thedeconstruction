@@ -165,12 +165,19 @@ ul.accordion {
 
 		&.social {
 			-webkit-transition: all 1s ease-in-out;
-			min-width:  330px;
+			min-width:  400px;
 			position: relative;
 			border:  0;
 			margin-left: -10px;
 			&:hover {
-			margin-left:-330px;
+			margin-left:-400px;
+			
+			span.fb_edge_comment_widget {
+				position: relative;
+				top: 0 !important;
+				left: 0 !important;
+			}
+			
 			}
 			> li {
 			 border-top:  0;
@@ -225,6 +232,7 @@ ul.accordion {
 			 border-left: 0;
 			 border-right:0;
 		}
+		
 		}
 		
 		
