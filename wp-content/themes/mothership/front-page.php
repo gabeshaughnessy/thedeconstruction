@@ -31,7 +31,7 @@ get_template_part('accordion', 'social');
 	<div class="eleven columns end">
 		<div class="home_update_bar">
 			<hr/>
-		Updates
+		UPDATES
 		</div>
 
 	<?php 
