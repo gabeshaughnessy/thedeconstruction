@@ -160,49 +160,6 @@ clear: both;
 
 
 
-ul.menu {
-		li.facebook {	
-			a 	{
-				display: block;
-				text-indent: -9999px;
-				width: 50px;
-				height: 50px;
-		  		background-image: url(../images/facebook50x50.png);
-				}
-		}
-}
-
-ul.menu {
-		li.google {
-			a {
-				display: block;
-				text-indent: -9999px;
-				width: 50px;
-		  		height: 50px;
-		  		background-image: url('../images/google-plus50x50.png');
-			}
-		}
-}
-
-ul.menu {
-		li.twitter {
-			a {
-				display: block;
-				text-indent: -9999px;
-				width: 50px;
-		  		height: 50px;
-		  		background-image: url('../images/twitter50x50.png');
-			}
-		}
-}
-
-ul.menu {
-		li.email {
-			a {
-				display: none;
-			}
-		}
-}
 
 ul.accordion {
 
@@ -258,11 +215,18 @@ ul.accordion {
 				background-image: url("../images/twitter50x50.png");
 			}
 		}
+		&.newsletter {
+			h5{
+				background-image: url("../images/email-list50x50.png");
+			}
+		}
+		
 		.content {
 			 border-left: 0;
 			 border-right:0;
 		}
 		}
+		
 		
 	}
 	

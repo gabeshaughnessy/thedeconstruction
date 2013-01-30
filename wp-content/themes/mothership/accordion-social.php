@@ -1,3 +1,4 @@
+<div class="one column offset-by-eleven">
 <ul class="accordion social">
   <li class="facebook">
     <div class="title">
@@ -25,4 +26,14 @@
       <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
     </div>
   </li>
+  <li class="newsletter">
+    <div class="title">
+      <h5>Newsletter</h5>
+    </div>
+    <div class="content">
+       <?php echo do_shortcode('[gravityform id="2" name="Newsletter Signup" ajax="true"]'); ?>
+    </div>
+  </li>
+  
 </ul>
+</div>
