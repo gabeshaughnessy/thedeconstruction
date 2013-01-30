@@ -122,7 +122,7 @@ function like_widget($atts) {
     'width' => '450',
     'show_faces' => FALSE,
     'font' => 'arial',
-    'colorscheme' => 'dark',
+    'theme' => 'light',
     'ref' => FALSE,
     'layout' => 'standard',
     'action' => 'like'
@@ -147,7 +147,7 @@ function like_widget($atts) {
 	    'send' => $send,
 	    'show_faces' => $show_faces,
 	    'ref' => $ref,
-	    'colorscheme' => $colorscheme,
+	    'colorscheme' => $theme,
 	    'font' => $font,
 	    'action' => $action,
 	    'layout' => $layout,
