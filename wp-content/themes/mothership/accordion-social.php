@@ -5,7 +5,7 @@
       <h5>Facebook</h5>
     </div>
     <div class="content">
-     <iframe src="//www.facebook.com/plugins/likebox.php?href=https%3A%2F%2Fwww.facebook.com%2Fthedeconstruction&amp;width=292&amp;height=258&amp;show_faces=true&amp;colorscheme=light&amp;stream=false&amp;border_color&amp;header=false&amp;appId=248428355196615" scrolling="no" frameborder="0" style="border:none; overflow:hidden; width:292px; height:258px;" allowTransparency="true"></iframe>
+    
     </div>
   </li>
   <li class="google">
