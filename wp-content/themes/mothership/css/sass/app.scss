@@ -165,17 +165,19 @@ ul.accordion {
 
 		&.social {
 			-webkit-transition: all 1s ease-in-out;
-			min-width:  400px;
+			min-width:  600px;
 			position: relative;
 			border:  0;
 			margin-left: -10px;
 			&:hover {
-			margin-left:-400px;
+			margin-left:-600px;
 			
 			span.fb_edge_comment_widget {
 				
 			}
-			
+			.facebook.active .content {
+				overflow:  visible !important;
+			}
 			}
 			> li {
 			 border-top:  0;
