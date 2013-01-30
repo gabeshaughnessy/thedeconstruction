@@ -8,7 +8,7 @@
  */
 
 get_header(); ?>
-<div id="content" class="twelve columns">
+<div id="content" class="eleven columns">
 <?php if(have_posts()) : while(have_posts()) : the_post(); ?>
 <article>
 	<div class="post-content">
@@ -18,15 +18,17 @@ get_header(); ?>
 <?php endwhile; ?>
 <?php endif; ?>
 </div><!-- end of content -->
+	<div class="one columns offset-by-eleven">
+	<?php 
+	get_template_part('accordion', 'social');
+	?>
+	</div>
+	
 	<div class="eleven columns">
 	<?php 
 	//get_template_part('loop', 'news_feed');
 	?>
 	</div>
-	<div class="one columns offset-by-eleven">
-	<?php 
-	get_template_part('accordion', 'social');
-	?>
-	</div></div><!-- end of main content container -->
+</div><!-- end of main content container -->
 
 <?php get_footer(); ?>
