@@ -265,14 +265,15 @@ ul.accordion.social > li .content {
 
 /* line 295, sass/app.scss */
 .home_update_bar {
-  margin-top: 30px;
+  margin: 40px 0px 30px 0px;
   font-family: 'EB Garamond', serif;
   font-size: 48px;
+  text-align: center;
 }
 
 /* Options for Navigation on Small Screens */
 @media only screen and (max-width: 767px) {
-  /* line 306, sass/app.scss */
+  /* line 307, sass/app.scss */
   #top-nav .menu_home a, #top-nav .menu_home a:focus, #top-nav .menu_home a:hover, #top-nav .menu_faq a, #top-nav .menu_faq a:focus, #top-nav .menu_faq a:hover, #top-nav .menu_register a, #top-nav .menu_register a:focus, #top-nav .menu_register a:hover, #top-nav .menu_manifesto a, #top-nav .menu_manifesto a:focus, #top-nav .menu_manifesto a:hover, #top-nav .menu_news a, #top-nav .menu_news a:focus, #top-nav .menu_news a:hover, #top-nav .menu_contact a, #top-nav .menu_contact a:focus, #top-nav .menu_contact a:hover {
     background-image: none;
     width: 130px;
@@ -284,11 +285,11 @@ ul.accordion.social > li .content {
     color: #000000;
   }
 
-  /* line 319, sass/app.scss */
+  /* line 320, sass/app.scss */
   .nav-bar {
     height: auto;
   }
-  /* line 321, sass/app.scss */
+  /* line 322, sass/app.scss */
   .nav-bar .menu_text {
     padding-top: 0px;
     font-size: 1.1em;
@@ -296,13 +297,13 @@ ul.accordion.social > li .content {
   }
 
   /* Social ACCORDION */
-  /* line 330, sass/app.scss */
+  /* line 331, sass/app.scss */
   ul.accordion.social {
     max-width: 330px;
     border: 0;
     margin-left: 0px;
   }
-  /* line 334, sass/app.scss */
+  /* line 335, sass/app.scss */
   ul.accordion.social:hover {
     margin-left: 0px;
   }

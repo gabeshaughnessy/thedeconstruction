@@ -28,7 +28,7 @@ get_template_part('accordion', 'social');
 
 <!-- end of content -->
 
-	<div class="twelve columns">
+	<div class="eleven columns end">
 		<div class="home_update_bar">
 			<hr/>
 		Updates

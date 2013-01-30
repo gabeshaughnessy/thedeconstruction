@@ -2,7 +2,7 @@
 //newsfeed section heading
 ?>
 <div class="news-wrapper">
-<h3>Deconstruction News:</h3>
+<!-- ><h3>Deconstruction News:</h3> -->
 <?php
 //check for newsfeed transient, if it exists, assign variable newfeed to it
 //if it doesn't exist:
