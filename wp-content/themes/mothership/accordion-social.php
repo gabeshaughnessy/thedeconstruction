@@ -1,4 +1,3 @@
-<div class="one columns offset-by-eleven">
 <ul class="accordion social">
   <li class="facebook">
     <div class="title">
@@ -35,4 +34,3 @@
   </li>
   
 </ul>
-</div>
