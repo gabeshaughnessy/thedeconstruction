@@ -31,10 +31,10 @@ get_template_part('accordion', 'social');
 	</div><!-- end of main content container -->
 
 <div class="post-footer row">
-	<div class="six columns">
+	<div class="five columns">
 			<div class="title">
 				
-				<h5>Updates</h5>
+				<h5>Deconstruct: News</h5>
 			</div>
 	
 		<?php 
@@ -42,9 +42,9 @@ get_template_part('accordion', 'social');
 		?>
 	</div>
 
-	<div class="six columns end">
+	<div class="six columns offset-by-one">
 		<div class="title">
-			<h5>Twitter</h5>
+			<h5>Deconstruct: Twitter</h5>
 		</div>
 		<div class="content">
 		  <a class="twitter-timeline" href="https://twitter.com/Deconstruction" data-widget-id="291720147733979136">Tweets by @Deconstruction</a>
