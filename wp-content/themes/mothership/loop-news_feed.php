@@ -1,12 +1,7 @@
 <?php add_action( 'save_post', 'clear_transients' );
 
-function clear_transients(){
-
-	
-		
-			delete_transient('newsfeed');
-		
-	
+function clear_transients(){	
+			delete_transient('newsfeed_posts');	
 }
 ?>
 <?php
@@ -57,7 +52,7 @@ endif;
 //end the loop
 
 //set newsfeed to the transient
-set_transient('newsfeed_posts', $newsfeed_posts, 10); //set to 24 hours - 60*60*24
+set_transient('newsfeed_posts', $newsfeed_posts, 60*60*24); //set to 24 hours - 60*60*24
 }
 echo $newsfeed_posts;
 //hook into save posts loop - clear transients for posts.

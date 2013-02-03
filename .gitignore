@@ -59,8 +59,8 @@ wp-content/plugins/akismet
 wp-content/plugins/jetpack
 wp-content/plugins/hello.php
 wp-content/plugins/ajax-thumbnail-rebuild
-wp-content/plugins/all-in-one-favicon	
-
+wp-content/plugins/all-in-one-favicon
+wp-content/plugins/all-in-one-favicon/*
 
 
 
