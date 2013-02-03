@@ -31,7 +31,7 @@ get_template_part('accordion', 'social');
 	</div><!-- end of main content container -->
 
 <div class="post-footer row">
-	<div class="five columns">
+	<div class="six columns">
 			<div class="title">
 				
 				<h5>Deconstruct: News</h5>
@@ -43,7 +43,7 @@ get_template_part('accordion', 'social');
 		?>
 	</div>
 
-	<div class="six columns offset-by-one">
+	<div class="six columns ">
 		<div class="title">
 			<h5>Deconstruct: Twitter</h5>
 			<hr>
