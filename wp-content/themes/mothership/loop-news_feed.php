@@ -16,9 +16,13 @@ $newsfeed = new WP_Query( $args );
 if($newsfeed->have_posts()) : while($newsfeed->have_posts()) : $newsfeed->the_post();
 ?>
 <div class="news-item">
+
 <h4 class="post-title"><?php the_title(); ?></h4>
-<p class="post-excerpt"><?php the_excerpt(); ?></p>
-<a class="read more" href="<?php the_permalink(); ?>" title="Read More">Read More</a>
+<div class="post-image four columns">
+	<?php the_post_thumbnail(); ?>
+</div>
+<div class="post-excerpt"><?php the_excerpt(); ?></div>
+<a class="twelve columns read more" href="<?php the_permalink(); ?>" title="Read More">Read More &rArr;</a>
 </div>
 <?php
 

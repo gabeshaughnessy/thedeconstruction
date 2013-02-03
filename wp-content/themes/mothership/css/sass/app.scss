@@ -148,16 +148,30 @@ header {
 /*End Header*/
 /* ___ FOOTER ___ */
 
-.post-footer .title {
+.post-footer {
 
-	
-	
-	h5 {
+	a {
+		&.read.more {
 		font-family: 'EB Garamond', serif;
-		text-align: center;
-		margin: 40px 0px 30px 0px;
-		font-size: 36px;
+		text-align: right;
+		margin: 0px 0px 20px 0px;
+		font-size: 18px;
+		
+		}
 	}
+		
+	.title {
+		
+		h5 {
+			font-family: 'EB Garamond', serif;
+			text-align: center;
+			margin: 40px 0px 30px 0px;
+			font-size: 36px;
+		}
+		
+	}
+
+
 }
 
 /* end FOOTER */

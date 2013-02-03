@@ -163,4 +163,11 @@ function like_widget($atts) {
     
 }
 add_shortcode('like_widget','like_widget'); 
+
+/* IMAGES */
+add_theme_support( 'post-thumbnails' );
+set_post_thumbnail_size( '120', '120', true );
+if ( function_exists( 'add_image_size' ) ) { 
+	add_image_size( 'one-column', 120, 120, true ); //(cropped)
+ }
 ?>
