@@ -1,3 +1,14 @@
+<?php add_action( 'save_post', 'clear_transients' );
+
+function clear_transients(){
+
+	
+		
+			delete_transient('newsfeed');
+		
+	
+}
+?>
 <?php
 //newsfeed section heading
 ?>
@@ -5,7 +16,11 @@
 <!-- ><h3>Deconstruction News:</h3> -->
 <?php
 //check for newsfeed transient, if it exists, assign variable newfeed to it
+$newsfeed_posts = get_transient('newsfeed_posts');
+
+if($newsfeed_posts == false){
 //if it doesn't exist:
+
 //query the posts for
 
 $args = array(
@@ -15,29 +30,25 @@ $args = array(
 $newsfeed = new WP_Query( $args );
 if($newsfeed->have_posts()) : while($newsfeed->have_posts()) : $newsfeed->the_post();
 ?>
-<div class="news-item">
+<?php $newsfeed_posts .= '<div class="news-item">'; ?>
 
-<h4 class="post-title"><a href="<?php the_permalink(); ?>" title="View the Post"><?php the_title(); ?></a></h4>
-<div class="post-image three columns push left">
-	<a href="<?php the_permalink(); ?>" title="View the Post">
-	<?php 
-	
+<?php $newsfeed_posts .= '<h4 class="post-title"><a href="'.get_permalink().'"title="View the Post">'.get_the_title().'</a></h4>';
+ $newsfeed_posts .= '<div class="post-image three columns push left">';
+ $newsfeed_posts .= '<a href="'.get_permalink().'" title="View the Post">';	
 	if(has_post_format('video')){
-	?>
-	<img src="<?php video_thumbnail();	?>" width="120" height="80" />
-<?php
+	
+	$newsfeed_posts .= '<img src="'.get_video_thumbnail().'" width="120" height="80" />' ;
+
 	}
 	else{
-	the_post_thumbnail(); 
+	$newsfeed_posts .= get_the_post_thumbnail();
 	}
-	?>
-	</a>
-</div>
-<div class="post-excerpt"><?php the_excerpt(); ?></div>
-<a class="twelve columns read more" href="<?php the_permalink(); ?>" title="Read More">Read More &rArr;</a>
-</div>
-<?php
-
+	
+	$newsfeed_posts .= '</a>';
+$newsfeed_posts .= '</div>';
+$newsfeed_posts .= '<div class="post-excerpt">'.wpautop(get_the_excerpt()).'</div>';
+$newsfeed_posts .= '<a class="twelve columns read more" href="'.get_permalink().'" title="Read More">Read More &rArr;</a>';
+$newsfeed_posts .= '</div>';
 endwhile;
 endif;
 //assign the query to variable newsfeed
@@ -46,7 +57,9 @@ endif;
 //end the loop
 
 //set newsfeed to the transient
-
+set_transient('newsfeed_posts', $newsfeed_posts, 10); //set to 24 hours - 60*60*24
+}
+echo $newsfeed_posts;
 //hook into save posts loop - clear transients for posts.
 ?>
 <?php
