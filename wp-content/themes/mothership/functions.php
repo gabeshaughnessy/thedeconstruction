@@ -166,6 +166,11 @@ add_shortcode('like_widget','like_widget');
 
 /* FORMATS */
 add_theme_support( 'post-formats', array( 'video', 'image', 'aside', 'gallery', 'quote', 'link', 'audio' ) );
+/* VIDEOS */
+add_filter('embed_oembed_html', 'my_embed_oembed_html', 99, 4);
+function my_embed_oembed_html($html, $url, $attr, $post_id) {
+  return '<div class="flex-video">' . $html . '</div>';
+}
 /* IMAGES */
 
 add_theme_support( 'post-thumbnails' );
