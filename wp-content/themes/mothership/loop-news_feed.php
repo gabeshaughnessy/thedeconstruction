@@ -17,9 +17,21 @@ if($newsfeed->have_posts()) : while($newsfeed->have_posts()) : $newsfeed->the_po
 ?>
 <div class="news-item">
 
-<h4 class="post-title"><?php the_title(); ?></h4>
-<div class="post-image four columns">
-	<?php the_post_thumbnail(); ?>
+<h4 class="post-title"><a href="<?php the_permalink(); ?>" title="View the Post"><?php the_title(); ?></a></h4>
+<div class="post-image three columns push left">
+	<a href="<?php the_permalink(); ?>" title="View the Post">
+	<?php 
+	
+	if(has_post_format('video')){
+	?>
+	<img src="<?php video_thumbnail();	?>" width="120" height="80" />
+<?php
+	}
+	else{
+	the_post_thumbnail(); 
+	}
+	?>
+	</a>
 </div>
 <div class="post-excerpt"><?php the_excerpt(); ?></div>
 <a class="twelve columns read more" href="<?php the_permalink(); ?>" title="Read More">Read More &rArr;</a>

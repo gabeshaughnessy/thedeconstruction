@@ -164,10 +164,13 @@ function like_widget($atts) {
 }
 add_shortcode('like_widget','like_widget'); 
 
+/* FORMATS */
+add_theme_support( 'post-formats', array( 'video', 'image', 'aside', 'gallery', 'quote', 'link', 'audio' ) );
 /* IMAGES */
+
 add_theme_support( 'post-thumbnails' );
-set_post_thumbnail_size( '120', '120', true );
+set_post_thumbnail_size( 120, 9999, true );
 if ( function_exists( 'add_image_size' ) ) { 
-	add_image_size( 'one-column', 120, 120, true ); //(cropped)
+	add_image_size( 'one-column', 120, 9999, true ); //(cropped)
  }
 ?>
