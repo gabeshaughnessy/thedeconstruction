@@ -28,17 +28,29 @@ get_template_part('accordion', 'social');
 
 <!-- end of content -->
 
-	<div class="eleven columns end">
-		<div class="home_update_bar">
-			<hr/>
-		UPDATES
-		</div>
+	</div><!-- end of main content container -->
 
-	<?php 
-	get_template_part('loop', 'news_feed');
-	?>
+<div class="post-footer row">
+	<div class="six columns">
+			<div class="title">
+				
+				<h5>Updates</h5>
+			</div>
+	
+		<?php 
+		get_template_part('loop', 'news_feed');
+		?>
 	</div>
 
-</div><!-- end of main content container -->
-
+	<div class="six columns end">
+		<div class="title">
+			<h5>Twitter</h5>
+		</div>
+		<div class="content">
+		  <a class="twitter-timeline" href="https://twitter.com/Deconstruction" data-widget-id="291720147733979136">Tweets by @Deconstruction</a>
+		  <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
+		</div>
+	
+	</div>
+</div>
 <?php get_footer(); ?>
