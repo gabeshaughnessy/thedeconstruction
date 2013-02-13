@@ -268,7 +268,7 @@ class GFFormsModel{
                                 "displayTitle"=>"","inputType"=>"","rangeMin"=>"","rangeMax"=>"","calendarIconType"=>"",
                                 "calendarIconUrl"=>"", "dateType"=>"","dateFormat"=>"","phoneFormat"=>"","addressType"=>"","defaultCountry"=>"","defaultProvince"=>"",
                                 "defaultState"=>"","hideAddress2"=>"","hideCountry"=>"","hideState"=>"","inputs"=>"","nameFormat"=>"","allowedExtensions"=>"",
-                                "captchaType"=>"","page_number"=>"","captchaTheme"=>"","simpleCaptchaSize"=>"","simpleCaptchaFontColor"=>"","simpleCaptchaBackgroundColor"=>"",
+                                "captchaType"=>"","pageNumber"=>"","captchaTheme"=>"","simpleCaptchaSize"=>"","simpleCaptchaFontColor"=>"","simpleCaptchaBackgroundColor"=>"",
                                 "failed_validation"=>"", "productField" => "", "enablePasswordInput" => "", "maxLength" => "", "enablePrice" => "", "basePrice" => "");
 
             foreach($form["fields"] as &$field)
@@ -1029,7 +1029,7 @@ class GFFormsModel{
         //if section is hidden, hide field no matter what. if section is visible, see if field is supposed to be visible
         if($section_display == "hide")
             return true;
-        else if(self::is_page_hidden($form, rgar($field,"page_number"), $field_values, $lead)){
+        else if(self::is_page_hidden($form, rgar($field,"pageNumber"), $field_values, $lead)){
             return true;
         }
         else{
@@ -1057,7 +1057,7 @@ class GFFormsModel{
     }
 
     public static function get_page_by_field($form, $field){
-        return get_page_by_number($field["page_number"]);
+        return get_page_by_number($field["pageNumber"]);
     }
 
     //gets the section that the specified field belongs to, or null if none
@@ -1492,7 +1492,7 @@ class GFFormsModel{
     public static function prepare_date($date_format, $value){
         $format = empty($date_format) ? "mdy" : $date_format;
         $date_info = GFCommon::parse_date($value, $format);
-        if(!empty($date_info))
+        if(!empty($date_info) && !GFCommon::is_empty_array($date_info))
             $value = sprintf("%s-%02d-%02d", $date_info["year"], $date_info["month"], $date_info["day"]);
         else
             $value = "";
@@ -1814,6 +1814,10 @@ class GFFormsModel{
         }
 
         //inserting post
+        if (GFCommon::is_bp_active()){
+        	//disable buddy press action so save_post is not called because the post data is not yet complete at this point
+        	remove_action("save_post", "bp_blogs_record_post");
+		}
         $post_id = wp_insert_post($post_data);
 
         //adding form id and entry id hidden custom fields
@@ -1944,7 +1948,10 @@ class GFFormsModel{
 
                 $post->post_name = $post_title;
             }
-
+			if (GFCommon::is_bp_active()){
+				//re-enable buddy press action for save_post since the post data is complete at this point
+        		add_action( 'save_post', 'bp_blogs_record_post', 10, 2 );
+			}
             wp_update_post($post);
         }
 
@@ -2468,6 +2475,8 @@ class GFFormsModel{
         else
             $sql = self::sort_by_default_field_query($form_id, $sort_field_number, $sort_direction, $search, $offset, $page_size, $star, $read, $is_numeric_sort, $start_date, $end_date, $status);
 
+        GFCommon::log_debug($sql);
+
         //initializing rownum
         $wpdb->query("select @rownum:=0");
 
@@ -2559,8 +2568,8 @@ class GFFormsModel{
         $read_filter = $read !== null && $status == 'active' ? $wpdb->prepare(" AND is_read=%d AND status='active' ", $read) :  "";
         $status_filter = $wpdb->prepare(" AND status=%s ", $status);
 
-        $start_date_filter = empty($start_date) ? "" : " AND datediff(date_created, '$start_date') >=0";
-        $end_date_filter = empty($end_date) ? "" : " AND datediff(date_created, '$end_date') <=0";
+        $start_date_filter = empty($start_date) ? "" : " AND timestampdiff(SECOND, '$start_date', date_created) >=0";
+        $end_date_filter = empty($end_date) ? "" : " AND timestampdiff(SECOND, '$end_date', date_created) <=0";
 
 		$entry_meta = self::get_entry_meta($form_id);
         $entry_meta_sql_join = "";
@@ -2702,8 +2711,8 @@ class GFFormsModel{
 
         $star_filter = $star !== null ? $wpdb->prepare("AND is_starred=%d ", $star) : "";
         $read_filter = $read !== null ? $wpdb->prepare("AND is_read=%d ", $read) : "";
-        $start_date_filter = empty($start_date) ? "" : " AND datediff(date_created, '$start_date') >=0";
-        $end_date_filter = empty($end_date) ? "" : " AND datediff(date_created, '$end_date') <=0";
+        $start_date_filter = empty($start_date) ? "" : " AND timestampdiff(SECOND, '$start_date', date_created) >=0";
+        $end_date_filter = empty($end_date) ? "" : " AND timestampdiff(SECOND, '$end_date', date_created) <=0";
         $status_filter = $status !== null ? $wpdb->prepare(" AND status='%s' ", $status) : "";
 
         $search_term = "%$search%";

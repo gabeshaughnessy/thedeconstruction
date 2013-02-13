@@ -13,7 +13,7 @@ class Facebook_Admin_Login {
 	 * @since 1.1
 	 */
 	public static function connect_facebook_account( $verify_permissions = null ) {
-		global $facebook;
+		global $facebook, $facebook_loader;
 
 		$profile_prompt = false;
 
@@ -41,9 +41,18 @@ class Facebook_Admin_Login {
 			$facebook_user_data_exists = true;
 		}
 
+		// attempt to extend the access token while suppressing errors and warnings such as headers sent on session start
+		try {
+			if ( isset( $facebook ) || ( isset( $facebook_loader ) && $facebook_loader->load_php_sdk() ) )
+				$facebook->setExtendedAccessToken();
+		}catch(Exception $e){}
+
 		// Facebook information not found
-		$facebook_user = Facebook_User::get_current_user( array( 'id','username' ) );
+		$facebook_user = Facebook_User::get_current_user( array( 'id','username','third_party_id' ) );
 		if ( $facebook_user ) {
+			if ( ! isset( $facebook ) && ! ( isset( $facebook_loader ) && $facebook_loader->load_php_sdk() ) )
+				return;
+
 			$permissions = $facebook->get_current_user_permissions( $facebook_user );
 
 			$all_permissions_exist = true;
@@ -62,6 +71,8 @@ class Facebook_Admin_Login {
 					);
 					if ( ! empty( $facebook_user['username'] ) )
 						$facebook_user_data['username'] = $facebook_user['username'];
+					if ( ! empty( $facebook_user['third_party_id'] ) )
+						$facebook_user_data['third_party_id'] = $facebook_user['third_party_id'];
 
 					Facebook_User::update_user_meta( $current_user->ID, 'fb_data', $facebook_user_data );
 				}
@@ -70,7 +81,7 @@ class Facebook_Admin_Login {
 		}
 
 		// priority before js sdk registration needed to add JS inside FbAsyncInit
-		add_action( 'admin_enqueue_scripts', array( 'Facebook_Admin_Login', 'add_async_load_javascript_filter' ), -1, 0 );
+		add_action( 'admin_enqueue_scripts', array( 'Facebook_Admin_Login', 'add_async_load_javascript_filter' ), -1, 2 );
 		// add all others at P11 after scripts registered
 		add_action( 'admin_enqueue_scripts', array( 'Facebook_Admin_Login', 'enqueue_scripts' ), 11 );
 
@@ -90,6 +101,11 @@ class Facebook_Admin_Login {
 		echo '</p></div>';
 	}
 
+	/**
+	 * Add output to the JavaScript SDK async loader success function filter
+	 *
+	 * @since 1.1
+	 */
 	public static function add_async_load_javascript_filter() {
 		// async load our script after we async load Facebook JavaScript SDK
 		add_filter( 'facebook_jssdk_init_extras', array( 'Facebook_Admin_Login', 'async_load_javascript' ), 10, 2 );
@@ -112,7 +128,7 @@ class Facebook_Admin_Login {
 	 * @return string JavaScript code to be appended to the fbAsyncInit function
 	 */
 	public static function async_load_javascript( $js_block = '', $app_id = '' ) {
-		return $js_block . 'jQuery.ajax({url:' . json_encode( plugins_url( 'static/js/admin/login' . ( defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ? '' : '.min' ) .  '.js', dirname(__FILE__) ) ) . ',cache:true,dataType:"script"}).success(function(){FB_WP.admin.login.attach_events();});';
+		return $js_block . 'jQuery.ajax({url:' . json_encode( plugins_url( 'static/js/admin/login' . ( defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ? '' : '.min' ) .  '.js', dirname(__FILE__) ) ) . ',cache:true,dataType:"script"}).success(function(){FB_WP.admin.login.messages.author_permissions_text=' . json_encode( __( 'Allow new posts to your Facebook Timeline', 'facebook' ) ) . ';FB_WP.admin.login.attach_events()});';
 	}
 }
 ?>

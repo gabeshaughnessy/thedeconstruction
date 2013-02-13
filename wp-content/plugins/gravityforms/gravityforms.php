@@ -3,7 +3,7 @@
 Plugin Name: Gravity Forms
 Plugin URI: http://www.gravityforms.com
 Description: Easily create web forms and manage form entries within the WordPress admin.
-Version: 1.6.11
+Version: 1.6.12
 Author: rocketgenius
 Author URI: http://www.rocketgenius.com
 
@@ -67,6 +67,9 @@ define("GF_SUPPORTED_WP_VERSION", version_compare(get_bloginfo("version"), GF_MI
 if(!defined("GRAVITY_MANAGER_URL"))
     define("GRAVITY_MANAGER_URL", "http://www.gravityhelp.com/wp-content/plugins/gravitymanager");
 
+//initializing translations
+load_plugin_textdomain( 'gravityforms', false, '/gravityforms/languages' );
+
 require_once(WP_PLUGIN_DIR . "/" . basename(dirname(__FILE__)) . "/common.php");
 require_once(WP_PLUGIN_DIR . "/" . basename(dirname(__FILE__)) . "/forms_model.php");
 require_once(WP_PLUGIN_DIR . "/" . basename(dirname(__FILE__)) . "/widget.php");
@@ -90,7 +93,7 @@ if(is_admin() && (RGForms::is_gravity_page() || RGForms::is_gravity_ajax_action(
     add_action("admin_footer", array("RGForms", "no_conflict_mode_style"), 1);
 }
 
-class RGForms{
+class GFForms{
 
     public static function has_members_plugin(){
         return function_exists( 'members_get_capabilities' );
@@ -98,8 +101,6 @@ class RGForms{
 
     //Plugin starting point. Will load appropriate files
     public static function init(){
-
-        load_plugin_textdomain( 'gravityforms', false, '/gravityforms/languages' );
 
         add_filter("gform_logging_supported", array("RGForms", "set_logging_supported"));
 
@@ -1323,21 +1324,24 @@ class RGForms{
         if($view == "entries"){
             require_once(GFCommon::get_base_path() . "/entry_list.php");
             GFEntryList::leads_page($id);
-        }
-        else if($view == "entry"){
+        } else if($view == "entry"){
             require_once(GFCommon::get_base_path() . "/entry_detail.php");
             GFEntryDetail::lead_detail_page();
-        }
-        else if($view == "notification"){
+        } else if($view == "notification"){
             require_once(GFCommon::get_base_path() . "/notification.php");
             GFNotification::notification_page($id);
+        } else if($view == 'settings') {
+            require_once(GFCommon::get_base_path() . "/form_settings.php");
+            GFFormSettings::form_settings_page($id);
+        } else if(empty($view)){
+            if(is_numeric($id)){
+                self::forms_page($id);
+            } else{
+                self::form_list_page();
+            }
         }
-        else if(is_numeric($id)){
-            self::forms_page($id);
-        }
-        else{
-            self::form_list_page();
-        }
+
+        do_action("gform_view", $view, $id);
 
     }
 
@@ -1619,29 +1623,10 @@ class RGForms{
         <div id="gf_form_toolbar">
             <ul id="gf_form_toolbar_links">
 
-                <?php
-                if(GFCommon::current_user_can_any("gravityforms_edit_forms")){
-                    ?>
-                    <li class="gf_form_toolbar_editor"><a href="?page=gf_edit_forms&id=<?php echo $id ?>"  <?php echo self::toolbar_class("editor"); ?>><?php _e("Form Editor", "gravityforms"); ?></a></li>
-                    <li class="gf_form_toolbar_settings"><a href="javascript: if(jQuery('#gform_heading.selectable').length > 0){FieldClick(jQuery('#gform_heading')[0]);} else{document.location = '?page=gf_edit_forms&id=<?php echo $id ?>&display_settings';}" <?php echo self::toolbar_class("settings"); ?>><?php _e("Form Settings", "gravityforms"); ?></a></li>
-                    <li class="gf_form_toolbar_notifications"><a href="?page=gf_edit_forms&view=notification&id=<?php echo $id ?>"  <?php echo self::toolbar_class("notifications"); ?>><?php _e("Notifications", "gravityforms"); ?></a></li>
-                    <?php
-                }
-
-                if(GFCommon::current_user_can_any(array('gravityforms_view_entries','gravityforms_edit_entries','gravityforms_delete_entries'))){
-                    ?>
-                    <li class="gf_form_toolbar_entries"><a href="?page=gf_entries&id=<?php echo $id ?>"  <?php echo self::toolbar_class("entries"); ?>>
-                        <?php echo RG_CURRENT_VIEW != 'entry' ? __("Entries", "gravityforms") : __("Entries", "gravityforms"); ?>
-                    </a></li>
-                    <?php
-                }
-
-                if(GFCommon::current_user_can_any(array("gravityforms_edit_forms", "gravityforms_create_form", "gravityforms_preview_forms"))){
-                    ?>
-                    <li class="gf_form_toolbar_preview"><a href="<?php echo site_url() ?>/?gf_page=preview&id=<?php echo $id ?>" target="_blank" <?php echo self::toolbar_class("preview"); ?>><?php _e("Preview", "gravityforms"); ?></a></li>
-                    <?php
-                }
-                ?>
+				<?php
+				$menu_items = apply_filters("gform_toolbar_menu", self::get_toolbar_menu_items($id), $id);
+				echo self::format_toolbar_menu_items($menu_items);
+				?>
 
                 <li class="gf_form_switcher">
                     <label for="export_form"><?php _e("Select A Form", "gravityforms") ?></label>
@@ -1670,41 +1655,226 @@ class RGForms{
 
     }
 
-    private static function toolbar_class($item){
+	public static function format_toolbar_menu_items($menu_items, $compact = false){
+		if (empty($menu_items))
+			return "";
 
-        switch($item){
+		$output = "";
 
-            case "editor":
-                if(in_array(rgget("page"), array("gf_edit_forms", "gf_new_form")) && rgempty("view", $_GET))
-                    return "class='gf_toolbar_active'";
-            break;
+		$priorities = array();
+		foreach($menu_items as $k => $menu_item){
+			$priorities[$k] = rgar($menu_item,"priority");
+		}
 
-            case "notifications" :
-                if(rgget("page") == "gf_new_form")
-                    return "class='gf_toolbar_disabled'";
-                else if(rgget("page") == "gf_edit_forms" && rgget("view") == "notification")
-                    return "class='gf_toolbar_active'";
+		array_multisort($priorities, SORT_DESC, $menu_items);
+		$last_key = array_pop(array_keys($menu_items));
+		foreach($menu_items as $key => $menu_item){
+			if(GFCommon::current_user_can_any(rgar($menu_item, "capabilities"))){
+				$sub_menu_str = "";
+				$count_sub_menu_items = 0;
+				$sub_menu_items = rgar($menu_item, "sub_menu_items");
+				if (is_array($sub_menu_items)){
+					foreach($sub_menu_items as $k => $val){
+						if(false === GFCommon::current_user_can_any(rgar($sub_menu_items[$k], "capabilities")))
+							unset($sub_menu_items[$k]);
+					}
+					$count_sub_menu_items = count($sub_menu_items);
+				}
 
-            break;
+				$menu_class = rgar($menu_item, "menu_class");
 
-            case "entries" :
-                if(rgget("page") == "gf_new_form")
-                    return "class='gf_toolbar_disabled'";
-                else if(rgget("page") == "gf_entries")
-                    return "class='gf_toolbar_active'";
 
-            break;
+				if ($count_sub_menu_items == 1){
+					$label = $compact ? rgar($menu_item, "label") : rgar($sub_menu_items[0], "label");
+					$menu_item = $sub_menu_items[0];
+				} else {
+					$label = rgar($menu_item, "label");
+					$sub_menu_str = self::toolbar_sub_menu_items($sub_menu_items, $compact);
+				}
+				$link_class = rgar($menu_item, "link_class");
+				$url 		= rgar($menu_item, "url");
+				$title 		= rgar($menu_item, "title");
+				$onclick 	= rgar($menu_item, "onclick");
 
-            case "preview" :
-                if(rgget("page") == "gf_new_form")
-                    return "class='gf_toolbar_disabled'";
+				$target 	= rgar($menu_item, "target");
+				$link = "<a class='{$link_class}' onclick='{$onclick}' title='{$title}' href='{$url}' target='{$target}'>{$label}</a>" . $sub_menu_str;
+				if($compact){
+					if ($key == "delete")
+						$link = apply_filters("gform_form_delete_link", $link);
+					$divider = $key == $last_key ? '' : " | ";
+					$output .= '<span class="edit">'. $link . $divider . '</span>';
+				} else {
 
-            break;
-        }
+					$output .= "<li class='{$menu_class}'>{$link}</li>";
+				}
 
-        return "";
-    }
+			}
+		}
+
+		return $output;
+	}
+
+	public static function get_toolbar_menu_items($form_id, $compact = false){
+		$menu_items = array();
+
+		//---- Form Editor ----
+		$edit_capabilities = array("gravityforms_edit_forms");
+
+		$menu_items['edit'] = array(
+			'label' 		=> $compact ? __("Edit", "gravityforms") : __("Form Editor", "gravityforms"),
+			'title'			=> __('Edit this form', 'gravityforms'),
+			'url' 			=> '?page=gf_edit_forms&id=' . $form_id,
+			'menu_class' 	=> 'gf_form_toolbar_editor',
+			'link_class' 	=> self::toolbar_class("editor"),
+			'capabilities' 	=> $edit_capabilities,
+			'priority'		=> 1000
+		);
+
+		//---- Form Settings ----
+
+		$menu_items['settings'] = array(
+			'label' 			=> $compact ? __("Settings", "gravityforms") : __("Form Settings", "gravityforms"),
+			'title'				=> __('Edit settings for this form', 'gravityforms'),
+			'url' 				=> 'javascript: if(jQuery("#gform_heading.selectable").length > 0){FieldClick(jQuery("#gform_heading")[0]);} else{document.location = "?page=gf_edit_forms&id=' . $form_id . '&display_settings";}',
+			'menu_class' 		=> 'gf_form_toolbar_settings',
+			'link_class' 		=> self::toolbar_class("settings"),
+			'capabilities' 		=> $edit_capabilities,
+			'priority'			=> 900
+		);
+
+		//---- Notifications ----
+
+		$menu_items['notifications'] = array(
+			'label' 		=> __("Notifications", "gravityforms"),
+			'title'			=> __('Edit notifications for this form', 'gravityforms'),
+			'url' 			=> '?page=gf_edit_forms&view=notification&id=' . $form_id,
+			'menu_class' 	=> 'gf_form_toolbar_editor',
+			'link_class' 	=> self::toolbar_class("notifications"),
+			'capabilities' 	=> $edit_capabilities,
+			'priority'		=> 950
+		);
+
+		//---- Entries ----
+
+		$entries_capabilities = array('gravityforms_view_entries','gravityforms_edit_entries','gravityforms_delete_entries');
+
+		$menu_items['entries'] = array(
+			'label' 		=> __("Entries", "gravityformsquiz"),
+			'title'			=> __('View entries generated by this form', 'gravityforms'),
+			'url' 			=> '?page=gf_entries&id=' . $form_id,
+			'menu_class' 	=> 'gf_form_toolbar_entries',
+			'link_class' 	=> self::toolbar_class("entries"),
+			'capabilities' 	=> $entries_capabilities,
+			'priority'		=> 800
+		);
+
+		//---- Preview ----
+
+		$preview_capabilities = array("gravityforms_edit_forms", "gravityforms_create_form", "gravityforms_preview_forms");
+
+		$menu_items['preview'] = array(
+			'label' 		=> __("Preview", "gravityformsquiz"),
+			'title'			=> __('Preview this form', 'gravityforms'),
+			'url' 			=> site_url() . '?gf_page=preview&id=' . $form_id,
+			'menu_class' 	=> 'gf_form_toolbar_preview',
+			'link_class' 	=> self::toolbar_class("preview"),
+			'target'		=> '_blank',
+			'capabilities' 	=> $preview_capabilities,
+			'priority'		=> 700
+		);
+
+
+		return $menu_items;
+	}
+
+	public static function toolbar_sub_menu_items($menu_items, $compact = false){
+		if (empty($menu_items))
+			return "";
+
+		$sub_menu_items_string = "";
+		foreach ($menu_items as $menu_item){
+			if(GFCommon::current_user_can_any(rgar($menu_item, "capabilities"))){
+				$menu_class = rgar($menu_item, "menu_class");
+				$link_class = rgar($menu_item, "link_class");
+				$url = rgar($menu_item, "url");
+				$label = rgar($menu_item, "label");
+				$target = rgar($menu_item, "target");
+				$sub_menu_items_string .= "<li class='{$menu_class}'><a href='{$url}' class='{$link_class}' target='{$target}'>{$label}</a></li>";
+			}
+		}
+		if($compact){
+			$sub_menu_items_string = '
+					<a class="gf_toggle_submenu" onclick="toggleSubMenu(this);"></a>
+					<div class="gf_submenu"><ul>' . $sub_menu_items_string . '</ul></div>';
+		}else{
+			$sub_menu_items_string = '<div class="gf_submenu"><ul>' . $sub_menu_items_string . '</ul></div>';
+		}
+
+		return $sub_menu_items_string;
+	}
+
+	public static function get_form_settings_sub_menu_items($form_id) {
+		require_once(GFCommon::get_base_path() . '/form_settings.php');
+
+		$sub_menu_items = array();
+		$tabs = GFFormSettings::get_tabs();
+
+		foreach($tabs as $tab) {
+
+			if($tab['name'] == 'settings')
+				$form_setting_menu_item['label'] = 'Settings';
+
+			$sub_menu_items[] = array(
+				'url' 			=> admin_url("admin.php?page=gf_edit_forms&view=settings&subview={$tab['name']}&id={$form_id}"),
+				'label' 		=> $tab['label'],
+				'capabilities' 	=> array("gravityforms_edit_forms")
+			);
+
+		}
+
+		return $sub_menu_items;
+	}
+
+	private static function toolbar_class($item){
+
+		switch($item){
+
+			case "editor":
+				if(in_array(rgget("page"), array("gf_edit_forms", "gf_new_form")) && rgempty("view", $_GET))
+					return "gf_toolbar_active";
+				break;
+
+			case "settings":
+				if(rgget('view') == 'settings')
+					return "gf_toolbar_active";
+				break;
+
+			case "notifications" :
+				if(rgget("page") == "gf_new_form")
+					return "gf_toolbar_disabled";
+				else if(rgget("page") == "gf_edit_forms" && rgget("view") == "notification")
+					return "gf_toolbar_active";
+				break;
+
+			case "entries" :
+				if(rgget("page") == "gf_new_form")
+					return "gf_toolbar_disabled";
+				else if(rgget("page") == "gf_entries")
+					return "gf_toolbar_active";
+
+				break;
+
+			case "preview" :
+				if(rgget("page") == "gf_new_form")
+					return "gf_toolbar_disabled";
+
+				break;
+		}
+
+		return "";
+	}
 }
+class RGForms extends GFForms { }
 
 //Main function call. Should be used to insert a Gravity Form from code.
 function gravity_form($id, $display_title=true, $display_description=true, $display_inactive=false, $field_values=null, $ajax=false, $tabindex = 1){

@@ -10,3 +10,5 @@
                 FROM wp_rg_userregistration s
                 INNER JOIN wp_rg_form f ON s.form_id = f.id
                 WHERE 1 = 1 AND s.form_id = 1 AND s.is_active = 1 made by require('wp-blog-header.php'), wp, WP->main, do_action_ref_array, call_user_func_array, RGForms::process_exterior_pages, require_once('/plugins/gravityforms/preview.php'), RGForms::get_form, GFFormDisplay::get_form, apply_filters('gform_pre_render'), call_user_func_array, GFUser::maybe_prepopulate_form, GFUserData::get_update_feed, GFUserData::get_feeds
+[30-Jan-2013 06:33:54] PHP Parse error:  syntax error, unexpected T_STRING in /home7/livlivem/public_html/decon/wp-content/themes/mothership/index.php on line 26
+[30-Jan-2013 06:34:37] PHP Parse error:  syntax error, unexpected T_STRING in /home7/livlivem/public_html/decon/wp-content/themes/mothership/index.php on line 26

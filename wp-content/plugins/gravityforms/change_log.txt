@@ -1,3 +1,17 @@
+Version 1.6.12
+    - Fixed issue with double spinner icons when form is configured with image buttons
+    - Added new filter "gform_pre_validation" to allow add-ons to modify the form object before validation
+    - Added new filter "gform_toolbar_menu" to support custom toolbar buttons
+    - Fixed issue with website field validation failing tildas (~)
+    - Fixed issue with export not taking timezone into account when searching by start and end dates
+    - Fixed issue with "Date Field" type where a blank dates would display as 00-00 in the entry list instead of blank
+    - Fixed issue with export not converting start and end dates to GMT correctly
+    - Fixed issue with fields hidden by page conditional logic saving their values
+	- Removed debug alert statement
+	- Updated post creation to not fire Buddy Press' save_post function until the post data is complete
+    - Fixed issue with translating Widget title and description
+    - Added notification logging to help troubleshoot email issues
+
 -------------------------------------------------------------------------------------------------------------------
 Version 1.6.11
     - Fixed warnings messages thrown by $wpdb->prepare()

@@ -571,9 +571,8 @@ class GFFormDisplay{
                     "function gformInitSpinner_{$form_id}(){" .
                         "jQuery('#gform_{$form_id}').submit(function(){" .
                             "if(jQuery('#gform_ajax_spinner_{$form_id}').length == 0){".
-                                "jQuery('#gform_submit_button_{$form_id}').attr('disabled', true).after('<' + 'img id=\"gform_ajax_spinner_{$form_id}\"  class=\"gform_ajax_spinner\" src=\"{$spinner_url}\" alt=\"\" />');" .
-                                "jQuery('#gform_wrapper_{$form_id} .gform_previous_button').attr('disabled', true); " .
-                                "jQuery('#gform_wrapper_{$form_id} .gform_next_button, #gform_wrapper_{$form_id} .gform_image_button').attr('disabled', true).after('<' + 'img id=\"gform_ajax_spinner_{$form_id}\"  class=\"gform_ajax_spinner\" src=\"{$spinner_url}\" alt=\"\" />');" .
+                                "jQuery('#gform_submit_button_{$form_id}, #gform_wrapper_{$form_id} .gform_previous_button, #gform_wrapper_{$form_id} .gform_next_button, #gform_wrapper_{$form_id} .gform_image_button').attr('disabled', true); " .
+                                "jQuery('#gform_submit_button_{$form_id}, #gform_wrapper_{$form_id} .gform_next_button, #gform_wrapper_{$form_id} .gform_image_button').after('<' + 'img id=\"gform_ajax_spinner_{$form_id}\"  class=\"gform_ajax_spinner\" src=\"{$spinner_url}\" alt=\"\" />'); " .
                             "}".
                         "} );" .
                     "}" .
@@ -997,6 +996,8 @@ class GFFormDisplay{
     }
 
     public static function validate(&$form, $field_values, $page_number=0, &$failed_validation_page=0){
+
+		$form = apply_filters('gform_pre_validation', $form);
 
         // validate form schedule
         if(self::validate_form_schedule($form))

@@ -1,7 +1,7 @@
 <?php
 class GFCommon{
 
-    public static $version = "1.6.11";
+    public static $version = "1.6.12";
     public static $tab_index = 1;
 
     public static function get_selection_fields($form, $selected_field_id){
@@ -171,7 +171,7 @@ class GFCommon{
     }
 
     public static function is_valid_url($url){
-        return preg_match('!^(http|https)://([\w-]+\.?)+[\w-]+(:\d+)?(/[\w- ./?%&=+\']*)?$!', $url);
+        return preg_match('!^(http|https)://([\w-]+\.?)+[\w-]+(:\d+)?(/[\w- ./?~%&=+\']*)?$!', $url);
     }
 
     public static function is_valid_email($email){
@@ -1223,7 +1223,13 @@ class GFCommon{
         $headers .= GFCommon::is_valid_email($bcc) ? "Bcc: $bcc\r\n" :"";
         $headers .= "Content-type: {$content_type}; charset=" . get_option('blog_charset') . "\r\n";
 
+        GFCommon::log_debug("Sending email via wp_mail()");
+        GFCommon::log_debug(print_r(compact("to", "subject", "message", "headers", "attachments"), true));
+
         $result = wp_mail($to, $subject, $message, $headers, $attachments);
+        $result_text = $result ? "success" : "failed";
+
+        GFCommon::log_debug("Result from wp_mail(): {$result} ({$result_text})");
     }
 
     public static function has_post_field($fields){
@@ -4551,6 +4557,10 @@ class GFCommon{
             GFLogging::include_logger();
             GFLogging::log_message("gravityforms", $message, KLogger::DEBUG);
         }
+    }
+
+    public static function is_bp_active() {
+        return defined('BP_VERSION') ? true : false;
     }
 }
 ?>

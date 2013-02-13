@@ -34,7 +34,7 @@ function gf_check_field_rule(formId, fieldId, isInit, callback){
 
 function gf_apply_field_rule(formId, fieldId, isInit, callback){
 
-    action = gf_check_field_rule(formId, fieldId, isInit, callback);
+    var action = gf_check_field_rule(formId, fieldId, isInit, callback);
 
     gf_do_field_action(formId, action, fieldId, isInit, callback);
 

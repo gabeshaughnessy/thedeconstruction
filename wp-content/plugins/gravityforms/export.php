@@ -14,7 +14,7 @@ class GFExport{
             $form_id=$_POST["export_form"];
             $form = RGFormsModel::get_form_meta($form_id);
 
-            $filename = sanitize_title_with_dashes($form["title"]) . "-" . date("Y-m-d") . ".csv";
+            $filename = sanitize_title_with_dashes($form["title"]) . "-" . gmdate("Y-m-d", GFCommon::get_local_timestamp(time())) . ".csv";
             $charset = get_option('blog_charset');
             header('Content-Description: File Transfer');
             header("Content-Disposition: attachment; filename=$filename");
@@ -508,12 +508,29 @@ class GFExport{
         return $row_counts;
     }
 
+    public static function get_gmt_timestamp($local_timestamp){
+        return $local_timestamp - (get_option( 'gmt_offset' ) * 3600 );
+    }
+
+    public static function get_gmt_date($local_date){
+
+        $local_timestamp = strtotime($local_date);
+        $gmt_timestamp = self::get_gmt_timestamp($local_timestamp);
+        $date = gmdate("Y-m-d H:i:s", $gmt_timestamp);
+
+        return $date;
+    }
+
     public static function start_export($form){
 
         $form_id = $form["id"];
         $fields = $_POST["export_field"];
-        $start_date = $_POST["export_date_start"];
-        $end_date = $_POST["export_date_end"];
+
+        $start_date = empty($_POST["export_date_start"]) ? "" : self::get_gmt_date($_POST["export_date_start"] . " 00:00");
+        $end_date = empty($_POST["export_date_end"]) ? "" : self::get_gmt_date($_POST["export_date_end"] . " 23:59:59");
+
+        GFCommon::log_debug("start date: {$start_date}");
+        GFCommon::log_debug("end date: {$end_date}");
 
         $form = self::add_default_export_fields($form);
 
@@ -550,7 +567,7 @@ class GFExport{
         //paging through results for memory issues
         while($entry_count > 0){
             $leads = RGFormsModel::get_leads($form_id,"date_created", "DESC", "", $offset, $page_size, null, null, false, $start_date, $end_date);
-            
+
             foreach($leads as $lead){
                 foreach($fields as $field_id){
                     switch($field_id){
@@ -609,7 +626,7 @@ class GFExport{
     }
 
 	public static function add_default_export_fields($form){
-        
+
         //adding default fields
         array_push($form["fields"],array("id" => "created_by" , "label" => __("Created By (User Id)", "gravityforms")));
         array_push($form["fields"],array("id" => "id" , "label" => __("Entry Id", "gravityforms")));
@@ -626,7 +643,7 @@ class GFExport{
         $form = apply_filters('gform_export_fields', $form);
         return $form;
     }
-	
+
     private function cleanup(&$forms){
         unset($forms["version"]);
 
@@ -657,7 +674,7 @@ class GFExport{
             }
         }
     }
-    
+
     private static function get_entry_meta($form){
             $entry_meta = GFFormsModel::get_entry_meta($form["id"]);
             $keys = array_keys($entry_meta);

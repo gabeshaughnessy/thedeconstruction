@@ -2,7 +2,6 @@
 
 /**
  * Post to a Facebook profile or page timeline
- * Mention profiles or pages in the post
  *
  * @since 1.1
  */
@@ -30,9 +29,9 @@ class Facebook_Social_Publisher {
 	 * @since 1.1
 	 */
 	public function __construct() {
-		global $facebook;
+		global $facebook_loader;
 
-		if ( ! isset( $facebook ) )
+		if ( ! ( isset( $facebook_loader ) && $facebook_loader->app_access_token_exists() ) )
 			return;
 
 		// always load publish and delete hooks
@@ -45,6 +44,16 @@ class Facebook_Social_Publisher {
 		foreach( array( 'post', 'post-new' ) as $hook ) {
 			add_action( 'load-' . $hook . '.php', array( &$this, 'load' ) );
 		}
+	}
+
+	/**
+	 * Initialize social publisher hooks
+	 *
+	 * @since 1.2
+	 * @return Facebook_Social_Publisher new Facebook_Social_Publisher object
+	 */
+	public static function init() {
+		return new Facebook_Social_Publisher();
 	}
 
 	/**
@@ -65,10 +74,6 @@ class Facebook_Social_Publisher {
 		if ( ! class_exists( 'Facebook_Social_Publisher_Meta_Box_Page' ) )
 			require_once(  dirname(__FILE__) . '/publish-box-page.php' );
 		add_action( 'save_post', array( 'Facebook_Social_Publisher_Meta_Box_Page', 'save' ) );
-
-		if ( ! class_exists( 'Facebook_Mentions_Box' ) )
-			require_once( dirname(__FILE__) . '/mentions/mentions-box.php' );
-		Facebook_Mentions_Box::add_save_post_hooks();
 	}
 
 	/**
@@ -95,16 +100,24 @@ class Facebook_Social_Publisher {
 	 * Can the current user publish to Facebook?
 	 *
 	 * @since 1.1
+	 * @param int $wordpress_user_id WordPress user identifier
 	 * @return bool true if Facebook data stored for user and permissions exist
 	 */
-	public static function user_can_publish_to_facebook() {
+	public static function user_can_publish_to_facebook( $wordpress_user_id = null ) {
+		global $facebook_loader;
+
 		if ( ! class_exists( 'Facebook_User' ) )
-			require_once( dirname( dirname( dirname( dirname(__FILE__) ) ) ) . '/facebook-user.php' );
+			require_once( $facebook_loader->plugin_directory . 'facebook-user.php' );
 
-		$current_user = wp_get_current_user();
+		if ( ! ( is_int( $wordpress_user_id ) && $wordpress_user_id ) ) {
+			$current_user = wp_get_current_user();
+			$wordpress_user_id = $current_user->ID;
+			unset( $current_user );
+		}
 
-		if ( Facebook_User::can_publish_to_facebook() && ! Facebook_User::get_user_meta( $current_user->ID, 'facebook_timeline_disabled', true ) )
+		if ( Facebook_User::get_facebook_profile_id( $wordpress_user_id ) && ! Facebook_User::get_user_meta( $wordpress_user_id, 'facebook_timeline_disabled', true ) )
 			return true;
+
 		return false;
 	}
 
@@ -211,12 +224,6 @@ class Facebook_Social_Publisher {
 
 					Facebook_Social_Publisher_Meta_Box_Profile::add_meta_box( $post_type );
 				}
-
-				// it does not make sense to re-publish a post with mentions to Facebook but an author may want to show additional mentions in the post after it is published.
-				// allow for local mentions not sent to Facebook at the time the post was made public
-				if ( ! class_exists( 'Facebook_Mentions_Box' ) )
-					require_once( dirname(__FILE__) . '/mentions/mentions-box.php' );
-				Facebook_Mentions_Box::after_posts_load( $post_type );
 			}
 		}
 	}
@@ -261,9 +268,9 @@ class Facebook_Social_Publisher {
 	 * @param array $facebook_page stored Facebook page data
 	 */
 	public static function publish_to_facebook_page( $post, $facebook_page = null ) {
-		global $facebook, $post;
+		global $facebook, $facebook_loader;
 
-		if ( ! ( isset( $facebook ) && $post ) )
+		if ( ! $post )
 			return;
 
 		$post_id = $post->ID;
@@ -271,6 +278,19 @@ class Facebook_Social_Publisher {
 		// check if this post has previously been posted to the Facebook page
 		// no need to publish again
 		if ( get_post_meta( $post_id, 'fb_fan_page_post_id', true ) )
+			return;
+
+		if ( ! class_exists( 'Facebook_Social_Publisher_Meta_Box_Page' ) )
+			require_once( dirname(__FILE__) . '/publish-box-page.php' );
+
+		$meta_box_present = true;
+		if ( defined('XMLRPC_REQUEST') && XMLRPC_REQUEST )
+			$meta_box_present = false;
+
+		if ( $meta_box_present && get_post_meta( $post->ID, Facebook_Social_Publisher_Meta_Box_Page::POST_META_KEY_FEATURE_ENABLED, true ) === '0' )
+			return;
+
+		if ( ! isset( $facebook ) && ! ( isset( $facebook_loader ) && $facebook_loader->load_php_sdk() ) )
 			return;
 
 		// thanks to Tareq Hasan on http://wordpress.org/support/topic/plugin-facebook-bug-problems-when-publishing-to-a-page
@@ -298,23 +318,26 @@ class Facebook_Social_Publisher {
 
 		$args = array(
 			'access_token' => $facebook_page['access_token'],
-			'from' => $facebook_page['id'],
 			'link' => $link,
-			'fb:explicitly_shared' => 'true',
 			'ref' => 'fbwpp'
 		);
+
+		if ( $meta_box_present )
+			$args['fb:explicitly_shared'] = 'true';
 
 		// either message or link is required
 		// confident we have link, making message optional
 		$fan_page_message = get_post_meta( $post_id, 'fb_fan_page_message', true );
 		if ( ! empty( $fan_page_message ) )
 			$args['message'] = $fan_page_message;
+		unset( $fan_page_message );
 
 		// does current post type and the current theme support post thumbnails?
 		if ( post_type_supports( $post_type, 'thumbnail' ) && function_exists( 'has_post_thumbnail' ) && has_post_thumbnail() ) {
 			list( $post_thumbnail_url, $post_thumbnail_width, $post_thumbnail_height ) = wp_get_attachment_image_src( get_post_thumbnail_id( $post_id ), 'full' );
 			if ( ! empty( $post_thumbnail_url ) )
 				$args['picture'] = $post_thumbnail_url;
+			unset( $post_thumbnail_url, $post_thumbnail_width, $post_thumbnail_height );
 		}
 
 		if ( post_type_supports( $post_type, 'title' ) ) {
@@ -340,12 +363,17 @@ class Facebook_Social_Publisher {
 		$post_content = Facebook_Open_Graph_Protocol::clean_description( $post->post_content, false );
 		if ( $post_content )
 			$args['description'] = $post_content;
+		unset( $post_content );
 
 		$status_messages = array();
 		try {
-			$publish_result = $facebook->api( '/' . $facebook_page['id'] . '/feed', 'POST', $args );
+			$publish_result = $facebook->api( $facebook_page['id'] . '/feed', 'POST', $args );
 
-			update_post_meta( $post_id, 'fb_fan_page_post_id', sanitize_text_field( $publish_result['id'] ) );
+			if ( isset( $publish_result['id'] ) ) {
+				update_post_meta( $post_id, 'fb_fan_page_post_id', sanitize_text_field( $publish_result['id'] ) );
+				delete_post_meta( $post_id, Facebook_Social_Publisher_Meta_Box_Page::POST_META_KEY_FEATURE_ENABLED );
+				delete_post_meta( $post_id, Facebook_Social_Publisher_Meta_Box_Page::POST_META_KEY );
+			}
 		} catch (WP_FacebookApiException $e) {
 			$error_result = $e->getResult();
 
@@ -357,6 +385,7 @@ class Facebook_Social_Publisher {
 			} else {
 				$status_messages[] = array( 'message' => esc_html( sprintf( __( 'Failed posting to %s Timeline.', 'facebook' ), $facebook_page['name'] ) ) . ' ' . esc_html( __( 'Error', 'facebook' ) ) . ': ' . esc_html( json_encode( $error_result['error'] ) ), 'error' => true );
 			}
+			unset( $error_result );
 		}
 
 		if ( isset( $publish_result ) && isset( $publish_result['id'] ) ) {
@@ -365,14 +394,18 @@ class Facebook_Social_Publisher {
 				$message = sprintf( esc_html( __( 'Posted to %1$s with message "%2$s"', 'facebook' ) ), $link, esc_html( $args['message'] ) );
 			else
 				$message = sprintf( esc_html( __( 'Posted to %s', 'facebook' ) ), $link );
+			unset( $link );
 			$status_messages[] = array( 'message' => $message, 'error' => false );
+			unset( $message );
 		}
+		unset( $publish_result );
 
 		if ( ! empty( $status_messages ) ) {
 			// allow author and page messages on the same post
 			$existing_status_messages = get_post_meta( $post_id, 'facebook_status_messages', true );
 			if ( is_array( $existing_status_messages ) && ! empty( $existing_status_messages ) )
 				$status_messages = array_merge( $existing_status_messages, $status_messages );
+			unset( $existing_status_messages );
 
 			update_post_meta( $post_id, 'facebook_status_messages', $status_messages );
 			add_filter( 'redirect_post_location', array( 'Facebook_Social_Publisher', 'add_new_post_location' ) );
@@ -386,15 +419,24 @@ class Facebook_Social_Publisher {
 	 * @param stdClass $post post object
 	 */
 	public static function publish_to_facebook_profile( $post ) {
-		global $facebook, $post;
+		global $facebook_loader;
 
-		if ( ! ( isset( $facebook ) && isset( $post ) ) )
+		if ( ! ( isset( $facebook_loader ) && $facebook_loader->app_access_token_exists() && isset( $post ) ) )
 			return;
 
 		$post_id = $post->ID;
 
 		// does the current post have an existing Facebook post id stored? no need to publish again
 		if ( get_post_meta( $post_id, 'fb_author_post_id', true ) )
+			return;
+
+		$meta_box_present = true;
+		if ( defined('XMLRPC_REQUEST') && XMLRPC_REQUEST )
+			$meta_box_present = false;
+
+		if ( ! class_exists( 'Facebook_Social_Publisher_Meta_Box_Profile' ) )
+			require_once( dirname(__FILE__) . '/publish-box-profile.php' );
+		if ( $meta_box_present && get_post_meta( $post->ID, Facebook_Social_Publisher_Meta_Box_Profile::POST_META_KEY_FEATURE_ENABLED, true ) === '0' )
 			return;
 
 		$post = get_post( $post );
@@ -404,60 +446,13 @@ class Facebook_Social_Publisher {
 		if ( ! ( $post_type && post_type_supports( $post_type, 'author' ) ) )
 			return;
 
-		// the person publishing the post may not be the same person who authored the post
-		// publish to the timeline of the author, not the post approver / publisher
-		// TODO: allow an author without publish capability to allow WordPress users with the capability to publish on his or her behalf
-		$current_user = wp_get_current_user();
-		if ( isset( $post->post_author ) && $post->post_author != $current_user->ID )
+		// test the author, not the current actor
+		if ( ! self::user_can_publish_to_facebook( $post->post_author ) )
 			return;
 
-		if ( ! self::user_can_publish_to_facebook() )
-			return;
-
-		$author_messages = self::post_to_author_timeline( $post );
-		if ( is_array( $author_messages ) && ! empty( $author_messages ) )
-			$status_messages = $author_messages;
-		else
-			$status_messages = array();
-		unset( $author_messages );
-
-		$friends_messages = self::post_to_mentioned_friends_timelines( $post );
-		if ( is_array( $friends_messages ) )
-			$status_messages = array_merge( $status_messages, $friends_messages );
-		unset( $friends_messages );
-
-		$pages_messages = self::post_to_mentioned_pages_timelines( $post );
-		if ( is_array( $pages_messages ) && ! empty( $pages_messages ) )
-			$status_messages = array_merge( $status_messages, $pages_messages );
-		unset( $pages_messages );
-
-		if ( ! empty( $status_messages ) ) {
-			$existing_status_messages = get_post_meta( $post_id, 'fb_status_messages', true );
-
-			if ( is_array( $existing_status_messages ) && ! empty( $existing_status_messages ) )
-				$status_messages = array_merge($existing_status_messages, $status_messages);
-
-			update_post_meta( $post_id, 'facebook_status_messages', $status_messages );
-			add_filter( 'redirect_post_location', array( 'Facebook_Social_Publisher', 'add_new_post_location' ) );
-		}
-	}
-
-	/**
-	 * Post to the timelines of mentioned friends
-	 *
-	 * @since 1.1
-	 * @param stdClass $post post object
-	 * @return array status messages with message and error. used to update publisher of performed action on admin_notices
-	 */
-	public static function post_to_mentioned_friends_timelines( $post ) {
-		global $facebook;
-
-		$post_id = $post->ID;
-		$post_type = get_post_type( $post );
-
-		$mentioned_friends = get_post_meta( $post_id, 'fb_mentioned_friends', true );
-		if ( empty( $mentioned_friends ) )
-			return array();
+		if ( ! class_exists( 'Facebook_User' ) )
+			require_once( $facebook_loader->plugin_directory . 'facebook-user.php' );
+		$author_facebook_id = Facebook_User::get_facebook_profile_id( $post->post_author );
 
 		// check our assumptions about a valid link in place
 		// fail if a piece of the filter process killed our response
@@ -465,227 +460,25 @@ class Facebook_Social_Publisher {
 		if ( ! $link )
 			return;
 
-		$story = array(
-			'link' => $link,
-			'ref' => 'fbwpp'
-		);
-
-		// either message or link is required
-		// confident we have link, making message optional
-		$mentioned_friends_message = get_post_meta( $post_id, 'fb_mentioned_friends_message', true );
-		if ( ! empty( $mentioned_friends_message ) )
-			$story['message'] = $mentioned_friends_message;
-
-		// does current post type and the current theme support post thumbnails?
-		if ( post_type_supports( $post_type, 'thumbnail' ) && function_exists( 'has_post_thumbnail' ) && has_post_thumbnail() ) {
-			list( $post_thumbnail_url, $post_thumbnail_width, $post_thumbnail_height ) = wp_get_attachment_image_src( get_post_thumbnail_id( $post_id ), 'full' );
-			if ( ! empty( $post_thumbnail_url ) )
-				$story['picture'] = $post_thumbnail_url;
-		}
-
-		if ( post_type_supports( $post_type, 'title' ) ) {
-			$title = trim( html_entity_decode( get_the_title( $post_id ), ENT_COMPAT, 'UTF-8' ) );
-			if ( $title )
-				$story['name'] = $title;
-			unset( $title );
-		}
-
-		if ( ! class_exists( 'Facebook_Open_Graph_Protocol' ) )
-			require_once( dirname( dirname( dirname( __FILE__ ) ) ) . '/open-graph-protocol.php' );
-
-		if ( post_type_supports( $post_type, 'excerpt' ) && ! empty( $post->post_excerpt ) ) {
-			$excerpt = trim( apply_filters( 'get_the_excerpt', $post->post_excerpt ) );
-			if ( $excerpt ) {
-				$excerpt = Facebook_Open_Graph_Protocol::clean_description( $excerpt );
-				if ( $excerpt )
-					$story['caption'] = $excerpt;
-			}
-			unset( $excerpt );
-		}
-
-		$post_content = Facebook_Open_Graph_Protocol::clean_description( $post->post_content, false );
-		if ( $post_content )
-			$story['description'] = $post_content;
-
-		$publish_ids_friends = array();
-		$friends_posts = array();
-		$status_messages = array();
-
-		// define a photo URL template once, with SSL goodness. sprintf later inside the loop
-		$photo_params = array( 'width' => 15, 'height' => 15 );
-		if ( is_ssl() )
-			$photo_params['return_ssl_resources'] = 1;
-		$photo_url = 'http' . ( is_ssl() ? 's' : '' ) . '://graph.facebook.com/%s/picture?' . http_build_query( $photo_params );
-		unset( $photo_params );
-
-		foreach( $mentioned_friends as $friend )  {
-			try {
-				$publish_result = $facebook->api( '/' . $friend['id'] . '/feed', 'POST', $story );
-
-				$publish_ids_friends[] = sanitize_text_field( $publish_result['id'] );
-
-				$friends_post = '<a href="' . esc_url( self::get_permalink_from_feed_publish_id( $publish_result['id'] ), array( 'http', 'https' ) ) . '" target="_blank">';
-				$friends_post .= '<img src="' . esc_url( sprintf( $photo_url, $friend['id'] ), array( 'http', 'https' ) ) . '" width="15" height="15" alt="' . ( isset( $friend['name'] ) ? esc_attr( $friend['name'] ) : '' ) . '" />';
-				$friends_post .= '</a>';
-				$friends_posts[] = $friends_post;
-				unset( $friends_post );
-			} catch (WP_FacebookApiException $e) {
-				$error_result = $e->getResult();
-
-				if ( $e->getCode() == 210) {
-					$status_messages[] = array( 'message' => esc_html( __( 'Failed posting to mentioned friend\'s Facebook Timeline.', 'facebook' ) ) . '<img src="' . esc_url( sprintf( $photo_url, $friend['id'] ), array( 'http', 'https' ) ) . '" width="15" height="15" alt="' . ( isset( $friend['name'] ) ? esc_attr( $friend['name'] ) : '' ) . ' /> ' . esc_html( __( 'Error: Page doesn\'t allow posts from other Facebook users.', 'facebook' ) ) . ' ' . esc_html( __( 'Error', 'facebook' ) ) . ': ' . esc_html( json_encode( $error_result['error'] ) ), 'error' => true );
-				} else {
-					$status_messages[] = array( 'message' => esc_html( __( 'Failed posting to mentioned friend\'s Facebook Timeline.', 'facebook' ) ) . '<img src="' . esc_url( sprintf( $photo_url, $friend['id'] ), array( 'http', 'https' ) ) . '" width="15" height="15" alt="' . ( isset( $friend['name'] ) ? esc_attr( $friend['name'] ) : '' ) . '" /> ' . esc_html( __( 'Error', 'facebook' ) ) . ': ' . esc_html( json_encode( $error_result['error'] ) ), 'error' => true );
-				}
-			}
-		}
-
-		if ( ! empty( $publish_ids_friends ) )
-			update_post_meta( $post_id, 'fb_mentioned_friends_post_ids', $publish_ids_friends );
-
-		if ( ! empty( $friends_posts ) )
-			$status_messages[] = array( 'message' => esc_html( __( 'Posted to mentioned friends\' Facebook Timelines.', 'facebook' ) ) . implode( ' ', $friends_posts ), 'error' => false );
-
-		return $status_messages;
-	}
-
-	/**
-	 * Post to the timeline of mentioned Facebook pages
-	 *
-	 * @since 1.1
-	 * @param stdClass $post post object
-	 * @return array status messages with message and error. used to update publisher of performed action on admin_notices
-	 */
-	public static function post_to_mentioned_pages_timelines( $post ) {
-		global $facebook;
-
-		$post_id = $post->ID;
-		$post_type = get_post_type( $post );
-		if ( ! $post_type )
-			return;
-
-		$mentioned_pages = get_post_meta( $post_id, 'fb_mentioned_pages', true );
-		if ( ! is_array( $mentioned_pages ) || empty( $mentioned_pages ) )
-			return;
-
-		// check our assumptions about a valid link in place
-		// fail if a piece of the filter process killed our response
-		$link = apply_filters( 'facebook_rel_canonical', get_permalink( $post_id ) );
-		if ( ! $link )
-			return;
-
-		$story = array(
-			'link' => $link,
-			'ref' => 'fbwpp'
-		);
-
-		// either message or link is required
-		// confident we have link, making message optional
-		$mentioned_pages_message = get_post_meta( $post_id, 'fb_mentioned_pages_message', true );
-		if ( ! empty( $mentioned_pages_message ) )
-			$story['message'] = $mentioned_pages_message;
-		unset( $mentioned_pages_message );
-
-		// does current post type and the current theme support post thumbnails?
-		if ( post_type_supports( $post_type, 'thumbnail' ) && function_exists( 'has_post_thumbnail' ) && has_post_thumbnail() ) {
-			list( $post_thumbnail_url, $post_thumbnail_width, $post_thumbnail_height ) = wp_get_attachment_image_src( get_post_thumbnail_id( $post_id ), 'full' );
-			if ( ! empty( $post_thumbnail_url ) )
-				$story['picture'] = $post_thumbnail_url;
-		}
-
-		if ( post_type_supports( $post_type, 'title' ) ) {
-			$title = trim( html_entity_decode( get_the_title( $post_id ), ENT_COMPAT, 'UTF-8' ) );
-			if ( $title )
-				$story['name'] = $title;
-			unset( $title );
-		}
-
-		if ( ! class_exists( 'Facebook_Open_Graph_Protocol' ) )
-			require_once( dirname( dirname( dirname( __FILE__ ) ) ) . '/open-graph-protocol.php' );
-
-		if ( post_type_supports( $post_type, 'excerpt' ) && ! empty( $post->post_excerpt ) ) {
-			$excerpt = trim( apply_filters( 'get_the_excerpt', $post->post_excerpt ) );
-			if ( $excerpt ) {
-				$excerpt = Facebook_Open_Graph_Protocol::clean_description( $excerpt );
-				if ( $excerpt )
-					$story['caption'] = $excerpt;
-			}
-			unset( $excerpt );
-		}
-
-		$post_content = Facebook_Open_Graph_Protocol::clean_description( $post->post_content, false );
-		if ( $post_content )
-			$story['description'] = $post_content;
-		unset( $post_content );
-
-		// define a photo URL template once, with SSL goodness. sprintf later inside the loop
-		$photo_params = array( 'width' => 15, 'height' => 15 );
-		if ( is_ssl() )
-			$photo_params['return_ssl_resources'] = 1;
-		$photo_url = 'http' . ( is_ssl() ? 's' : '' ) . '://graph.facebook.com/%s/picture?' . http_build_query( $photo_params );
-		unset( $photo_params );
-
-		$pages_posts = array();
-		$publish_ids_pages = array();
-
-		foreach( $mentioned_pages as $page ) {
-			try {
-				$publish_result = $facebook->api( '/' . $page['id'] . '/feed', 'POST', $story );
-
-				$published_id = sanitize_text_field( $publish_result['id'] );
-				$publish_ids_pages[] = $published_id;
-
-				$pages_posts[] = '<a href="' . esc_url( self::get_permalink_from_feed_publish_id( $published_id ), array( 'http', 'https' ) ) . '" target="_blank"><img src="' . esc_url( sprintf( $photo_url, $page['id'] ), array( 'http', 'https' ) ) . '" alt="' . ( isset( $page['name'] ) ? esc_attr( $page['name'] ) : '' ) . '" width="15" height="15" /></a>';
-
-			} catch (WP_FacebookApiException $e) {
-				$error_result = $e->getResult();
-
-				if ( $e->getCode() == 210 ) {
-					$status_messages[] = array( 'message' => esc_html( __( 'Failed posting to mentioned page\'s Facebook Timeline.', 'facebook' ) ) . ' <img src="' . esc_url( sprintf( $photo_url, $page['id'] ), array( 'http', 'https' ) ) . '" alt="' . ( isset( $page['name'] ) ? esc_attr( $page['name'] ) : '' ) . '" width="15" height="15" /> ' . esc_html( __( 'Error: Page doesn\'t allow posts from other Facebook users. Full error:', 'facebook' ) ) . ' ' . esc_html( json_encode( $error_result['error'] ) ), 'error' => true );
-				} else {
-					$status_messages[] = array( 'message' => __( 'Failed posting to mentioned page\'s Facebook Timeline.', 'facebook' ) . ' <img src="' . esc_url( sprintf( $photo_url, $page['id'] ), array( 'http', 'https' ) ) . '" alt="' . ( isset( $page['name'] ) ? esc_attr( $page['name'] ) : '' ) . '" width="15" height="15" /> ' . esc_html( __( 'Error', 'facebook' ) ) . ': ' . esc_html( json_encode( $error_result['error'] ) ), 'error' => true );
-				}
-			}
-		}
-
-		if ( ! empty( $publish_ids_pages ) )
-			update_post_meta( $post_id, 'fb_mentioned_pages_post_ids', $publish_ids_pages );
-
-		if ( ! empty( $publish_ids_pages ) )
-			$status_messages[] = array( 'message' => esc_html( __( 'Posted to mentioned pages\' Facebook Timelines.', 'facebook' ) ) . ' ' . implode( ' ' , $pages_posts ), 'error' => false );
-
-		return $status_messages;
-	}
-
-	/**
-	 * Post to the post author's Facebook timeline
-	 * Note: function currently assumes the author of the post is publishing the post
-	 *
-	 * @since 1.1
-	 * @param stdClass $post post object
-	 * @return array status messages to display in admin notices
-	 */
-	public static function post_to_author_timeline( $post ) {
-		global $facebook;
-
-		$post_id = $post->ID;
-
-		// check our assumptions about a valid link in place
-		// fail if a piece of the filter process killed our response
-		$link = apply_filters( 'facebook_rel_canonical', get_permalink( $post_id ) );
-		if ( ! $link )
-			return;
 		$story = array( 'article' => $link );
-		$message = get_post_meta( $post_id, 'fb_author_message', true );
+		if ( $meta_box_present )
+			$story['fb:explicitly_shared'] = 'true';
+		$message = get_post_meta( $post_id, Facebook_Social_Publisher_Meta_Box_Profile::POST_META_KEY_MESSAGE, true );
 		if ( is_string( $message ) && $message )
 			$story['message'] = $message;
 
-		try {
-			//POST https://graph.facebook.com/me/news.reads?article=[article object URL]
-			$publish_result = $facebook->api( '/me/news.publishes', 'POST', $story );
+		if ( ! class_exists( 'Facebook_WP_Extend' ) )
+			require_once( $facebook_loader->plugin_directory . 'includes/facebook-php-sdk/class-facebook-wp.php' );
 
-			if ( isset( $publish_result['id'] ) )
+		$status_messages = array();
+		try {
+			$publish_result = Facebook_WP_Extend::graph_api_with_app_access_token( $author_facebook_id . '/news.publishes', 'POST', $story );
+
+			if ( isset( $publish_result['id'] ) ) {
 				update_post_meta( $post_id, 'fb_author_post_id', sanitize_text_field( $publish_result['id'] ) );
+				delete_post_meta( $post_id, Facebook_Social_Publisher_Meta_Box_Profile::POST_META_KEY_MESSAGE );
+				delete_post_meta( $post_id, Facebook_Social_Publisher_Meta_Box_Profile::POST_META_KEY_FEATURE_ENABLED );
+			}
 		} catch (WP_FacebookApiException $e) {
 			$error_result = $e->getResult();
 
@@ -701,7 +494,7 @@ class Facebook_Social_Publisher {
 		}
 
 		if ( isset( $publish_result ) && isset( $publish_result['id'] ) ) {
-			$link = '<a href="' . esc_url( 'https://www.facebook.com/' . $publish_result['id'], array( 'http', 'https' ) ) . '" target="_blank">' . esc_html( __( 'your Facebook Timeline', 'facebook' ) ) . '</a>';
+			$link = '<a href="' . esc_url( 'https://www.facebook.com/' . $publish_result['id'], array( 'http', 'https' ) ) . '" target="_blank">' . esc_html( __( 'Facebook Timeline', 'facebook' ) ) . '</a>';
 			if ( empty( $author_message ) )
 				$message = sprintf( esc_html( __( 'Posted to %s', 'facebook' ) ), $link );
 			else
@@ -709,7 +502,16 @@ class Facebook_Social_Publisher {
 			$status_messages[] = array( 'message' => $message, 'error' => false );
 		}
 
-		return $status_messages;
+		// add new status messages
+		if ( ! empty( $status_messages ) ) {
+			$existing_status_messages = get_post_meta( $post_id, 'fb_status_messages', true );
+
+			if ( is_array( $existing_status_messages ) && ! empty( $existing_status_messages ) )
+				$status_messages = array_merge( $existing_status_messages, $status_messages );
+
+			update_post_meta( $post_id, 'facebook_status_messages', $status_messages );
+			add_filter( 'redirect_post_location', array( 'Facebook_Social_Publisher', 'add_new_post_location' ) );
+		}
 	}
 
 	/**
@@ -780,57 +582,57 @@ class Facebook_Social_Publisher {
 	 * @param int $post_id post identifer
 	 */
 	public static function delete_facebook_post( $post_id ) {
-		global $facebook;
-
-		if ( ! isset( $facebook ) )
-			return;
+		global $facebook, $facebook_loader;
 
 		$fb_page_post_id = get_post_meta( $post_id, 'fb_fan_page_post_id', true );
 		if ( $fb_page_post_id ) {
 			$page_to_publish = self::get_publish_page();
 			if ( isset( $page_to_publish['access_token'] ) ) {
-				// act as the saved credential, not current user
-				try {
-					$delete_result = $facebook->api( '/' . $fb_page_post_id, 'DELETE', array( 'access_token' => $page_to_publish['access_token'], 'ref' => 'fbwpp' ) );
-				} catch (WP_FacebookApiException $e) {}
+				if ( isset( $facebook ) || ( isset( $facebook_loader ) && $facebook_loader->load_php_sdk() ) ) {
+					// act as the saved credential, not current user
+					try {
+						$facebook->api( '/' . $fb_page_post_id, 'DELETE', array( 'access_token' => $page_to_publish['access_token'], 'ref' => 'fbwpp' ) );
+					} catch (WP_FacebookApiException $e) {}
+				}
 			}
 			unset( $page_to_publish );
 		}
 		unset( $fb_page_post_id );
 
-		// no use proceeding if the current user has no Facebook credentials
-		if ( self::user_can_publish_to_facebook() ) {
-			$current_user = wp_get_current_user();
-			$post = get_post( $post_id );
-			if ( isset( $post->post_author ) && $post->post_author == $current_user->ID ) {
-				$fb_author_post_id = get_post_meta( $post_id, 'fb_author_post_id', true );
-				if ( $fb_author_post_id ) {
+		$post = get_post( $post_id );
+		if ( isset( $post->post_author ) && self::user_can_publish_to_facebook( $post->post_author ) ) {
+
+			if ( ! class_exists( 'Facebook_WP_Extend' ) )
+				require_once( $facebook_loader->plugin_directory . 'includes/facebook-php-sdk/class-facebook-wp.php' );
+
+			$fb_author_post_id = get_post_meta( $post_id, 'fb_author_post_id', true );
+			if ( $fb_author_post_id ) {
+				try {
+					Facebook_WP_Extend::graph_api_with_app_access_token( $fb_author_post_id, 'DELETE', array( 'ref' => 'fbwpp' ) );
+				} catch (WP_FacebookApiException $e) {}
+			}
+			unset( $fb_author_post_id );
+
+			// support old post mentions
+			$fb_mentioned_pages_post_ids = get_post_meta( $post_id, 'fb_mentioned_pages_post_ids', true );
+			if ( $fb_mentioned_pages_post_ids ) {
+				foreach( $fb_mentioned_pages_post_ids as $page_post_id ) {
 					try {
-						$delete_result = $facebook->api( '/' . $fb_author_post_id, 'DELETE', array( 'ref' => 'fbwpp' ) );
+						Facebook_WP_Extend::graph_api_with_app_access_token( $page_post_id, 'DELETE', array( 'ref' => 'fbwpp' ) );
 					} catch (WP_FacebookApiException $e) {}
 				}
-				unset( $fb_author_post_id );
-
-				$fb_mentioned_pages_post_ids = get_post_meta( $post_id, 'fb_mentioned_pages_post_ids', true );
-				if ( $fb_mentioned_pages_post_ids ) {
-					foreach($fb_mentioned_pages_post_ids as $page_post_id) {
-						try {
-							$delete_result = $facebook->api( '/' . $page_post_id, 'DELETE', array( 'ref' => 'fbwpp' ) );
-						} catch (WP_FacebookApiException $e) {}
-					}
-				}
-				unset( $fb_mentioned_pages_post_ids );
-
-				$fb_mentioned_friends_post_ids = get_post_meta( $post_id, 'fb_mentioned_friends_post_ids', true );
-				if ( $fb_mentioned_friends_post_ids ) {
-					foreach($fb_mentioned_friends_post_ids as $page_post_id) {
-						try {
-							$delete_result = $facebook->api( '/' . $page_post_id, 'DELETE', array( 'ref' => 'fbwpp' ) );
-						} catch (WP_FacebookApiException $e) {}
-					}
-				}
-				unset( $fb_mentioned_friends_post_ids );
 			}
+			unset( $fb_mentioned_pages_post_ids );
+
+			$fb_mentioned_friends_post_ids = get_post_meta( $post_id, 'fb_mentioned_friends_post_ids', true );
+			if ( $fb_mentioned_friends_post_ids ) {
+				foreach( $fb_mentioned_friends_post_ids as $page_post_id ) {
+					try {
+						Facebook_WP_Extend::graph_api_with_app_access_token( $page_post_id, 'DELETE', array( 'ref' => 'fbwpp' ) );
+					} catch (WP_FacebookApiException $e) {}
+				}
+			}
+			unset( $fb_mentioned_friends_post_ids );
 		}
 	}
 }

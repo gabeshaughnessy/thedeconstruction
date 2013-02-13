@@ -82,7 +82,6 @@ class GFFormDetail{
             };
         </script>
 
-        <script src="<?php echo GFCommon::get_base_url() ?>/js/jquery.dimensions.js?ver=<?php echo GFCommon::$version ?>"></script>
         <script src="<?php echo GFCommon::get_base_url() ?>/js/floatmenu_init.js?ver=<?php echo GFCommon::$version ?>"></script>
         <script src="<?php echo GFCommon::get_base_url() ?>/js/menu.js?ver=<?php echo GFCommon::$version ?>"></script>
         <script src="<?php echo GFCommon::get_base_url() ?>/js/jquery.json-1.3.js?ver=<?php echo GFCommon::$version ?>"></script>

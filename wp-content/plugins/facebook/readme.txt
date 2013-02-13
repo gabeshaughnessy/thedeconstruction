@@ -1,11 +1,11 @@
 === Facebook ===
-Contributors: Facebook, automattic, mattwkelly, niallkennedy, rgharpuray, ngfeldman, jamesgpearce, ravi.grover, danielbachhuber, gigawats, eosgood, Otto42, colmdoyle, zazinteractive
+Contributors: Facebook, automattic, niallkennedy, mattwkelly, rgharpuray, ngfeldman, jamesgpearce, ravi.grover, danielbachhuber, gigawats, eosgood, Otto42, colmdoyle, zazinteractive
 Tags: Facebook, comments, social, friends, like, like button, social plugins, facebook platform, page, posts, sidebar, plugin, open graph
 Requires at least: 3.3
-Tested up to: 3.5
+Tested up to: 3.5.1
 License: GPLv2
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
-Stable tag: 1.1.11
+Stable tag: 1.2.2
 
 Make your WordPress site social in a couple of clicks, powered by Facebook.
 
@@ -19,9 +19,10 @@ The Facebook plugin for WordPress adds Facebook social plugins to your WordPress
 * [Facebook Insights](http://www.facebook.com/insights) support for Facebook accounts associated with a Facebook application.
 * Add [Like](https://developers.facebook.com/docs/reference/plugins/like/), [send](https://developers.facebook.com/docs/reference/plugins/send/), and [subscribe](https://developers.facebook.com/docs/reference/plugins/subscribe/) buttons to every post to help your site's readers share content with friends or stay connected to future content shared by your site on Facebook.
 * Enable the [Facebook Comments Box social plugin](https://developers.facebook.com/docs/reference/plugins/comments/) to encourage new comments from logged-in Facebook users and his or her Facebook friends. Comments associated with a post are sorted according to social signals including friend networks, most liked, or the most active discussion threads.
+* [Like Box](https://developers.facebook.com/docs/reference/plugins/like-box/) displays recent activity from your Facebook Page and encourages Like actions.
 * [Recommendations Bar](https://developers.facebook.com/docs/reference/plugins/recommendationsbar/) helps visitors discover additional content on your site by recommending posts and encouraging Like shares.
 * [Recommendations Box](https://developers.facebook.com/docs/reference/plugins/recommendations/) suggests related posts in a configurable widget.
-* Mention Facebook friends and Facebook pages associated with a post.
+* Mention Facebook friends and Facebook pages in a custom message posted to your timeline with your post.
 
 = Shortcodes =
 
@@ -38,18 +39,18 @@ The development [source code for this plugin is available on Facebook's GitHub a
 
 1. Install Facebook for WordPress either via the WordPress.org plugin directory, or by uploading the files to your server (in the `/wp-content/plugins/` directory).
 1. After activating the plugin, you will be asked to set up your Facebook application or enter existing credentials copied from the [Facebook Developers site](http://developers.facebook.com/apps/).
+1. Publishing to Facebook Timeline requires a Facebook application with an approved publish action with tags, user message, and explicitly shared action permissions. See the [Facebook for WordPress help page](https://developers.facebook.com/wordpress/) for more information.
 1. That's it. You're ready to go!
 
 == Screenshots ==
 
-1. Facebook settings screen.
-2. Boxes to mention Facebook friends and pages in a WordPress Post or Page.
-3. Set the status update that will be published to Facebook, along with the WordPress Page or Post.
-4. The resulting Post on Celebuzz.
-5. The Post is published to the author's (Andy Scott) Timeline.
-6. The Post is published on Duets Facebook Timeline, since it was mentioned in the Post.
-7. The Post is published to the Celebuzz Facebook Page.
-8. Widgets are also available.
+1. Facebook settings screen
+2. Mention Facebook friends and pages in a custom message posted to your Timeline
+3. Create a custom message published to your Facebook Timeline or Page alongside a summary of your new post
+4. The resulting post published on the author's Timeline
+5. Encourage social activity by adding Facebook social plugins before and after your posts
+6. Facebook social plugins are available as WordPress widgets
+7. Customized Like Box and Recommendations Box social plugins displayed as WordPress widgets
 
 == Custom actions & filters ==
 
@@ -98,6 +99,15 @@ The [Comments Box social plugin](https://developers.facebook.com/docs/reference/
 
 == Upgrade Notice ==
 
+= 1.2.2 =
+Improve performance of settings migration from old versions of the plugin.
+
+= 1.2.1 =
+Fixes an issue with author pages and Open Graph protocol.
+
+= 1.2 =
+App access token support. Mention tagging support. Explicit sharing to Facebook Timeline and/or Facebook Page.
+
 = 1.1.11 =
 Like Box widget. Improved locale selector. Bugfix publishing to a Facebook Page.
 
@@ -138,6 +148,19 @@ Improve site performance when cURL not installed or SSL not available. Removed p
 Security fixes. Improved customization and debugging of settings. l10n and i18n fixes.
 
 == Changelog ==
+
+= 1.2.2 =
+* Improve performance of settings migration from old versions of the plugin
+
+= 1.2.1 =
+* Fix: Properly display Open Graph protocol data on author page
+
+= 1.2 =
+* Post to Timeline now uses an [app access token](https://developers.facebook.com/docs/concepts/login/access-tokens-and-types/#appaccess) to communicate with Facebook servers without needing an active Facebook user session. Improves XML-RPC compatibility and wp-admin performance
+* The Facebook PHP SDK is now loaded as needed, not with every admin request
+* [Mention tagging](https://developers.facebook.com/docs/technical-guides/opengraph/mention-tagging/) Facebook friends and Facebook pages replaces previous mention meta boxes for friends and pages
+* Removed mention display alongside a post. Mentions are constructed in a custom Facebook message
+* Associate a WordPress account with a Facebook account from the edit profile page
 
 = 1.1.11 =
 * Added [Like Box](https://developers.facebook.com/docs/reference/plugins/like-box/) widget for Facebook Page promotion

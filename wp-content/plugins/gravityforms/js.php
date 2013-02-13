@@ -365,7 +365,6 @@ function SetDefaultValues(field){
             field.choices = new Array();
             field.displayAllCategories = true;
             field.inputType = 'select';
-            alert(0);
             break;
 
         case "section" :
