@@ -193,3 +193,11 @@ if ( function_exists( 'add_image_size' ) ) {
  
  add_action('wp_dashboard_setup', 'example_remove_dashboard_widgets' );
 ?>
+<?php 
+
+add_action( 'save_post', 'clear_transients' );
+
+function clear_transients(){	
+			delete_transient('newsfeed_posts');	
+}
+?>
