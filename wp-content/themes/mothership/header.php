@@ -62,8 +62,13 @@ $theme_options = get_option('mothership_options');
 <header class="row">
 	<div id="top-nav">
 		<?php 
-		foundation_nav_bar(); //switch this with the template-part 'topbar' function below to change to a topbar
-		//get_template_part('topbar'); ?>
+		if(!is_author()){
+			foundation_nav_bar(); //switch this with the template-part 'topbar' function below to change to a topbar
+		}
+		else {
+			//get_template_part('topbar', 'team'); 
+		}
+		?>
 	</div>
 	
 	<!-- <div class="logo twelve columns last"><h1><?php bloginfo('name'); ?></h1></div> -->

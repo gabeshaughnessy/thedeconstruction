@@ -1,9 +1,8 @@
 <?php  /* Theme Functions */
 
 //Initialize Admin Pages 
-require_once('admin-page-class/admin-page-class.php');
-require_once('admin-page-class/theme-options.php');
-
+require_once('lib/admin-page-class/admin-page-class.php');
+require_once('lib/admin-page-class/theme-options.php');
 //enqueue foundation js
 function decon_enqueue_scripts() {
 	
@@ -38,7 +37,7 @@ function decon_enqueue_scripts() {
 add_action('wp_enqueue_scripts', 'decon_enqueue_scripts');
 
 /* USER PROFILES */
-require_once('user-fields.php');
+require_once('lib/user-fields.php');
 
 /* ------ MENUS ----------*/
 require_once('foundation/foundation-topbar-menu.php');

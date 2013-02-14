@@ -1,4 +1,6 @@
-<?php add_action( 'save_post', 'clear_transients' );
+<?php 
+
+add_action( 'save_post', 'clear_transients' );
 
 function clear_transients(){	
 			delete_transient('newsfeed_posts');	

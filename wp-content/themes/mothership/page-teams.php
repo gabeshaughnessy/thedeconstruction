@@ -1,7 +1,11 @@
 <?php
 /**
- * The single post template
- * 
+ * Template Name: Team Archive Template
+ *
+ * Description: A page template that provides a key component of WordPress as a CMS
+ * by meeting the need for a carefully crafted introductory page. The front page template
+ * in Twenty Twelve consists of a page content area for adding text, images, video --
+ * anything you'd like -- followed by front-page-only widgets in one or two columns.
  *
  * @package WordPress
  * @subpackage mothership
@@ -14,10 +18,10 @@
 <article>
 	<div class="post-title ">
 		<h2><?php the_title(); ?></h2>
-		<p class="author"><?php the_author_posts_link(); ?></p>
 	</div>
 	<div class="post-content">
 		<?php the_content(); ?>
+		<?php wp_list_authors('orderby=post_count&order=DESC&number=10&hide_empty=0'); ?>
 		<?php comments_template(); ?>
 	</div>
 </article>
