@@ -20,8 +20,13 @@
       <h5>Twitter</h5>
     </div>
     <div class="content">
-      <a class="twitter-timeline" href="https://twitter.com/Deconstruction" data-widget-id="291720147733979136">Tweets by @Deconstruction</a>
-      <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
+     <script src="http://platform.twitter.com/widgets.js" type="text/javascript"></script>
+        <a href="http://twitter.com/share" class="twitter-share-button"
+           data-url="<?php the_permalink(); ?>"
+           data-via="deconstruction"
+           data-text="<?php the_title(); ?>"
+           data-related="@deconstruction"
+           data-count="horizontal">Tweet</a>
     </div>
   </li>
   <li class="newsletter">

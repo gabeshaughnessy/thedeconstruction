@@ -11,15 +11,33 @@
 <?php get_header(); ?>
 <?php //set up the current Author 
 $curauth = (isset($_GET['author_name'])) ? get_user_by('slug', $author_name) : get_userdata(intval($author));
+$team_meta = get_user_meta($curauth->ID);
+$team_name = $curauth->display_name;
+$team_location = get_user_meta($curauth->ID, 'team-location', true);
+$team_bio = $team_meta['bio'][0];
+$team_twitter = $team_meta['twitter'][0];
+$team_string = $team_meta['stream'][0];
+$team_googleplus = $team_meta['googleplus'][0];
 ?>
 
 <div id="content" class="nine columns">
-<h2>This is the <?php echo $curauth->first_name.' '.$curauth->last_name; ?> page.</h2>
-<p class="team-location"> <?php echo get_the_author_meta('team-location'); ?></p>
-<div class="team-image four columns"><?php echo get_wp_user_avatar(get_the_author_meta('ID'), 'medium');  ?></div>
-<p class="team-bio eight columns"> <?php echo get_the_author_meta('bio'); ?></p>
+<pre>
+<?php  
+//print_r($curauth);
+//print_r($team_meta);
+?>
+</pre>
+<div class="row">
+	<div class="team-image four columns"><?php echo get_wp_user_avatar(get_the_author_meta('ID'), 'medium');  ?></div>
+	<div class="eight columns">
+	<h3><?php echo $curauth->first_name.' '.$curauth->last_name; ?></h3>
+	<p class="team-location"> <?php echo $team_location; ?></p>
+	</div>
+</div>
 
-<h4>The Team <?php echo $curauth->first_name.' '.$curauth->last_name;  ?> feed: </h4>
+<p class="team-bio eight columns"> <?php echo $team_bio; ?></p>
+
+<h4>The <?php echo $curauth->first_name.' '.$curauth->last_name;  ?> feed: </h4>
 <?php if(have_posts()) : while(have_posts()) : the_post(); ?>
 
 <article>
