@@ -73,6 +73,14 @@ function decon_profile_fields( $user ) { ?>
 						<span class="description">Tell us your team's story for the top of your profile page.</span>
 					</td>
 		</tr>
+		<tr>
+					<th><label for="stream">Team Stream Embed Code</label></th>
+		
+					<td>
+						<textarea  name="stream" id="stream" value="<?php echo esc_attr( get_the_author_meta( 'stream', $user->ID ) ); ?>" class="regular-text"></textarea><br />
+						<span class="description">Paste the HTML embed code for your team's live video stream here.</span>
+					</td>
+		</tr>
 		
 	
 		
@@ -105,6 +113,7 @@ function decon_user_bio_visual_editor( $user ) {
 	(function($){ 
 		// Remove the textarea before displaying visual editor
 		$('#bio').parents('tr').remove();
+		$('#stream').parents('tr').remove();
 	})(jQuery);
 	</script>
  
@@ -114,25 +123,25 @@ function decon_user_bio_visual_editor( $user ) {
 			<td>
 				<?php 
 				$bio = get_user_meta( $user->ID, 'bio', true);
-				wp_editor( $bio, 'bio' ); 
+				wp_editor( $bio, 'bio', array() ); 
 				?>
 				<p class="description"><?php _e('Share a little background information to fill out your profile. This will be shown at the top of your team profile.'); ?></p>
 			</td>
 		</tr>
 	</table>
-	<table class="form-table">
+<table class="form-table">
 		<tr>
 			<th><label for="stream"><?php _e('Team Stream Embed Code'); ?></label></th>
 			<td>
 				<?php 
-				$stream = get_user_meta( $user->ID, 'astream', true);
-				wp_editor( $stream, 'stream', array('tinymce'=>false) ); 
+				$stream = get_user_meta( $user->ID, 'stream', true);
+				wp_editor( $stream, 'stream', array('wpautop'=>false, 'tinymce'=>false )); 
 				?>
 				<p class="description"><?php _e('Paste the HTML embed code for your team\'s live video stream here.'); ?></p>
 			</td>
 		</tr>
 	</table>
-	<?php
+		<?php
 	endif;
 }
 add_action('show_user_profile', 'decon_user_bio_visual_editor');

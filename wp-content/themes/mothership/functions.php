@@ -74,6 +74,48 @@ function curPageURL() {
  }
  return $pageURL;
 }
+// --- COLUMNS TO NUMBER STRINGS WRITTEN OUT
+function writeOutNum($columns){
+	switch($columns){
+	case 1 :
+	$columns = 'one';
+	break;
+	case 2 :
+	$columns = 'two';
+	break;
+	case 3 :
+	$columns = 'three';
+	break;
+	case 4 :
+	$columns = 'four';
+	break;
+	case 5 :
+	$columns = 'five';
+	break;
+	case 6 :
+	$columns = 'six';
+	break;
+	case 7 :
+	$columns = 'seven';
+	break;
+	case 8 :
+	$columns = 'eight';
+	break;
+	case 9 :
+	$columns = 'nine';
+	break;
+	case 10 :
+	$columns = 'ten';
+	break;
+	case 11 :
+	$columns = 'eleven';
+	break;
+	case 12:
+	$columns = 'twelve';
+	break;
+	}
+	return $columns;
+}
 
 //Print a Widget in a Shortcode
 function widget($atts) {

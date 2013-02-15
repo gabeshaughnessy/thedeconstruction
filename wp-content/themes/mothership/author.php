@@ -15,8 +15,9 @@ $curauth = (isset($_GET['author_name'])) ? get_user_by('slug', $author_name) : g
 
 <div id="content" class="nine columns">
 <h2>This is the <?php echo $curauth->first_name.' '.$curauth->last_name; ?> page.</h2>
+<p class="team-location"> <?php echo get_the_author_meta('team-location'); ?></p>
 <div class="team-image four columns"><?php echo get_wp_user_avatar(get_the_author_meta('ID'), 'medium');  ?></div>
-<p class="team bio eight columns"> <?php echo get_the_author_meta('bio'); ?></p>
+<p class="team-bio eight columns"> <?php echo get_the_author_meta('bio'); ?></p>
 
 <h4>The Team <?php echo $curauth->first_name.' '.$curauth->last_name;  ?> feed: </h4>
 <?php if(have_posts()) : while(have_posts()) : the_post(); ?>
