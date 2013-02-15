@@ -238,7 +238,10 @@ if ( function_exists( 'add_image_size' ) ) {
 <?php 
 
 add_action( 'save_post', 'clear_transients' );
-
+add_action('edit_user_profile', 'clear_user_transient');
+function clear_user_transient(){	
+			delete_transient('team-list');	
+}
 function clear_transients(){	
 			delete_transient('newsfeed_posts');	
 }

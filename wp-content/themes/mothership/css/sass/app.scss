@@ -158,7 +158,11 @@ header {
 /* TEAM LIST */
 .team-list {
 	list-style: none;
-	
+	.team-image {
+		img {
+		margin:  0 auto 4px;
+		}
+	}
 	.team-link {
 	
 	}
