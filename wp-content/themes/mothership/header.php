@@ -66,14 +66,20 @@ $theme_options = get_option('mothership_options');
 			foundation_nav_bar(); //switch this with the template-part 'topbar' function below to change to a topbar
 		}
 		else {
-			//get_template_part('topbar', 'team'); 
+			get_template_part('topbar', 'team'); 
 		}
 		?>
 	</div>
 	
+	
+	<?php 
+	if(!is_author()){?>
 	<!-- <div class="logo twelve columns last"><h1><?php bloginfo('name'); ?></h1></div> -->
+	
 	<div class="logo ten columns centered"><h1><img src="<?php bloginfo('stylesheet_directory') ?>/images/deconstruction_logo.jpg"/></h1></div>
+	
 	<div class="header_description ten columns centered"><p><?php bloginfo('description'); ?></p></div>
+	<?php  } ?>
 </header>
 <div id="main-content-area" class="row">
 <?php } ?>

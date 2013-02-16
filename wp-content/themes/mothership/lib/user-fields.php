@@ -37,7 +37,7 @@ $(\'form#your-profile label[for=last_name]\').html("Team Organizer Last Name");
 $(\'form#your-profile label[for=nickname]\').html("Team Name");
 $(\'form#your-profile label[for=wp_user_avatar]\').html("Team Avatar Image");
 $(\'form#your-profile > table:first\').hide();
-$(\'form#your-profile label[for=url], form#your-profile input#url\').hide();
+//$(\'form#your-profile label[for=url], form#your-profile input#url\').hide();
 $(\'form#your-profile label[for=description], form#your-profile textarea#description, form#your-profile span.description\').hide();
 $(\'form#createuser label[for=url], form#createuser input#url\').hide();
 });

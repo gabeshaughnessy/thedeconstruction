@@ -13,7 +13,8 @@ if($newsfeed_posts == false){
 //query the posts for
 
 $args = array(
-'posts_per_page' => '3'
+'posts_per_page' => '3',
+'category_name' => 'news'
 );
 
 $newsfeed = new WP_Query( $args );

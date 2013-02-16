@@ -30,6 +30,7 @@
 }
 
 #top-nav {
+.nav-bar{
 	.menu-item {
 		a, a:focus, a:hover{
 			width: 130px; 
@@ -43,9 +44,18 @@
 			font-size: 1.7em;
 		} 
 	}
+	}
 }
 
-
+.nav-bar{
+	background: none;
+	height: 160px;
+	.menu_text {
+		padding-top: 130px;
+		font-size: 1.5em;
+		text-align: center;
+		
+	}
 	.menu_home {
 		a, a:focus, a:hover{
 		background-image: url('../images/catscra130x130.jpg');
@@ -83,52 +93,33 @@
 		background-image: url('../images/keyboard_contact130x130.jpg');
 		}
 }
-
-.nav-bar {
-background: none;
-height: 160px;
 }
-
 
 .nav-bar > {
 	li {
 	margin-right: 25px;
 	border: none;
 	}
-}
-
-.nav-bar > li.active {
-background: none;
-border-color: none;
-}
-
-.nav-bar > li.hover {
-background: none;
-border-color: none;
-}
-
-.nav-bar > li.active:hover {
-background: none;
-border-color: none;
-}
-
-.nav-bar > li:hover {
-background: none;
-border-color: none;
-}
-
-.nav-bar > {
+	li.active {
+	background: none;
+	border-color: none;
+	}
+	 li.hover {
+	background: none;
+	border-color: none;
+	}
+	
+	li.active:hover {
+	background: none;
+	border-color: none;
+	}
+	
+	li:hover {
+	background: none;
+	border-color: none;
+	}
 	li:last-child {
 	border: none;
-	}
-}
-
-.nav-bar {
-	.menu_text {
-		padding-top: 130px;
-		font-size: 1.5em;
-		text-align: center;
-		
 	}
 }
 
