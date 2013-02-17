@@ -45,7 +45,7 @@ $team_url = $curauth->user_url;
 	 if(strpos('$team_url', 'http://') != false){
 	 echo $team_url; 
 	 }
-	 else { echo 'http://'.$team_url; } ?>">Website</a></li>
+	 else { echo $team_url; } ?>">Website</a></li>
 	<?php }  
 	if($team_twitter != ''){ ?>
 	<li><a class="team-twitter has-tip" href="https://twitter.com/<?php echo $team_twitter; ?>" title="Find this team on twitter">Twitter</a></li>
