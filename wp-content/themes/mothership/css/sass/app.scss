@@ -29,6 +29,35 @@
 	list-style: none;
 }
 
+/* MEDIA QUERIES */
+@media only screen and (max-width: 767px) { 
+
+#top-nav {
+.nav-bar{
+	
+	background: #fff;
+	.menu-item {
+		border:  1px dotted #ddd;
+		a, a:focus, a:hover{
+
+background-image: none;
+width: 100%;
+height: auto;
+margin: 0 auto;
+background-repeat: no-repeat;
+background-color: #ffffff;
+padding: 0px 10px;
+color: #000000;
+font-size: 1.5em;
+text-align:  center;
+				}
+			}
+		} 
+	}
+}
+@media only screen and (min-width: 767px) { 
+
+
 #top-nav {
 .nav-bar{
 	.menu-item {
@@ -41,7 +70,7 @@
 			margin: 0 auto -160px;
 			color: #000000;
 			text-align: center;
-			font-size: 1.7em;
+			font-size: 1.5em;
 		} 
 	}
 	}
@@ -123,6 +152,8 @@
 	}
 }
 
+}
+/* end @media only screen and (max-width: 767px) */
 /*End Navigation */
 
 /* Header */
@@ -391,4 +422,3 @@ ul.accordion {
 		
 	}
 
-	
