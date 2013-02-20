@@ -14,7 +14,8 @@
 <article>
 	<div class="post-title ">
 		<h2><?php the_title(); ?></h2>
-		<p class="author"><?php the_author_posts_link(); ?></p>
+		<p class="author"><em>posted by: </am><?php the_author_posts_link(); ?> on <?php echo the_date('F j, Y', '<em>','</em>', true); ?></p>
+		
 	</div>
 	<div class="post-content">
 		<?php the_content(); ?>
