@@ -38,7 +38,6 @@ $team_url = $curauth->user_url;
 	<?php } ?>
 	<?php if($team_bio != ''){ ?>
 	<p class="team-bio"> <?php echo $team_bio; ?></p><?php }  ?>
-	<div class="twelve columns">
 	<ul class="inline-list">
 	<?php if($team_location != ''){ ?>
 	<li><em>Locations: </em></li>
@@ -59,16 +58,15 @@ $team_url = $curauth->user_url;
 	<?php } ?>
 	</ul>
 	</div>
-	</div>
 </div>
 
 <?php if($team_stream != ''){ ?>
 <h4>The <?php echo $team_name;  ?> live stream: </h4>
 <div class="panel twelve columns"><?php echo $team_stream; ?></div>
 <?php } ?>
-<h4>The <?php echo $team_name;  ?> feed: </h4>
+<h4>The <?php echo $team_name;  ?> updates: </h4>
+<hr>
 <?php if(have_posts()) : while(have_posts()) : the_post(); ?>
-
 <article>
 	<div class="post-title ">
 	<h3><?php the_title(); ?></h3>
@@ -80,7 +78,7 @@ $team_url = $curauth->user_url;
 		<?php comments_template(); ?>
 		
 	</div>
-</article>
+</article><hr>
 <?php endwhile; ?>
 <?php endif; ?>
 </div><!-- end of content -->

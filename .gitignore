@@ -54,6 +54,7 @@ wp-content/themes/twentyeleven
 wp-content/themes/twentytwelve
 
 # Plugins
+wp-content/plugins/login-logo
 wp-content/plugins/backupwordpress
 wp-content/plugins/akismet
 wp-content/plugins/quick-chat
