@@ -18,6 +18,15 @@
 	margin-top: 0;
 }
 
+.top-bar > ul .name h1 a {
+	
+		background: url('../images/navbar_logo.png') no-repeat 0 5px;
+		text-indent: -9000%;
+		width:  187px;
+		height: auto;
+	}
+
+
 /* Form custom styles */
 .gform_wrapper .gfield  input[type="text"] {
 	padding: 2px 4px;

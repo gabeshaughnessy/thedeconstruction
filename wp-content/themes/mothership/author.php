@@ -69,7 +69,7 @@ $team_url = $curauth->user_url;
 <?php if(have_posts()) : while(have_posts()) : the_post(); ?>
 <article>
 	<div class="post-title ">
-	<h3><?php the_title(); ?></h3>
+	<h3><a href="<?php echo the_permalink(); ?>" title="View Post"><?php the_title(); ?></a></h3>
 	<p class="date"><em>Posted on: <?php the_date(); ?></em> 
 			</div>
 	<div class="post-content">
