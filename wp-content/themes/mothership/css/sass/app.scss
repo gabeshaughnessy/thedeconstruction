@@ -25,7 +25,9 @@
 		width:  187px;
 		height: auto;
 	}
-
+.uppercase {
+	text-transform: uppercase;
+}
 
 /* Form custom styles */
 .gform_wrapper .gfield  input[type="text"] {

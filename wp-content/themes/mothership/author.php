@@ -61,15 +61,15 @@ $team_url = $curauth->user_url;
 </div>
 
 <?php if($team_stream != ''){ ?>
-<h4>The <?php echo $team_name;  ?> live stream: </h4>
+<h4 class="uppercase"><?php echo $team_name;  ?> live stream: </h4>
 <div class="panel twelve columns"><?php echo $team_stream; ?></div>
 <?php } ?>
-<h4>The <?php echo $team_name;  ?> updates: </h4>
+<h3 class="uppercase"><?php echo $team_name;  ?> updates: </h3>
 <hr>
 <?php if(have_posts()) : while(have_posts()) : the_post(); ?>
 <article>
 	<div class="post-title ">
-	<h3><a href="<?php echo the_permalink(); ?>" title="View Post"><?php the_title(); ?></a></h3>
+	<h3 ><a href="<?php echo the_permalink(); ?>" title="View Post"><?php the_title(); ?></a></h3>
 	<p class="date"><em>Posted on: <?php the_date(); ?></em> 
 			</div>
 	<div class="post-content">
