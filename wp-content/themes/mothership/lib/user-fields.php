@@ -57,6 +57,14 @@ function decon_profile_fields( $user ) { ?>
 
 	<table class="form-table">
 		<tr>
+					<th><label for="team-theme">Deconstruction Theme</label></th>
+		
+					<td>
+						<input type="text" name="team-theme" id="team-theme" value="<?php echo esc_attr( get_the_author_meta( 'team-theme', $user->ID ) ); ?>" class="regular-text" /><br />
+						<span class="description">Your chosen Deconstruction Theme, in a few words</span>
+					</td>
+		</tr>
+		<tr>
 					<th><label for="team-name">Team Location</label></th>
 		
 					<td>
@@ -98,6 +106,7 @@ function decon_save_profile_fields( $user_id ) {
 	/* Copy and paste this line for additional fields. Make sure to change 'twitter' to the field ID. */
 	update_user_meta( $user_id, 'bio', $_POST['bio'] );
 	update_user_meta( $user_id, 'stream', $_POST['stream'] );
+	update_user_meta( $user_id, 'team-theme', $_POST['team-theme'] );
 	update_user_meta( $user_id, 'team-location', $_POST['team-location'] );
 	update_user_meta( $user_id, 'twitter', $_POST['twitter'] );
 }

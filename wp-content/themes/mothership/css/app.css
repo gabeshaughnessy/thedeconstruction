@@ -26,23 +26,29 @@
   font-size: 14px;
 }
 
-/* Sidebar */
+/* tooltip fix */
 /* line 28, sass/app.scss */
+.tooltip {
+  margin-top: -20px;
+}
+
+/* Sidebar */
+/* line 32, sass/app.scss */
 .sidebar > li {
   list-style: none;
 }
 
 /* MEDIA QUERIES */
 @media only screen and (max-width: 767px) {
-  /* line 36, sass/app.scss */
+  /* line 40, sass/app.scss */
   #top-nav .nav-bar {
     background: #fff;
   }
-  /* line 39, sass/app.scss */
+  /* line 43, sass/app.scss */
   #top-nav .nav-bar .menu-item {
     border: 1px dotted #ddd;
   }
-  /* line 41, sass/app.scss */
+  /* line 45, sass/app.scss */
   #top-nav .nav-bar .menu-item a, #top-nav .nav-bar .menu-item a:focus, #top-nav .nav-bar .menu-item a:hover {
     background-image: none;
     width: 100%;
@@ -57,7 +63,7 @@
   }
 }
 @media only screen and (min-width: 767px) {
-  /* line 64, sass/app.scss */
+  /* line 68, sass/app.scss */
   #top-nav .nav-bar .menu-item a, #top-nav .nav-bar .menu-item a:focus, #top-nav .nav-bar .menu-item a:hover {
     width: 130px;
     height: 160px;
@@ -70,68 +76,68 @@
     font-size: 1.5em;
   }
 
-  /* line 79, sass/app.scss */
+  /* line 83, sass/app.scss */
   .nav-bar {
     background: none;
     height: 160px;
   }
-  /* line 82, sass/app.scss */
+  /* line 86, sass/app.scss */
   .nav-bar .menu_text {
     padding-top: 130px;
     font-size: 1.5em;
     text-align: center;
   }
-  /* line 89, sass/app.scss */
+  /* line 93, sass/app.scss */
   .nav-bar .menu_home a, .nav-bar .menu_home a:focus, .nav-bar .menu_home a:hover {
     background-image: url("../images/catscra130x130.jpg");
   }
-  /* line 97, sass/app.scss */
+  /* line 101, sass/app.scss */
   .nav-bar .menu_faq a, .nav-bar .menu_faq a:focus, .nav-bar .menu_faq a:hover {
     background-image: url("../images/unicorn_faq130x130.jpg");
   }
-  /* line 103, sass/app.scss */
+  /* line 107, sass/app.scss */
   .nav-bar .menu_register a, .nav-bar .menu_register a:focus, .nav-bar .menu_register a:hover {
     background-image: url("../images/crane_register130x130.jpg");
   }
-  /* line 109, sass/app.scss */
+  /* line 113, sass/app.scss */
   .nav-bar .menu_manifesto a, .nav-bar .menu_manifesto a:focus, .nav-bar .menu_manifesto a:hover {
     background-image: url("../images/manifesto130x130.jpg");
   }
-  /* line 115, sass/app.scss */
+  /* line 119, sass/app.scss */
   .nav-bar .menu_news a, .nav-bar .menu_news a:focus, .nav-bar .menu_news a:hover {
     background-image: url("../images/bike_news130x130.jpg");
   }
-  /* line 121, sass/app.scss */
+  /* line 125, sass/app.scss */
   .nav-bar .menu_contact a, .nav-bar .menu_contact a:focus, .nav-bar .menu_contact a:hover {
     background-image: url("../images/keyboard_contact130x130.jpg");
   }
 
-  /* line 128, sass/app.scss */
+  /* line 132, sass/app.scss */
   .nav-bar > li {
     margin-right: 25px;
     border: none;
   }
-  /* line 132, sass/app.scss */
+  /* line 136, sass/app.scss */
   .nav-bar > li.active {
     background: none;
     border-color: none;
   }
-  /* line 136, sass/app.scss */
+  /* line 140, sass/app.scss */
   .nav-bar > li.hover {
     background: none;
     border-color: none;
   }
-  /* line 141, sass/app.scss */
+  /* line 145, sass/app.scss */
   .nav-bar > li.active:hover {
     background: none;
     border-color: none;
   }
-  /* line 146, sass/app.scss */
+  /* line 150, sass/app.scss */
   .nav-bar > li:hover {
     background: none;
     border-color: none;
   }
-  /* line 150, sass/app.scss */
+  /* line 154, sass/app.scss */
   .nav-bar > li:last-child {
     border: none;
   }
@@ -139,12 +145,12 @@
 /* end @media only screen and (max-width: 767px) */
 /*End Navigation */
 /* Header */
-/* line 163, sass/app.scss */
+/* line 167, sass/app.scss */
 header .logo img {
   margin-top: 20px;
 }
 
-/* line 171, sass/app.scss */
+/* line 175, sass/app.scss */
 header .header_description p {
   font-weight: bold;
   font-size: 2.2em;
@@ -152,30 +158,30 @@ header .header_description p {
 
 /*End Header*/
 /* TEAM LIST */
-/* line 181, sass/app.scss */
+/* line 185, sass/app.scss */
 .team-list {
   list-style: none;
 }
-/* line 184, sass/app.scss */
+/* line 188, sass/app.scss */
 .team-list .team-image img {
   margin: 0 auto 4px;
 }
 
 /* end team list */
 /* ___ FOOTER ___ */
-/* line 201, sass/app.scss */
+/* line 205, sass/app.scss */
 .post-footer a.read.more {
   text-align: right;
   margin: 0px 0px 20px 0px;
   font-size: 18px;
 }
-/* line 209, sass/app.scss */
+/* line 213, sass/app.scss */
 .post-footer h4.post-title {
   text-align: center;
   font-size: 20px;
   text-transform: uppercase;
 }
-/* line 218, sass/app.scss */
+/* line 222, sass/app.scss */
 .post-footer .title h5 {
   text-align: left;
   text-transform: uppercase;
@@ -185,12 +191,12 @@ header .header_description p {
 
 /* end FOOTER */
 /*Social */
-/* line 235, sass/app.scss */
+/* line 239, sass/app.scss */
 ul.menu {
   clear: both;
 }
 
-/* line 240, sass/app.scss */
+/* line 244, sass/app.scss */
 ul.menu li {
   margin: 5px;
   list-style: none;
@@ -198,7 +204,7 @@ ul.menu li {
   width: 50px;
 }
 
-/* line 254, sass/app.scss */
+/* line 258, sass/app.scss */
 ul.accordion.social {
   background: #fff;
   -webkit-transition: all 1s ease-in-out;
@@ -207,32 +213,32 @@ ul.accordion.social {
   border: 0;
   margin-left: -10px;
 }
-/* line 261, sass/app.scss */
+/* line 265, sass/app.scss */
 ul.accordion.social:hover {
   margin-left: -600px;
 }
-/* line 265, sass/app.scss */
+/* line 269, sass/app.scss */
 ul.accordion.social .facebook.active .content {
   overflow: visible !important;
 }
-/* line 269, sass/app.scss */
+/* line 273, sass/app.scss */
 ul.accordion.social > li {
   border-top: 0;
   border-bottom: 0;
 }
-/* line 275, sass/app.scss */
+/* line 279, sass/app.scss */
 ul.accordion.social > li .title {
   border-left: 0;
   border-right: 0;
   background: #fff;
 }
-/* line 279, sass/app.scss */
+/* line 283, sass/app.scss */
 ul.accordion.social > li .title::after {
   border-width: 14px;
   top: 26px;
   right: 25px;
 }
-/* line 284, sass/app.scss */
+/* line 288, sass/app.scss */
 ul.accordion.social > li .title h5 {
   display: block;
   text-indent: 65px;
@@ -243,23 +249,23 @@ ul.accordion.social > li .title h5 {
   width: 50px;
   height: 50px;
 }
-/* line 298, sass/app.scss */
+/* line 302, sass/app.scss */
 ul.accordion.social > li.facebook h5 {
   background-image: url("../images/facebook50x50.png");
 }
-/* line 303, sass/app.scss */
+/* line 307, sass/app.scss */
 ul.accordion.social > li.google h5 {
   background-image: url("../images/google-plus50x50.png");
 }
-/* line 308, sass/app.scss */
+/* line 312, sass/app.scss */
 ul.accordion.social > li.twitter h5 {
   background-image: url("../images/twitter50x50.png");
 }
-/* line 313, sass/app.scss */
+/* line 317, sass/app.scss */
 ul.accordion.social > li.newsletter h5 {
   background-image: url("../images/email-list50x50.png");
 }
-/* line 318, sass/app.scss */
+/* line 322, sass/app.scss */
 ul.accordion.social > li .content {
   border-left: 0;
   border-right: 0;
@@ -267,7 +273,7 @@ ul.accordion.social > li .content {
 
 /*End Social*/
 /*Modal Buttons */
-/* line 333, sass/app.scss */
+/* line 337, sass/app.scss */
 .modal_btn {
   -moz-box-shadow: inset 0px 1px 0px 0px #858585;
   -webkit-box-shadow: inset 0px 1px 0px 0px #858585;
@@ -290,7 +296,7 @@ ul.accordion.social > li .content {
   text-shadow: 1px 1px 0px #949494;
 }
 
-/* line 353, sass/app.scss */
+/* line 357, sass/app.scss */
 .classname:hover {
   background: -webkit-gradient(linear, left top, left bottom, color-stop(0.05, black), color-stop(1, #3d3d3d));
   background: -moz-linear-gradient(center top, black 5%, #3d3d3d 100%);
@@ -298,7 +304,7 @@ ul.accordion.social > li .content {
   background-color: #000000;
 }
 
-/* line 358, sass/app.scss */
+/* line 362, sass/app.scss */
 .classname:active {
   position: relative;
   top: 1px;
@@ -307,21 +313,21 @@ ul.accordion.social > li .content {
 /* This imageless css button was generated by CSSButtonGenerator.com */
 /*End Modals */
 /*Content area*/
-/* line 367, sass/app.scss */
+/* line 371, sass/app.scss */
 #main-content-area {
   padding-bottom: 40px;
   overflow: hidden;
 }
 
 /*Home Page*/
-/* line 373, sass/app.scss */
+/* line 377, sass/app.scss */
 .home_content p {
   text-align: justify;
 }
 
 /* Options for Navigation on Small Screens */
 @media only screen and (max-width: 767px) {
-  /* line 385, sass/app.scss */
+  /* line 389, sass/app.scss */
   #top-nav .menu_home a, #top-nav .menu_home a:focus, #top-nav .menu_home a:hover, #top-nav .menu_faq a, #top-nav .menu_faq a:focus, #top-nav .menu_faq a:hover, #top-nav .menu_register a, #top-nav .menu_register a:focus, #top-nav .menu_register a:hover, #top-nav .menu_manifesto a, #top-nav .menu_manifesto a:focus, #top-nav .menu_manifesto a:hover, #top-nav .menu_news a, #top-nav .menu_news a:focus, #top-nav .menu_news a:hover, #top-nav .menu_contact a, #top-nav .menu_contact a:focus, #top-nav .menu_contact a:hover {
     background-image: none;
     width: 130px;
@@ -333,11 +339,11 @@ ul.accordion.social > li .content {
     color: #000000;
   }
 
-  /* line 398, sass/app.scss */
+  /* line 402, sass/app.scss */
   .nav-bar {
     height: auto;
   }
-  /* line 400, sass/app.scss */
+  /* line 404, sass/app.scss */
   .nav-bar .menu_text {
     padding-top: 0px;
     font-size: 1.1em;
@@ -345,13 +351,13 @@ ul.accordion.social > li .content {
   }
 
   /* Social ACCORDION */
-  /* line 409, sass/app.scss */
+  /* line 413, sass/app.scss */
   ul.accordion.social {
     max-width: 330px;
     border: 0;
     margin-left: 0px;
   }
-  /* line 413, sass/app.scss */
+  /* line 417, sass/app.scss */
   ul.accordion.social:hover {
     margin-left: 0px;
   }
