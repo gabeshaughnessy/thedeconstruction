@@ -56,6 +56,7 @@ wp-content/themes/twentytwelve
 # Plugins
 wp-content/plugins/backupwordpress
 wp-content/plugins/akismet
+wp-content/plugins/quick-chat
 wp-content/plugins/jetpack
 wp-content/plugins/hello.php
 wp-content/plugins/ajax-thumbnail-rebuild
