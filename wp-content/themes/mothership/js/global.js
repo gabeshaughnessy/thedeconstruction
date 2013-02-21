@@ -30,10 +30,11 @@ jQuery(document).ready(function($){
 
 
 
-
 }); //end document ready
 
 /* --------- WINDOW LOAD --------- */
 jQuery(window).load(function(){
+	jQuery('.quick-chat-smilies-container').hide();
+	
 	//activateModal('#main-modal', '.modal_btn, .modal_btn_container a');
 }); //end window load
