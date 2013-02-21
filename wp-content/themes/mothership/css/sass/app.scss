@@ -346,14 +346,21 @@ ul.accordion {
 /* CHAT */
 	
 body div.quick-chat-container {
-	/*padding: 4px;
+	padding: 4px;
 	
 	.quick-chat-history-container {
 		box-shadow: inset 0 0 13px #aaa;
 		padding: 8px;
 		background: #fff;
 		border: 1px solid #ccc;
-	}*/
+	}
+	.quick-chat-users-container {
+		
+	
+		.quick-chat-single-user{
+			margin:  4px 0 0 0;
+		}
+	}
 }
 
 /*Modal Buttons */
