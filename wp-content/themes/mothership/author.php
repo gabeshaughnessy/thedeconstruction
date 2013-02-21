@@ -34,7 +34,7 @@ $team_url = $curauth->user_url;
 	<div class="eight columns">
 	<h3><?php echo $team_name; ?></h3>
 	<?php if($team_theme != ''){ ?>
-	<p><em>Deconstruction Theme: </em> <b><?php echo $team_theme; ?></b></p>
+	<p><em>Team Topic</em> - <b>Deconstruct:  <?php echo $team_theme; ?></b></p>
 	<?php } ?>
 	<?php if($team_bio != ''){ ?>
 	<p class="team-bio"> <?php echo $team_bio; ?></p><?php }  ?>
@@ -62,10 +62,13 @@ $team_url = $curauth->user_url;
 
 
 <h4 class="uppercase"><?php echo $team_name;  ?> live stream: </h4>
-<div class="panel twelve columns fit-vid"><?php if($team_stream != ''){ ?><div class="seven columns"><?php echo $team_stream; ?></div>
+<div class="panel twelve columns fit-vid">
+<div class="row">
+<?php if($team_stream != ''){ ?>
+<div class="seven columns"><?php echo $team_stream; ?></div>
 <?php } ?>
 <div id="team-chat" class="five columns end"><?php echo do_shortcode('[quick-chat  room="'.$team_name.'"]'); ?></div>
-
+</div>
 
 </div>
 <h3 class="uppercase"><?php echo $team_name;  ?> updates: </h3>
