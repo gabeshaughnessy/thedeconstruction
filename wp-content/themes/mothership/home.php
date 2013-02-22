@@ -19,6 +19,7 @@
 	<div class="post-content">
 		<?php the_content(); ?>
 	</div>
+	<hr>
 </article>
 <?php endwhile; ?>
 <?php endif; ?>
