@@ -183,7 +183,7 @@ header .header_description p {
 /* end team list */
 /* Post Styles */
 /* line 213, sass/app.scss */
-.author {
+.post-title .author {
   color: #888;
 }
 
