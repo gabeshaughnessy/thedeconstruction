@@ -13,6 +13,7 @@
 $curauth = (isset($_GET['author_name'])) ? get_user_by('slug', $author_name) : get_userdata(intval($author));
 $team_meta = get_user_meta($curauth->ID);
 $team_name = $curauth->display_name;
+$team_nicename = $curauth->nicename;
 $team_location = get_user_meta($curauth->ID, 'team-location', true);
 $team_theme = get_user_meta($curauth->ID, 'team-theme', true);
 $team_bio = $team_meta['bio'][0];
@@ -62,12 +63,12 @@ $team_url = $curauth->user_url;
 
 
 <h4 class="uppercase"><?php echo $team_name;  ?> live stream: </h4>
-<div class="panel twelve columns fit-vid">
+<div class="panel twelve columns">
 <div class="row">
 <?php if($team_stream != ''){ ?>
-<div class="seven columns"><?php echo $team_stream; ?></div>
+<div class="seven columns fit-vid"><?php echo $team_stream; ?></div>
 <?php } ?>
-<div id="team-chat" class="five columns end"><?php echo do_shortcode('[quick-chat  room="'.$team_name.'"]'); ?></div>
+<div id="team-chat" class="five columns end"><?php echo do_shortcode('[quick-chat  room="'.$team_nicename.'"]'); ?></div>
 </div>
 
 </div>
