@@ -68,7 +68,7 @@
 			$avatar = get_avatar($team['ID'], $avatar_size);
 			$team_profile_url = home_url('/').'team/'.$team['data']->user_nicename;
 			$team_location = get_user_meta($team['ID'], 'team-location', true);
-			$team_list .= '<li class="'.writeOutNum(12/$columns).' columns"><a class="team-image th has-tip" title="View the Team Profile Page" href="'. $team_profile_url. '">'. $avatar . '</a><div class="team-details panel twelve columns"><a class="has-tip" title="View the Team Profile Page" href="'. $team_profile_url.'" class="team-link"><h6>'. $display_name. '</h6></a><p class="team-location ">'.$team_location.'</p></div></li>';
+			$team_list .= '<li class="'.writeOutNum(12/$columns).' columns"><a class="team-image th" title="View the Team Profile Page" href="'. $team_profile_url. '">'. $avatar . '</a><div class="team-details panel twelve columns"><a class="" title="View the Team Profile Page" href="'. $team_profile_url.'" class="team-link"><h6>'. $display_name. '</h6></a><p class="team-location ">'.$team_location.'</p></div></li>';
 			$i++;
 		}
 		$team_list .= '</ul>';
