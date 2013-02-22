@@ -14,6 +14,7 @@
 <article>
 	<div class="post-title">
 		<h2><a href="<?php the_permalink(); ?>" title="View Post"><?php the_title(); ?></a></h2>
+		<p class="author"><em>posted by: </em><?php the_author_posts_link(); ?> on <?php echo the_date('F j, Y', '<em>','</em>', true); ?></p>
 	</div>
 	<div class="post-content">
 		<?php the_content(); ?>
