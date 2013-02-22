@@ -38,7 +38,7 @@ $team_url = $curauth->user_url;
 	<p><em>Team Topic</em> - <b>Deconstruct:  <?php echo $team_theme; ?></b></p>
 	<?php } ?>
 	<?php if($team_bio != ''){ ?>
-	<p class="team-bio"> <?php echo $team_bio; ?></p><?php }  ?>
+	<p class="team-bio"> <?php echo wpautop($team_bio); ?></p><?php }  ?>
 	<ul class="inline-list">
 	<?php if($team_location != ''){ ?>
 	<li><em>Locations: </em></li>
