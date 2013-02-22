@@ -89,11 +89,11 @@ $team_list .= '</ul>';
 echo $team_list;
 $next_page = './?offset='.($number + $offset);
 $prev_page = './?offset='.($offset - $number);
-$page_link = '';
+$page_link = '<div class="row">';
 if(($offset - $number) >= 0){ 
 $page_link .= '<a href="'.$prev_page.'" title="previous page">Previous Page</a> | ';
 }
-$page_link .= '<a href="'.$next_page.'" title="next page">Next Page</a>';
+$page_link .= '<a href="'.$next_page.'" title="next page">Next Page</a></div>';
 echo $page_link;
 ?>
 
