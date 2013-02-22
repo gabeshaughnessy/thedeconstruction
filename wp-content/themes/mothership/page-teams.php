@@ -77,7 +77,7 @@
 		echo $team_list;
 		?>
 		
-		<?php comments_template(); ?>
+		
 	</div>
 	
 </article>
