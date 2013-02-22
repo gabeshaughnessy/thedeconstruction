@@ -55,14 +55,14 @@ $theme_options = get_option('mothership_options');
 ?>
 <?php wp_head(); //goes right before the closing head tag for plugin support  ?>
 </head>
-<?php if(!is_page_template('page-modal.php')){ // no containers for the modals
+<?php if(!is_page_template('page-modal.php') && !is_page_template('page-hud.php')){ // no containers for the modals
 ?>
 <body <?php body_class(); ?>>
 
 <header class="row">
 	<div id="top-nav">
 		<?php 
-		if(!is_author()){
+		if(!is_author() ){
 			foundation_nav_bar(); //switch this with the template-part 'topbar' function below to change to a topbar
 		}
 		else {
