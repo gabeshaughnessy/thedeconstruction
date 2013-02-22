@@ -87,8 +87,8 @@ $team_list .= '</ul>';
 }
 //set_transient('team-huds', $team_list, 60*60);//set to 1hr
 echo $team_list;
-$next_page = '/?offset='.($number + $offset);
-$prev_page = '/?offset='.($offset - $number);
+$next_page = './?offset='.($number + $offset);
+$prev_page = './?offset='.($offset - $number);
 $page_link = '';
 if(($offset - $number) >= 0){ 
 $page_link .= '<a href="'.$prev_page.'" title="previous page">Previous Page</a> | ';
