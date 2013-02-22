@@ -32,11 +32,28 @@ if(!empty($display_admins)) {
 		$exclude[] = $ad->ID;
 	}
 	$exclude = implode(',', $exclude);
+	if(isset($_GET["offset"])){
 	$offset = $_GET["offset"];
-	if(!isset($offset)){
+	}
+	else{
 	$offset = 0;
 	}
-	$blogusers = get_users('exclude='.$exclude.'&orderby='.$order_by.'&role='.$role.'&number=6'.'&offset='.$offset);
+	$number = 6;
+	$args = array(
+	'exclude' => $exclude,
+	'orderby' => $order_by,
+	'role'=> $role,
+	'number' => $number,
+	'offset' => $offset, 
+	'meta_query' => array(
+			array(
+				'key' => 'stream',
+				'value' => '',
+				'compare' => '!='
+			)
+		)
+	);
+	$blogusers = get_users($args);
 }
 $teams = array();
 foreach ($blogusers as $bloguser) {
@@ -50,7 +67,7 @@ foreach ($blogusers as $bloguser) {
 
 $team_list .=  '<ul class="team-list row">';
 $i = 1;
-$columns = 1;
+$columns = 2;
 foreach($teams as $team) {
 if($i % $columns == 1){ 
 	$row = true;
@@ -63,11 +80,20 @@ if($i % $columns == 1){
 	$display_name = $team['data']->display_name;
 	$team_profile_url = home_url('/').'team/'.$team['data']->user_nicename;
 	$team_location = get_user_meta($team['ID'], 'team-location', true);
-	$team_list .= '<li class="'.writeOutNum(12/$columns).' columns panel"><div class="fit-vid eight columns">'.$team_stream.'</div><div class="team-details four columns"><a class="" title="View the Team Profile Page" href="'. $team_profile_url.'" class="team-link"><h6>'. $display_name. '</h6></a><p class="team-location ">'.$team_location.'</p></div></li>';
+	$team_list .= '<li class="'.writeOutNum(12/$columns).' columns panel"><div class="fit-vid twelve columns">'.$team_stream.'</div><div class="team-details twelve columns"><a class="" title="View the Team Profile Page" href="'. $team_profile_url.'" class="team-link"><h6>'. $display_name. '</h6></a><p class="team-location ">'.$team_location.'</p></div></li>';
 	$i++;
 }
 $team_list .= '</ul>';
 }
 //set_transient('team-huds', $team_list, 60*60);//set to 1hr
 echo $team_list;
+$next_page = '/?offset='.($number + $offset);
+$prev_page = '/?offset='.($offset - $number);
+$page_link = '';
+if(($offset - $number) >= 0){ 
+$page_link .= '<a href="'.$prev_page.'" title="previous page">Previous Page</a> | ';
+}
+$page_link .= '<a href="'.$next_page.'" title="next page">Next Page</a>';
+echo $page_link;
 ?>
+
