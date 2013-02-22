@@ -11,10 +11,15 @@ if($newsfeed_posts == false){
 //if it doesn't exist:
 
 //query the posts for
-
+$admins = get_users('role=administrator');
+$admin_ids = '';
+foreach($admins as $admin){
+$admin_ids .= $admin->ID.',';
+}
 $args = array(
 'posts_per_page' => '3',
-'category_name' => 'news'
+'category_name' => 'news',
+'author' => $admin_ids
 );
 
 $newsfeed = new WP_Query( $args );
