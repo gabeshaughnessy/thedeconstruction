@@ -23,6 +23,7 @@
 </article>
 <?php endwhile; ?>
 <?php endif; ?>
+<div class="navigation"><p><?php posts_nav_link(); ?></p></div>
 </div><!-- end of content -->
 
 	 <div class="one columns offset-by-eleven">
