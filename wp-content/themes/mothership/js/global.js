@@ -35,6 +35,10 @@ jQuery(document).ready(function($){
 /* --------- WINDOW LOAD --------- */
 jQuery(window).load(function(){
 	jQuery('.quick-chat-smilies-container').hide();
+	var embedFeed = jQuery('#feed-embed-stand-alone');
+	embedFeed.css({'height':'700', 'marginTop': '-216px', 'marginBottom': '20px', 'overflow' : 'hidden'});
+	//console.log(embedFeed);
+	//embedFeed.hide();
 	
 	//activateModal('#main-modal', '.modal_btn, .modal_btn_container a');
 }); //end window load
