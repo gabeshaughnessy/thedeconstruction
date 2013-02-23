@@ -34,7 +34,7 @@ jQuery(document).ready(function($){
 
 /* --------- WINDOW LOAD --------- */
 jQuery(window).load(function(){
-	jQuery('.quick-chat-smilies-container').hide();
+	//jQuery('.quick-chat-smilies-container').hide();
 	var embedFeed = jQuery('#feed-embed-stand-alone');
 	embedFeed.css({'height':'570', 'marginTop': '-216px', 'marginBottom': '20px', 'overflow' : 'hidden'});
 	//console.log(embedFeed);
