@@ -18,7 +18,7 @@ $admin_ids .= $admin->ID.',';
 }
 $args = array(
 'posts_per_page' => '3',
-'category_name' => 'news',
+//'category_name' => 'news',
 //'author' => $admin_ids
 );
 
