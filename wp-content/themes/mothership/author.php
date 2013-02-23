@@ -13,7 +13,7 @@
 $curauth = (isset($_GET['author_name'])) ? get_user_by('slug', $author_name) : get_userdata(intval($author));
 $team_meta = get_user_meta($curauth->ID);
 $team_name = $curauth->display_name;
-$team_nicename = $curauth->nicename;
+$team_nicename = $curauth->user_nicename;
 $team_location = get_user_meta($curauth->ID, 'team-location', true);
 $team_theme = get_user_meta($curauth->ID, 'team-theme', true);
 $team_bio = $team_meta['bio'][0];
