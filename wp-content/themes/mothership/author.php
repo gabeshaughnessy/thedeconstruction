@@ -62,16 +62,15 @@ $team_url = $curauth->user_url;
 </div>
 
 
-<h4 class="uppercase"><?php echo $team_name;  ?> live stream: </h4>
-<div class="panel twelve columns">
+<h4 class="uppercase"><?php echo $team_name;  ?> Video: </h4>
+
 <div class="row">
 <?php if($team_stream != ''){ ?>
-<div class="seven columns fit-vid"><?php echo $team_stream; ?></div>
+<div class="twelve columns flex-video"><?php echo $team_stream; ?></div>
 <?php } ?>
-<div id="team-chat" class="five columns end"><?php echo do_shortcode('[quick-chat  room="'.$team_nicename.'"]'); ?></div>
+<!-- NO CHAT <div id="team-chat" class="five columns end"><?php echo do_shortcode('[quick-chat  room="'.$team_nicename.'"]'); ?></div> -->
 </div>
 
-</div>
 <h3 class="uppercase"><?php echo $team_name;  ?> updates: </h3>
 <hr>
 <?php if(have_posts()) : while(have_posts()) : the_post(); ?>
