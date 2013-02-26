@@ -14,7 +14,7 @@
 <article>
 	<div class="post-content">
 		<?php the_content(); 
-		echo do_shortcode([fbcomments]);
+		//echo do_shortcode('[fbcomments]');
 			//comments_template(); 
 		echo '<hr><h3>The Deconstruction Teams:</h3>';
 			get_template_part('loop', 'teams');
