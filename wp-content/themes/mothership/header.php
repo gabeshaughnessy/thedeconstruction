@@ -47,7 +47,7 @@
 
 <link rel="pingback" href="<?php bloginfo( 'pingback_url' ); ?>" />
 <link href='http://fonts.googleapis.com/css?family=Cinzel+Decorative' rel='stylesheet' type='text/css'>
-
+<meta property="og:image" content="<?php echo home_url(); ?>/wp-content/uploads/2012/12/homecenterimage-300x202.jpg">
 <?php //get the theme options to an array
 $theme_options = get_option('mothership_options');
 //access each field by its id
