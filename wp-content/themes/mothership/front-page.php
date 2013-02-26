@@ -13,7 +13,10 @@
 <?php if(have_posts()) : while(have_posts()) : the_post(); ?>
 <article>
 	<div class="post-content">
-		<?php the_content(); ?>
+		<?php the_content(); 
+		echo '<hr><h3>The Deconstruction Teams:</h3>';
+			get_template_part('loop', 'teams');
+				?>
 	</div>
 
 </article>
