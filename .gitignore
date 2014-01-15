@@ -47,11 +47,21 @@ wp-content/advanced-cache.php
 wp-content/wp-cache-config.php
 wp-content/cache/
 wp-content/backups/
+wp-content/install.php
 
 # Default Themes
 wp-content/themes/twentyten
 wp-content/themes/twentyeleven
 wp-content/themes/twentytwelve
+wp-content/themes/be-genesis-child/
+wp-content/themes/debut/
+wp-content/themes/genesis/
+wp-content/themes/relay/
+wp-content/themes/*.zip
+wp-content/themes/seven-five/
+wp-content/themes/social-life/
+wp-content/themes/twentyfourteen/
+wp-content/themes/twentythirteen/
 
 # Plugins
 wp-content/plugins/login-logo
@@ -63,6 +73,42 @@ wp-content/plugins/hello.php
 wp-content/plugins/ajax-thumbnail-rebuild
 wp-content/plugins/all-in-one-favicon
 wp-content/plugins/all-in-one-favicon/*
+wp-content/plugins/debug-bar-transients/
+wp-content/plugins/facebook/
+wp-content/plugins/feedwordpress/
+wp-content/plugins/genesis-favicon-uploader/
+wp-content/plugins/genesis-featured-grid/
+wp-content/plugins/genesis-featured-widget-amplified/
+wp-content/plugins/genesis-footer-widgets/
+wp-content/plugins/genesis-footer/
+wp-content/plugins/genesis-post-teasers/
+wp-content/plugins/genesis-simple-headers/
+wp-content/plugins/genesis-simple-sidebars/
+wp-content/plugins/genesis-slider/
+wp-content/plugins/gravityforms/
+wp-content/plugins/gravityforms_1.5.1.zip
+wp-content/plugins/gravityformspolls/
+wp-content/plugins/hyperdb/
+wp-content/plugins/more-fields/
+wp-content/plugins/regenerate-thumbnails/
+wp-content/plugins/video-thumbnails/
+wp-content/plugins/white-label-cms/
+wp-content/plugins/wordpress-mu-sitewide-tags/
+wp-content/plugins/wordpress-seo/
+wp-content/plugins/wp-user-avatar/
+
+
+
+
+
+wp-feed.php
+wp-pass.php
+wp-rdf.php
+wp-register.php
+wp-rss.php
+wp-rss2.php
+wp-atom.php
+wp-commentsrss2.php
 
 
 
