@@ -1,0 +1,464 @@
+/* Variables */
+
+.push {
+	&.left {
+	margin:  0 0 0 -15px;
+	}
+	&.right {
+	margin:  0 -15px 0 0;
+	}
+}
+/* Navigation */
+.logged-in{
+	.top-bar-container {
+	top: 27px;
+	}
+}
+#top-nav .nav-bar {
+	margin-top: 0;
+}
+
+.top-bar > ul .name h1 a {
+	
+		background: url('../images/navbar_logo.png') no-repeat 0 5px;
+		text-indent: -9000%;
+		width:  187px;
+		height: auto;
+	}
+.uppercase {
+	text-transform: uppercase;
+}
+
+/* Form custom styles */
+.gform_wrapper .gfield  input[type="text"] {
+	padding: 2px 4px;
+	font-size: 14px;
+}
+
+/* tooltip fix */
+.tooltip {
+	margin-top: -20px;
+}
+/* Sidebar */
+.sidebar > li {
+	list-style: none;
+}
+
+/* MEDIA QUERIES */
+@media only screen and (max-width: 767px) { 
+
+#top-nav {
+.nav-bar{
+	
+	background: #fff;
+	.menu-item {
+		border:  1px dotted #ddd;
+		a, a:focus, a:hover{
+
+background-image: none;
+width: 100%;
+height: auto;
+margin: 0 auto;
+background-repeat: no-repeat;
+background-color: #ffffff;
+padding: 0px 10px;
+color: #000000;
+font-size: 1.5em;
+text-align:  center;
+				}
+			}
+		} 
+	}
+}
+@media only screen and (min-width: 767px) { 
+
+
+#top-nav {
+.nav-bar{
+	.menu-item {
+		a, a:focus, a:hover{
+			width: 130px; 
+			height: 160px;
+			background-repeat: no-repeat;
+			background-color: #ffffff;
+			padding: 122px 10px;
+			margin: 0 auto -160px;
+			color: #000000;
+			text-align: center;
+			font-size: 1.5em;
+		} 
+	}
+	}
+}
+
+.nav-bar{
+	background: none;
+	height: 160px;
+	.menu_text {
+		padding-top: 130px;
+		font-size: 1.5em;
+		text-align: center;
+		
+	}
+	.menu_home {
+		a, a:focus, a:hover{
+		background-image: url('../images/catscra130x130.jpg');
+		}
+	}
+
+
+
+	.menu_faq {
+		a, a:focus, a:hover{
+		background-image: url('../images/unicorn_faq130x130.jpg');
+		}
+	}
+
+	.menu_register {
+		a, a:focus, a:hover{
+		background-image: url('../images/crane_register130x130.jpg');
+		}
+	}
+
+	.menu_manifesto {
+		a, a:focus, a:hover{
+		background-image: url('../images/manifesto130x130.jpg');
+		}
+	}
+
+	.menu_news {
+		a, a:focus, a:hover{
+		background-image: url('../images/computer130.jpg');
+		
+		}
+	}
+
+	.menu_contact {
+		a, a:focus, a:hover{
+		background-image: url('../images/keyboard_contact130x130.jpg');
+		}
+}
+}
+
+.nav-bar > {
+	li {
+	margin-right: 25px;
+	border: none;
+	}
+	li.active {
+	background: none;
+	border-color: none;
+	}
+	 li.hover {
+	background: none;
+	border-color: none;
+	}
+	
+	li.active:hover {
+	background: none;
+	border-color: none;
+	}
+	
+	li:hover {
+	background: none;
+	border-color: none;
+	}
+	li:last-child {
+	border: none;
+	}
+}
+
+}
+/* end @media only screen and (max-width: 767px) */
+/*End Navigation */
+
+/* Header */
+
+header {
+.logo {
+	img {
+	margin-top: 20px;
+		}
+	}
+}
+
+header {
+ .header_description {
+	p {
+	
+	font-weight: bold;
+	font-size: 2.2em;
+		}
+	}
+}
+/*End Header*/
+
+/* TEAM LIST */
+.team-list {
+	list-style: none;
+	.team-image {
+		img {
+		margin:  0 auto 4px;
+		}
+	}
+	.team-link {
+	
+	}
+	.team-location{
+		}
+}
+
+/* end team list */
+
+/* Post Styles */
+.post-title .author {
+	color: #888;
+}
+/* ___ FOOTER ___ */
+
+.post-footer {
+
+	a {
+		&.read.more {
+		
+		text-align: right;
+		margin: 0px 0px 20px 0px;
+		font-size: 18px;
+		
+		}
+	}
+	h4.post-title {
+		text-align: center;
+		font-size: 20px;
+		
+		text-transform: uppercase;
+		
+	}	
+	.title {
+		
+		h5 {
+			
+			text-align: left;
+			text-transform: uppercase;
+			margin: 40px 0px 30px 0px;
+			font-size: 32px;
+		}
+		
+	}
+
+
+}
+
+/* end FOOTER */
+
+/*Social */
+
+ul.menu {
+clear: both;
+}
+
+	ul.menu {
+		li {
+			margin: 5px;
+			list-style: none;
+			height: 50px;
+			width: 50px;
+		}
+	}	
+
+
+
+
+
+ul.accordion {
+
+		&.social {
+			background: #fff;
+			-webkit-transition: all 1s ease-in-out;
+			min-width:  600px;
+			position: relative;
+			border:  0;
+			margin-left: -10px;
+			&:hover {
+			margin-left:-600px;
+			
+			}
+			.facebook.active .content {
+				overflow:  visible !important;
+			
+			}
+			> li {
+			 border-top:  0;
+			 border-bottom: 0;
+				
+				
+			
+		.title {
+			border-left: 0;
+			border-right:0;
+			background:  #fff;
+			&::after {
+				border-width: 14px;
+				top:  26px;
+				right:  25px;
+				}
+			h5 {
+				display: block;
+				text-indent: 65px;
+				line-height: 1.7em;
+				font-family: 'Cinzel Decorative', cursive;
+				font-weight: bold;
+				font-size: 2.2em;
+				width: 50px;
+				height: 50px;
+			
+			}
+			
+		}
+		&.facebook{
+			h5{	
+				background-image: url("../images/facebook50x50.png");
+			}
+		}
+		&.google {
+			h5{
+				background-image: url("../images/google-plus50x50.png");
+			}
+		}
+		&.twitter {
+			h5{
+				background-image: url("../images/twitter50x50.png");
+			}
+		}
+		&.newsletter {
+			h5{
+				background-image: url("../images/email-list50x50.png");
+			}
+		}
+		
+		.content {
+			 border-left: 0;
+			 border-right:0;
+		}
+		
+		}
+		
+		
+	}
+	
+}
+/*End Social*/
+
+/* CHAT */
+	
+body div.quick-chat-container {
+	padding: 4px;
+	
+	.quick-chat-history-container {
+		box-shadow: inset 0 0 13px #aaa;
+		padding: 8px;
+		background: #fff;
+		border: 1px solid #ccc;
+	}
+	.quick-chat-users-container {
+		
+	
+		.quick-chat-single-user{
+			margin:  4px 0 0 0;
+		}
+	}
+}
+
+/*Modal Buttons */
+.modal_btn {
+	-moz-box-shadow:inset 0px 1px 0px 0px #858585;
+	-webkit-box-shadow:inset 0px 1px 0px 0px #858585;
+	box-shadow:inset 0px 1px 0px 0px #858585;
+	background:-webkit-gradient( linear, left top, left bottom, color-stop(0.05, #3d3d3d), color-stop(1, #000000) );
+	background:-moz-linear-gradient( center top, #3d3d3d 5%, #000000 100% );
+	filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#3d3d3d', endColorstr='#000000');
+	background-color:#3d3d3d;
+	-moz-border-radius:6px;
+	-webkit-border-radius:6px;
+	border-radius:6px;
+	border:1px solid #949494;
+	display:inline-block;
+	color:#ffffff;
+	font-family:arial;
+	font-size:18px;
+	font-weight:bold;
+	padding:9px 24px;
+	text-decoration:none;
+	text-shadow:1px 1px 0px #949494;
+}.classname:hover {
+	background:-webkit-gradient( linear, left top, left bottom, color-stop(0.05, #000000), color-stop(1, #3d3d3d) );
+	background:-moz-linear-gradient( center top, #000000 5%, #3d3d3d 100% );
+	filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#000000', endColorstr='#3d3d3d');
+	background-color:#000000;
+}.classname:active {
+	position:relative;
+	top:1px;
+}
+/* This imageless css button was generated by CSSButtonGenerator.com */
+/*End Modals */
+
+/*Content area*/
+
+#main-content-area {
+	padding-bottom: 40px;
+	overflow: hidden;
+}
+/*Home Page*/
+
+.home_content p{
+
+	text-align: justify;
+
+}
+
+
+/* Options for Navigation on Small Screens */
+
+@media only screen and (max-width: 767px) {
+	#top-nav {
+		.menu_home, .menu_faq, .menu_register, .menu_manifesto, .menu_news, .menu_contact {
+			a, a:focus, a:hover{
+				background-image: none;
+				width: 130px; 
+				height:  auto;
+				margin: 0 auto;
+				background-repeat: no-repeat;
+				background-color: #ffffff;
+				padding: 0px 10px;
+				color: #000000;
+					} 
+				}
+			}
+
+		.nav-bar {
+			height: auto;
+			.menu_text {
+				padding-top: 0px;
+				font-size: 1.1em;
+				text-align: center;
+
+			}
+		}
+		/* Social ACCORDION */
+		ul.accordion {
+				&.social {
+					max-width:  330px;
+					border:  0;
+					margin-left: 0px;
+					&:hover {
+					margin-left:0px;
+					}
+				}
+				
+			}
+			
+		/*End Social*/
+		
+		
+	}
+
