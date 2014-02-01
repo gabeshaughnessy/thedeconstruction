@@ -7,10 +7,10 @@
 //check for newsfeed transient, if it exists, assign variable newfeed to it
 global $enable_transients;
 if($enable_transients == true){
-$newsfeed_posts = get_transient('newsfeed_posts');
+ $newsfeed_posts = get_transient('newsfeed_posts');
 }
 else{
-	$team_list = false;
+	$newsfeed_posts = false;
 
 }
 
