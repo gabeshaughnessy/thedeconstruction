@@ -90,19 +90,28 @@ text-align:  center;
 			width: 100%; 
 			height: auto;
 			display: block;
-			background-size: contain;
-			background-repeat: no-repeat;
+			
 			background-color: #ffffff;
-			background-position: 0 0;
-			padding: 25px 0;
+			padding:0;
 			margin: 0 auto;
 			color: #000000;
-			text-align: right;
+			text-align: center;
 			font-size: 1.2em;
 			text-transform: uppercase;
 			opacity: 1;
 			-webkit-transition: all .5s;
 			transition: all .5s;
+			.icon {
+				background-size: contain;
+				background-repeat: no-repeat;
+				background-position: 0 0;
+				width: 130px;
+				height: 130px;
+				display: block;
+				clear: both;
+				margin: 0 auto;
+
+			}
 			&:hover{
 				opacity: .5;
 			}
@@ -126,7 +135,7 @@ text-align:  center;
 		
 	}
 	.menu_home {
-		a, a:focus, a:hover{
+		a .icon, a:focus .icon, a:hover .icon{
 		background-image: url('images/catscra130x130.jpg');
 		}
 	}
@@ -134,32 +143,32 @@ text-align:  center;
 
 
 	.menu_faq {
-		a, a:focus, a:hover{
+		a .icon, a:focus .icon, a:hover .icon{
 		background-image: url('images/unicorn_faq130x130.jpg');
 		}
 	}
 
 	.menu_register {
-		a, a:focus, a:hover{
+		a .icon, a:focus .icon, a:hover .icon{
 		background-image: url('images/crane_register130x130.jpg');
 		}
 	}
 
 	.menu_manifesto {
-		a, a:focus, a:hover{
+		a .icon, a:focus .icon, a:hover .icon{
 		background-image: url('images/manifesto130x130.jpg');
 		}
 	}
 
 	.menu_news {
-		a, a:focus, a:hover{
+		a .icon, a:focus .icon, a:hover .icon{
 		background-image: url('images/computer130.jpg');
 		
 		}
 	}
 
 	.menu_contact {
-		a, a:focus, a:hover{
+		a .icon, a:focus .icon, a:hover .icon{
 		background-image: url('images/keyboard_contact130x130.jpg');
 		}
 }
@@ -299,13 +308,14 @@ ul.accordion {
 
 		&.social {
 			background: #fff;
+			list-style: none;
 			-webkit-transition: all 1s ease-in-out;
-			min-width:  600px;
+			min-width:  60px;
 			position: relative;
 			border:  0;
-			margin-left: -10px;
+			//margin-left: -10px;
 			&:hover {
-			margin-left:-600px;
+			//margin-left:-600px;
 			
 			}
 			.facebook.active .content {
@@ -329,7 +339,7 @@ ul.accordion {
 				}
 			h5 {
 				display: block;
-				text-indent: 65px;
+				text-indent: -9999%;
 				line-height: 1.7em;
 				font-family: 'Cinzel Decorative', cursive;
 				font-weight: bold;
@@ -342,22 +352,22 @@ ul.accordion {
 		}
 		&.facebook{
 			h5{	
-				background-image: url("../images/facebook50x50.png");
+				background-image: url("images/facebook50x50.png");
 			}
 		}
 		&.google {
 			h5{
-				background-image: url("../images/google-plus50x50.png");
+				background-image: url("images/google-plus50x50.png");
 			}
 		}
 		&.twitter {
 			h5{
-				background-image: url("../images/twitter50x50.png");
+				background-image: url("images/twitter50x50.png");
 			}
 		}
 		&.newsletter {
 			h5{
-				background-image: url("../images/email-list50x50.png");
+				background-image: url("images/email-list50x50.png");
 			}
 		}
 		

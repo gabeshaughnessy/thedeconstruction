@@ -21,7 +21,7 @@ function foundation_nav_bar() {
         'theme_location' => 'main-menu',  // where it's located in the theme
         'before' => '',                   // before each link <a>
         'after' => '',                    // after each link </a>
-        'link_before' => '',              // before each link text
+        'link_before' => '<span class="icon"></span>',              // before each link text
         'link_after' => '',               // after each link text
         'depth' => 2,                     // limit the depth of the nav
     	'fallback_cb' => 'main_nav_fb',   // fallback function (see below)
