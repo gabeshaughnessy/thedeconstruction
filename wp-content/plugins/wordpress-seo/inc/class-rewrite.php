@@ -22,12 +22,11 @@ class WPSEO_Rewrite {
 		add_filter( 'request', array( $this, 'request' ) );
 		add_filter( 'category_rewrite_rules', array( $this, 'category_rewrite_rules' ) );
 
-
 		add_action( 'created_category', array( $this, 'schedule_flush' ) );
 		add_action( 'edited_category', array( $this, 'schedule_flush' ) );
 		add_action( 'delete_category', array( $this, 'schedule_flush' ) );
 
-		add_action( 'init', array( $this, 'flush' ), 10 );
+		add_action( 'init', array( $this, 'flush' ), 999 );
 	}
 
 	/**
@@ -46,7 +45,7 @@ class WPSEO_Rewrite {
 	 */
 	function flush() {
 		if ( get_option( 'wpseo_flush_rewrite' ) ) {
-			flush_rewrite_rules();
+			add_action( 'shutdown', 'flush_rewrite_rules' );
 			delete_option( 'wpseo_flush_rewrite' );
 		}
 	}
@@ -69,7 +68,7 @@ class WPSEO_Rewrite {
 
 		$category_base .= '/';
 
-		return preg_replace( '|' . $category_base . '|', '', $link, 1 );
+		return preg_replace( '`' . preg_quote( $category_base, '`' ) . '`u', '', $link, 1 );
 	}
 
 	/**
@@ -113,6 +112,8 @@ class WPSEO_Rewrite {
 
 		$category_rewrite = array();
 
+		$taxonomy = get_taxonomy('category');
+
 		$blog_prefix = '';
 		if ( function_exists( 'is_multisite' ) && is_multisite() && !is_subdomain_install() && is_main_site() )
 			$blog_prefix = 'blog/';
@@ -121,7 +122,7 @@ class WPSEO_Rewrite {
 			$category_nicename = $category->slug;
 			if ( $category->parent == $category->cat_ID ) // recursive recursion
 				$category->parent = 0;
-			elseif ( $category->parent != 0 )
+			elseif ( $taxonomy->rewrite['hierarchical'] != 0 && $category->parent != 0 )
 				$category_nicename = get_category_parents( $category->parent, false, '/', true ) . $category_nicename;
 
 			$category_rewrite[$blog_prefix . '(' . $category_nicename . ')/(?:feed/)?(feed|rdf|rss|rss2|atom)/?$'] = 'index.php?category_name=$matches[1]&feed=$matches[2]';

@@ -9,7 +9,7 @@
  */
 ?>
 <?php get_header(); ?>
-<div id="content" class="eleven columns">
+<div id="content" class="large-11 columns">
 <?php if(have_posts()) : while(have_posts()) : the_post(); ?>
 <article>
 	<div class="post-content">
@@ -25,7 +25,7 @@
 <?php endwhile; ?>
 <?php endif; ?>
 </div>
-<div class="one columns offset-by-eleven">
+<div class="large-1 columns offset-large-11">
 <?php 
 get_template_part('accordion', 'social');
 ?>
@@ -36,7 +36,7 @@ get_template_part('accordion', 'social');
 	</div><!-- end of main content container -->
 
 <div class="post-footer row">
-	<div class="six columns">
+	<div class="large-6 columns">
 			<div class="title">
 				
 				<h5>Deconstruct: News</h5>
@@ -48,7 +48,7 @@ get_template_part('accordion', 'social');
 		?>
 	</div>
 
-	<div class="six columns ">
+	<div class="large-6 columns ">
 		<div class="title">
 			<h5>Deconstruct: Twitter</h5>
 			<hr>

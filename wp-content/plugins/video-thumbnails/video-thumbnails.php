@@ -1,14 +1,14 @@
 <?php
 /*
 Plugin Name: Video Thumbnails
-Plugin URI: http://sutherlandboswell.com/projects/wordpress-video-thumbnails/
-Description: Automatically retrieve video thumbnails for your posts and display them in your theme. Currently supports YouTube, Vimeo, Blip.tv, Justin.tv, Dailymotion and Metacafe.
+Plugin URI: http://refactored.co/plugins/video-thumbnails
+Description: Automatically retrieve video thumbnails for your posts and display them in your theme. Supports YouTube, Vimeo, Facebook, Vine, Justin.tv, Twitch, Dailymotion, Metacafe, Blip, Google Drive, Funny or Die, CollegeHumor, MPORA, Wistia, Youku, and Rutube.
 Author: Sutherland Boswell
 Author URI: http://sutherlandboswell.com
-Version: 1.8.2
+Version: 2.4
 License: GPL2
 */
-/*  Copyright 2010 Sutherland Boswell  (email : sutherland.boswell@gmail.com)
+/*  Copyright 2014 Sutherland Boswell  (email : sutherland.boswell@gmail.com)
 
 	This program is free software; you can redistribute it and/or modify
 	it under the terms of the GNU General Public License, version 2, as 
@@ -24,303 +24,306 @@ License: GPL2
 	Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
-// Get Vimeo Thumbnail
-function getVimeoInfo( $id, $info = 'thumbnail_large' ) {
-	if ( ! function_exists( 'curl_init' ) ) {
-		return null;
-	} else {
-		$ch = curl_init();
-		$videoinfo_url = "http://vimeo.com/api/v2/video/$id.php";
-		curl_setopt( $ch, CURLOPT_URL, $videoinfo_url );
-		curl_setopt( $ch, CURLOPT_HEADER, 0 );
-		curl_setopt( $ch, CURLOPT_RETURNTRANSFER, true );
-		curl_setopt( $ch, CURLOPT_TIMEOUT, 10 );
-		curl_setopt( $ch, CURLOPT_FAILONERROR, true ); // Return an error for curl_error() processing if HTTP response code >= 400
-		$output = unserialize( curl_exec( $ch ) );
-		$output = $output[0][$info];
-		if ( curl_error( $ch ) != null ) {
-			$output = new WP_Error( 'vimeo_info_retrieval', __( 'Error retrieving video information from the URL <a href="' . $videoinfo_url . '">' . $videoinfo_url . '</a>.<br /><a href="http://curl.haxx.se/libcurl/c/libcurl-errors.html">Libcurl error</a> ' . curl_errno( $ch ) . ': <code>' . curl_error( $ch ) . '</code>. If opening that URL in your web browser returns anything else than an error page, the problem may be related to your web server and might be something your host administrator can solve.' ) );
+// Define
+
+define( 'VIDEO_THUMBNAILS_PATH', dirname(__FILE__) );
+define( 'VIDEO_THUMBNAILS_FIELD', '_video_thumbnail' );
+define( 'VIDEO_THUMBNAILS_VERSION', '2.4' );
+
+// Providers
+require_once( VIDEO_THUMBNAILS_PATH . '/php/providers/class-video-thumbnails-providers.php' );
+
+// Extensions
+require_once( VIDEO_THUMBNAILS_PATH . '/php/extensions/class-video-thumbnails-extension.php' );
+
+// Settings
+require_once( VIDEO_THUMBNAILS_PATH . '/php/class-video-thumbnails-settings.php' );
+
+// Class
+
+class Video_Thumbnails {
+
+	var $providers = array();
+	var $settings;
+
+	function __construct() {
+
+		// Create provider array
+		$this->providers = apply_filters( 'video_thumbnail_providers', $this->providers );
+
+		// Settings
+		$this->settings = new Video_Thumbnails_Settings();
+
+		// Initialize meta box
+		add_action( 'admin_init', array( &$this, 'meta_box_init' ) );
+
+		// Add actions to save video thumbnails when saving
+		add_action( 'save_post', array( &$this, 'save_video_thumbnail' ), 100, 1 );
+
+		// Add actions to save video thumbnails when posting from XML-RPC (this action passes the post ID as an argument so 'get_video_thumbnail' is used instead)
+		add_action( 'xmlrpc_publish_post', 'get_video_thumbnail', 10, 1 );
+
+		// Add action for Ajax reset script on edit pages
+		if ( in_array( basename( $_SERVER['PHP_SELF'] ), apply_filters( 'video_thumbnails_editor_pages', array( 'post-new.php', 'page-new.php', 'post.php', 'page.php' ) ) ) ) {
+			add_action( 'admin_head', array( &$this, 'ajax_reset_script' ) );
 		}
-		curl_close( $ch );
-		return $output;
+
+		// Add action for Ajax reset callback
+		add_action( 'wp_ajax_reset_video_thumbnail', array( &$this, 'ajax_reset_callback' ) );
+
+		// Add admin menus
+		add_action( 'admin_menu', array( &$this, 'admin_menu' ) );
+
+		// Add JavaScript and CSS to admin pages
+		add_action( 'admin_enqueue_scripts', array( &$this, 'admin_scripts' ), 20 );
+
+		// Get the posts to be scanned in bulk
+		add_action('wp_ajax_video_thumbnails_bulk_posts_query', array( &$this, 'bulk_posts_query_callback' ) );
+		// Get the thumbnail for an individual post
+		add_action('wp_ajax_video_thumbnails_get_thumbnail_for_post', array( &$this, 'get_thumbnail_for_post_callback' ) );
+
 	}
-};
 
-// Blip.tv Functions
-function getBliptvInfo( $id ) {
-	$videoinfo_url = "http://blip.tv/players/episode/$id?skin=rss";
-	$xml = simplexml_load_file( $videoinfo_url );
-	if ( $xml == false ) {
-		return new WP_Error( 'bliptv_info_retrieval', __( 'Error retrieving video information from the URL <a href="' . $videoinfo_url . '">' . $videoinfo_url . '</a>. If opening that URL in your web browser returns anything else than an error page, the problem may be related to your web server and might be something your host administrator can solve.' ) );
-	} else {
-		$result = $xml->xpath( "/rss/channel/item/media:thumbnail/@url" );
-		$thumbnail = (string) $result[0]['url'];
-		return $thumbnail;
+	/**
+	 * Adds the admin menu items
+	 */
+	function admin_menu() {
+		add_management_page( 'Bulk Video Thumbnails', 'Bulk Video Thumbs', 'manage_options', 'video-thumbnails-bulk', array( &$this, 'bulk_scanning_page' ) );
 	}
-}
 
-// Justin.tv Functions
-function getJustintvInfo( $id ) {
-	$xml = simplexml_load_file( "http://api.justin.tv/api/clip/show/$id.xml" );
-	return (string) $xml->clip->image_url_large;
-}
-
-// Get DailyMotion Thumbnail
-function getDailyMotionThumbnail( $id ) {
-	if ( ! function_exists( 'curl_init' ) ) {
-		return null;
-	} else {
-		$ch = curl_init();
-		$videoinfo_url = "https://api.dailymotion.com/video/$id?fields=thumbnail_url";
-		curl_setopt( $ch, CURLOPT_URL, $videoinfo_url );
-		curl_setopt( $ch, CURLOPT_HEADER, 0 );
-		curl_setopt( $ch, CURLOPT_RETURNTRANSFER, true );
-		curl_setopt( $ch, CURLOPT_SSL_VERIFYPEER, false );
-		curl_setopt( $ch, CURLOPT_TIMEOUT, 10 );
-		curl_setopt( $ch, CURLOPT_FAILONERROR, true ); // Return an error for curl_error() processing if HTTP response code >= 400
-		$output = curl_exec( $ch );
-		$output = json_decode( $output );
-		$output = $output->thumbnail_url;
-		if ( curl_error( $ch ) != null ) {
-			$output = new WP_Error( 'dailymotion_info_retrieval', __( 'Error retrieving video information from the URL <a href="' . $videoinfo_url . '">' . $videoinfo_url . '</a>.<br /><a href="http://curl.haxx.se/libcurl/c/libcurl-errors.html">Libcurl error</a> ' . curl_errno( $ch ) . ': <code>' . curl_error( $ch ) . '</code>. If opening that URL in your web browser returns anything else than an error page, the problem may be related to your web server and might be something your host administrator can solve.' ) );
+	function admin_scripts( $hook ) {
+		// Bulk tool page
+		if ( 'tools_page_video-thumbnails-bulk' == $hook ) {
+			wp_enqueue_script( 'video-thumbnails-bulk-js', plugins_url( '/js/bulk.js' , __FILE__ ), array( 'jquery' ), VIDEO_THUMBNAILS_VERSION );
+			wp_enqueue_style( 'video-thumbnails-bulk-css', plugins_url('/css/bulk.css', __FILE__), false, VIDEO_THUMBNAILS_VERSION );
 		}
-		curl_close( $ch ); // Moved here to allow curl_error() operation above. Was previously below curl_exec() call.
-		return $output;
 	}
-};
 
-// Metacafe
-function getMetacafeThumbnail( $id ) {
-	$videoinfo_url = "http://www.metacafe.com/api/item/$id/";
-	$xml = simplexml_load_file( $videoinfo_url );
-	if ( $xml == false ) {
-		return new WP_Error( 'metacafe_info_retrieval', __( 'Error retrieving video information from the URL <a href="' . $videoinfo_url . '">' . $videoinfo_url . '</a>.<br /><a href="http://curl.haxx.se/libcurl/c/libcurl-errors.html">Libcurl error</a> ' . curl_errno( $ch ) . ': <code>' . curl_error( $ch ) . '</code>. If opening that URL in your web browser returns anything else than an error page, the problem may be related to your web server and might be something your host administrator can solve.' ) );
-	} else {
-		$result = $xml->xpath( "/rss/channel/item/media:thumbnail/@url" );
-		$thumbnail = (string) $result[0]['url'];
-		return $thumbnail;
-	}
-};
-
-//
-// The Main Event
-//
-function get_video_thumbnail( $post_id = null ) {
-
-	// Get the post ID if none is provided
-	if ( $post_id == null OR $post_id == '' ) $post_id = get_the_ID();
-
-	// Check to see if thumbnail has already been found
-	if( ( $thumbnail_meta = get_post_meta( $post_id, '_video_thumbnail', true ) ) != '' ) {
-		return $thumbnail_meta;
-	}
-	// If the thumbnail isn't stored in custom meta, fetch a thumbnail
-	else {
-
-		// Get the post or custom field to search
-		if ( $video_key = get_option( 'video_thumbnails_custom_field' ) ) {
-			$markup = get_post_meta( $post_id, $video_key, true );
-		} else {
-			$post_array = get_post( $post_id );
-			$markup = $post_array->post_content;
-			$markup = apply_filters( 'the_content', $markup );
-		}
-		$new_thumbnail = null;
-
-		// Simple Video Embedder Compatibility
-		if ( function_exists( 'p75HasVideo' ) ) {
-			if ( p75HasVideo( $post_id ) ) {
-				$markup = p75GetVideo( $post_id );
+	// Initialize meta box on edit page
+	function meta_box_init() {
+		if ( is_array( $this->settings->options['post_types'] ) ) {
+			foreach ( $this->settings->options['post_types'] as $type ) {
+				add_meta_box( 'video_thumbnail', 'Video Thumbnail', array( &$this, 'meta_box' ), $type, 'side', 'low' );
 			}
 		}
+	}
 
-		// Checks for the old standard YouTube embed
-		preg_match( '#<object[^>]+>.+?https?://www\.youtube(?:\-nocookie)?\.com/[ve]/([A-Za-z0-9\-_]+).+?</object>#s', $markup, $matches );
+	// Construct the meta box
+	function meta_box() {
 
-		// More comprehensive search for YouTube embed, redundant but necessary until more testing is completed
-		if ( !isset( $matches[1] ) ) {
-			preg_match( '#https?://www\.youtube(?:\-nocookie)?\.com/[ve]/([A-Za-z0-9\-_]+)#', $markup, $matches );
-		}
+		// Add hidden troubleshooting info
+		add_thickbox();
+		?>
+		<div id="video-thumbnail-not-found-troubleshooting" style="display:none;">
+			<h2><?php _e( 'Troubleshooting Video Thumbnails' ); ?></h2>
+			<h3>No video thumbnail for this post</h3>
+			<ol>
+				<li>Ensure you have saved any changes to your post.</li>
+				<li>If you are using a a plugin or theme that stores videos in a special location other than the main post content area, be sure you've entered the correct custom field on the <a href="<?php echo admin_url( 'options-general.php?page=video_thumbnails' ); ?>">settings page</a>. If you don't know the name of the field your video is being saved in, please contact the developer of that theme or plugin.</li>
+				<li>Copy and paste your embed code into the "Test Markup for Video" section of the <a href="<?php echo admin_url( 'options-general.php?page=video_thumbnails&tab=debugging' ); ?>">Debugging page</a>. If this doesn't find the thumbnail, you'll want to be sure to include the embed code you scanned when you request support. If it does find a thumbnail, please double check that you have the Custom Field set correctly in the <a href="<?php echo admin_url( 'options-general.php?page=video_thumbnails' ); ?>">settings page</a> if you are using a a plugin or theme that stores videos in a special location.</li>
+				<li>Go to the <a href="<?php echo admin_url( 'options-general.php?page=video_thumbnails&tab=debugging' ); ?>">Debugging page</a> and click "Test Image Downloading" to test your server's ability to save an image from a video source.</li>
+				<li>Try posting a video from other sources to help narrow down the problem.</li>
+				<li>Check the <a href="http://wordpress.org/support/plugin/video-thumbnails">support threads</a> to see if anyone has had the same issue.</li>
+				<li>If you are still unable to resolve the problem, <a href="http://wordpress.org/support/plugin/video-thumbnails">start a thread</a> with a good descriptive title ("Error" or "No thumbnails" is a bad title) and be sure to include the results of your testing as well. Also be sure to include the name of your theme, any video plugins you're using, and any other details you can think of.</li>
+			</ol>
+		</div>
+		<?php
 
-		// Checks for YouTube iframe, the new standard since at least 2011
-		if ( !isset( $matches[1] ) ) {
-			preg_match( '#https?://www\.youtube(?:\-nocookie)?\.com/embed/([A-Za-z0-9\-_]+)#', $markup, $matches );
-		}
+		global $post;
+		$custom = get_post_custom( $post->ID );
+		if ( isset( $custom[VIDEO_THUMBNAILS_FIELD][0] ) ) $video_thumbnail = $custom[VIDEO_THUMBNAILS_FIELD][0];
 
-		// Checks for any YouTube URL. After http(s) support a or v for Youtube Lyte and v or vh for Smart Youtube plugin
-		if ( !isset( $matches[1] ) ) {
-			preg_match( '#(?:https?(?:a|vh?)?://)?(?:www\.)?youtube(?:\-nocookie)?\.com/watch\?.*v=([A-Za-z0-9\-_]+)#', $markup, $matches );
-		}
+		if ( isset( $video_thumbnail ) && $video_thumbnail != '' ) {
+			echo '<p id="video-thumbnails-preview"><img src="' . $video_thumbnail . '" style="max-width:100%;" /></p>';	}
 
-		// Checks for any shortened youtu.be URL. After http(s) a or v for Youtube Lyte and v or vh for Smart Youtube plugin
-		if ( !isset( $matches[1] ) ) {
-			preg_match( '#(?:https?(?:a|vh?)?://)?youtu\.be/([A-Za-z0-9\-_]+)#', $markup, $matches );
-		}
-
-		// Checks for YouTube Lyte
-		if ( !isset( $matches[1] ) && function_exists( 'lyte_parse' ) ) {
-			preg_match( '#<div class="lyte" id="([A-Za-z0-9\-_]+)"#', $markup, $matches );
-		}
-
-		// If we've found a YouTube video ID, create the thumbnail URL
-		if ( isset( $matches[1] ) ) {
-			$youtube_thumbnail = 'http://img.youtube.com/vi/' . $matches[1] . '/0.jpg';
-
-			// Check to make sure it's an actual thumbnail
-			if ( ! function_exists( 'curl_init' ) ) {
-				$new_thumbnail = $youtube_thumbnail;
+		if ( get_post_status() == 'publish' || get_post_status() == 'private' ) {
+			if ( isset( $video_thumbnail ) && $video_thumbnail != '' ) {
+				echo '<p><a href="#" id="video-thumbnails-reset" onclick="video_thumbnails_reset(\'' . $post->ID . '\' );return false;">Reset Video Thumbnail</a></p>';
 			} else {
-				$ch = curl_init( $youtube_thumbnail );
-				curl_setopt( $ch, CURLOPT_NOBODY, true );
-				curl_exec( $ch );
-				$retcode = curl_getinfo( $ch, CURLINFO_HTTP_CODE );
-				// $retcode > 400 -> not found, $retcode = 200, found.
-				curl_close( $ch );
-				if ( $retcode == 200 ) {
-					$new_thumbnail = $youtube_thumbnail;
-				}
+				echo '<p id="video-thumbnails-preview">No video thumbnail for this post.</p>';
+				echo '<p><a href="#" id="video-thumbnails-reset" onclick="video_thumbnails_reset(\'' . $post->ID . '\' );return false;">Search Again</a> <a href="#TB_inline?width=400&height=600&inlineId=video-thumbnail-not-found-troubleshooting" class="thickbox" style="float:right;">Troubleshoot<a/></p>';
+			}
+		} else {
+			if ( isset( $video_thumbnail ) && $video_thumbnail != '' ) {
+				echo '<p><a href="#" id="video-thumbnails-reset" onclick="video_thumbnails_reset(\'' . $post->ID . '\' );return false;">Reset Video Thumbnail</a></p>';
+			} else {
+				echo '<p>A video thumbnail will be found for this post when it is published.</p>';
 			}
 		}
+	}
 
-		// Vimeo
-		if ( $new_thumbnail == null ) {
+	/**
+	 * A usort() callback that sorts videos by offset
+	 */
+	function compare_by_offset( $a, $b ) {
+		return $a['offset'] - $b['offset'];
+	}
 
-			// Standard embed code
-			preg_match( '#<object[^>]+>.+?http://vimeo\.com/moogaloop.swf\?clip_id=([A-Za-z0-9\-_]+)&.+?</object>#s', $markup, $matches );
+	/**
+	 * Find all the videos in a post
+	 * @param  string $markup Markup to scan for videos
+	 * @return array          An array of video information
+	 */
+	function find_videos( $markup ) {
 
-			// Find Vimeo embedded with iframe code
-			if ( !isset( $matches[1] ) ) {
-				preg_match( '#http://player\.vimeo\.com/video/([0-9]+)#', $markup, $matches );
+		$videos = array();
+
+		// Filter to modify providers immediately before scanning
+		$providers = apply_filters( 'video_thumbnail_providers_pre_scan', $this->providers );
+
+		foreach ( $providers as $key => $provider ) {
+
+			$provider_videos = $provider->scan_for_videos( $markup );
+
+			if ( empty( $provider_videos ) ) continue;
+
+			foreach ( $provider_videos as $video ) {
+				$videos[] = array(
+					'id'       => $video[0],
+					'provider' => $key,
+					'offset'   => $video[1]
+				);
 			}
 
-			// If we still haven't found anything, check for Vimeo embedded with JR_embed
-			if ( !isset( $matches[1] ) ) {
-				preg_match( '#\[vimeo id=([A-Za-z0-9\-_]+)]#', $markup, $matches );
-			}
-
-			// If we still haven't found anything, check for Vimeo URL
-			if ( !isset( $matches[1] ) ) {
-				preg_match( '#(?:http://)?(?:www\.)?vimeo\.com/([A-Za-z0-9\-_]+)#', $markup, $matches );
-			}
-
-			// If we still haven't found anything, check for Vimeo shortcode
-			if ( !isset( $matches[1] ) ) {
-				preg_match( '#\[vimeo clip_id="([A-Za-z0-9\-_]+)"[^>]*]#', $markup, $matches );
-			}
-			if ( !isset( $matches[1] ) ) {
-				preg_match( '#\[vimeo video_id="([A-Za-z0-9\-_]+)"[^>]*]#', $markup, $matches );
-			}
-
-			// Now if we've found a Vimeo ID, let's set the thumbnail URL
-			if ( isset( $matches[1] ) ) {
-				$vimeo_thumbnail = getVimeoInfo( $matches[1], $info = 'thumbnail_large' );
-				if ( is_wp_error( $vimeo_thumbnail ) ) {
-					return $vimeo_thumbnail;
-				} else if ( isset( $vimeo_thumbnail ) ) {
-					$new_thumbnail = $vimeo_thumbnail;
-				}
-			}
 		}
 
-		// Blip.tv
-		if ( $new_thumbnail == null ) {
+		usort( $videos, array( &$this, 'compare_by_offset' ) );
 
-			// Blip.tv embed URL
-			preg_match( '#http://blip\.tv/play/([A-Za-z0-9]+)#', $markup, $matches );
+		return $videos;
 
-			// Now if we've found a Blip.tv embed URL, let's set the thumbnail URL
-			if ( isset( $matches[1] ) ) {
-				$blip_thumbnail = getBliptvInfo( $matches[1] );
-				if ( is_wp_error( $blip_thumbnail ) ) {
-					return $blip_thumbnail;
-				} else if ( isset( $blip_thumbnail ) ) {
-					$new_thumbnail = $blip_thumbnail;
-				}
-			}
+	}
+
+	/**
+	 * Finds the first video in markup and retrieves a thumbnail
+	 * @param  string $markup Post markup to scan
+	 * @return mixed          Null if no thumbnail or a string with a remote URL
+	 */
+	function get_first_thumbnail_url( $markup ) {
+		$thumbnail = null;
+		$videos = $this->find_videos( $markup );
+		foreach ( $videos as $video ) {
+			$thumbnail = $this->providers[$video['provider']]->get_thumbnail_url( $video['id'] );
+			if ( $thumbnail != null ) break;
 		}
+		return $thumbnail;
+	}
 
-		// Justin.tv
-		if ( $new_thumbnail == null ) {
+	// The main event
+	function get_video_thumbnail( $post_id = null ) {
 
-			// Justin.tv archive ID
-			preg_match( '#archive_id=([0-9]+)#', $markup, $matches );
+		// Get the post ID if none is provided
+		if ( $post_id == null OR $post_id == '' ) $post_id = get_the_ID();
 
-			// Now if we've found a Justin.tv archive ID, let's set the thumbnail URL
-			if ( isset( $matches[1] ) ) {
-				$justin_thumbnail = getJustintvInfo( $matches[1] );
-				$new_thumbnail = $justin_thumbnail;
-			}
+		// Check to see if thumbnail has already been found
+		if( ( $thumbnail_meta = get_post_meta( $post_id, VIDEO_THUMBNAILS_FIELD, true ) ) != '' ) {
+			return $thumbnail_meta;
 		}
+		// If the thumbnail isn't stored in custom meta, fetch a thumbnail
+		else {
 
-		// Dailymotion
-		if ( $new_thumbnail == null ) {
+			$new_thumbnail = null;
+			// Filter for extensions to set thumbnail
+			$new_thumbnail = apply_filters( 'new_video_thumbnail_url', $new_thumbnail, $post_id );
 
-			// Dailymotion flash
-			preg_match( '#<object[^>]+>.+?http://www\.dailymotion\.com/swf/video/([A-Za-z0-9]+).+?</object>#s', $markup, $matches );
-
-			// Dailymotion url
-			if ( !isset( $matches[1] ) ) {
-				preg_match( '#(?:https?://)?(?:www\.)?dailymotion\.com/video/([A-Za-z0-9]+)#', $markup, $matches );
-			}
-
-			// Dailymotion iframe
-			if ( !isset( $matches[1] ) ) {
-				preg_match( '#https?://www\.dailymotion\.com/embed/video/([A-Za-z0-9]+)#', $markup, $matches );
-			}
-
-			// Now if we've found a Dailymotion video ID, let's set the thumbnail URL
-			if ( isset( $matches[1] ) ) {
-				$dailymotion_thumbnail = getDailyMotionThumbnail( $matches[1] );
-			if ( is_wp_error( $dailymotion_thumbnail ) ) {
-					return $dailymotion_thumbnail;
-				} else if ( isset( $dailymotion_thumbnail ) ) {
-					$new_thumbnail = strtok( $dailymotion_thumbnail, '?' );
-				}
-			}
-		}
-
-		// Metacafe
-		if ( $new_thumbnail == null ) {
-
-			// Find ID from Metacafe embed url
-			preg_match( '#http://www\.metacafe\.com/fplayer/([A-Za-z0-9\-_]+)/#', $markup, $matches );
-
-			// Now if we've found a Metacafe video ID, let's set the thumbnail URL
-			if ( isset( $matches[1] ) ) {
-				$metacafe_thumbnail = getMetacafeThumbnail( $matches[1] );
-				if ( is_wp_error( $metacafe_thumbnail ) ) {
-					return $metacafe_thumbnail;
-				} else if ( isset( $metacafe_thumbnail ) ) {
-					$new_thumbnail = strtok( $metacafe_thumbnail, '?' );
-				}
-			}
-		}
-
-		// Return the new thumbnail variable and update meta if one is found
-		if ( $new_thumbnail != null ) {
-
-			// Save as Attachment if enabled
-			if ( get_option( 'video_thumbnails_save_media' ) == 1 ) {
-
-				$response = wp_remote_get( $new_thumbnail, array( 'sslverify' => false ) );
-
-				// Check for error
-				if( is_wp_error( $response ) ) {
-					return new WP_Error( 'thumbnail_retrieval', __( 'Error retrieving a thumbnail from the URL <a href="' . $new_thumbnail . '">' . $new_thumbnail . '</a> If opening that URL in your web browser shows an image, the problem may be related to your web server and might be something your server administrator can solve. Error details: "' . $response->get_error_message() . '"' ) );
+			if ( $new_thumbnail == null ) {
+				// Get the post or custom field to search
+				if ( $this->settings->options['custom_field'] ) {
+					$markup = get_post_meta( $post_id, $this->settings->options['custom_field'], true );
+				} else {
+					$post_array = get_post( $post_id );
+					$markup = $post_array->post_content;
+					$markup = apply_filters( 'the_content', $markup );
 				}
 
-				$image_contents = wp_remote_retrieve_body( $response );
+				// Filter for extensions to modify what markup is scanned
+				$markup = apply_filters( 'video_thumbnail_markup', $markup, $post_id );
 
-				$upload = wp_upload_bits( basename( $new_thumbnail ), null, $image_contents );
+				$new_thumbnail = $this->get_first_thumbnail_url( $markup );
+			}
 
-				$new_thumbnail = $upload['url'];
+			// Return the new thumbnail variable and update meta if one is found
+			if ( $new_thumbnail != null ) {
+
+				// Save as Attachment if enabled
+				if ( $this->settings->options['save_media'] == 1 ) {
+					$attachment_id = $this->save_to_media_library( $new_thumbnail, $post_id );
+					$new_thumbnail = wp_get_attachment_image_src( $attachment_id, 'full' );
+					$new_thumbnail = $new_thumbnail[0];
+				}
+
+				// Add hidden custom field with thumbnail URL
+				if ( !update_post_meta( $post_id, VIDEO_THUMBNAILS_FIELD, $new_thumbnail ) ) add_post_meta( $post_id, VIDEO_THUMBNAILS_FIELD, $new_thumbnail, true );
+
+				// Set attachment as featured image if enabled
+				if ( $this->settings->options['set_featured'] == 1 && $this->settings->options['save_media'] == 1 ) {
+					// Make sure there isn't already a post thumbnail
+					if ( !ctype_digit( get_post_thumbnail_id( $post_id ) ) ) {
+						set_post_thumbnail( $post_id, $attachment_id );
+					}
+				}
+			}
+			return $new_thumbnail;
+
+		}
+	}
+
+	/**
+	 * Gets a video thumbnail when a published post is saved
+	 * @param  int $post_id The post ID
+	 */
+	function save_video_thumbnail( $post_id ) {
+		// Don't save video thumbnails during autosave or for unpublished posts
+		if ( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE ) return null;
+		if ( get_post_status( $post_id ) != 'publish' ) return null;
+		// Check that Video Thumbnails are enabled for current post type
+		$post_type = get_post_type( $post_id );
+		if ( in_array( $post_type, (array) $this->settings->options['post_types'] ) || $post_type == $this->settings->options['post_types'] ) {
+			$this->get_video_thumbnail( $post_id );
+		} else {
+			return null;
+		}
+	}
+
+	// Saves to media library
+	public function save_to_media_library( $image_url, $post_id ) {
+
+		$error = '';
+		$response = wp_remote_get( $image_url, array( 'sslverify' => false ) );
+		if( is_wp_error( $response ) ) {
+			$error = new WP_Error( 'thumbnail_retrieval', __( 'Error retrieving a thumbnail from the URL <a href="' . $image_url . '">' . $image_url . '</a> using <code>wp_remote_get()</code><br />If opening that URL in your web browser returns anything else than an error page, the problem may be related to your web server and might be something your host administrator can solve.<br />Details: ' . $response->get_error_message() ) );
+		} else {
+			$image_contents = $response['body'];
+			$image_type = wp_remote_retrieve_header( $response, 'content-type' );
+		}
+
+		if ( $error != '' ) {
+			return $error;
+		} else {
+
+			// Translate MIME type into an extension
+			if ( $image_type == 'image/jpeg' ) $image_extension = '.jpg';
+			elseif ( $image_type == 'image/png' ) $image_extension = '.png';
+
+			// Construct a file name using post slug and extension
+			$new_filename = urldecode( basename( get_permalink( $post_id ) ) ) . $image_extension;
+
+			// Save the image bits using the new filename
+			$upload = wp_upload_bits( $new_filename, null, $image_contents );
+
+			// Stop for any errors while saving the data or else continue adding the image to the media library
+			if ( $upload['error'] ) {
+				$error = new WP_Error( 'thumbnail_upload', __( 'Error uploading image data:' ) . ' ' . $upload['error'] );
+				return $error;
+			} else {
+
+				$image_url = $upload['url'];
 
 				$filename = $upload['file'];
 
 				$wp_filetype = wp_check_filetype( basename( $filename ), null );
 				$attachment = array(
 					'post_mime_type'	=> $wp_filetype['type'],
-					'post_title'		=> get_the_title($post_id),
+					'post_title'		=> get_the_title( $post_id ),
 					'post_content'		=> '',
 					'post_status'		=> 'inherit'
 				);
@@ -330,360 +333,145 @@ function get_video_thumbnail( $post_id = null ) {
 				require_once( ABSPATH . 'wp-admin/includes/image.php' );
 				$attach_data = wp_generate_attachment_metadata( $attach_id, $filename );
 				wp_update_attachment_metadata( $attach_id, $attach_data );
-			
+
+				// Add field to mark image as a video thumbnail
+				update_post_meta( $attach_id, 'video_thumbnail', '1' );
+
 			}
 
-			// Add hidden custom field with thumbnail URL
-			if ( !update_post_meta( $post_id, '_video_thumbnail', $new_thumbnail ) ) add_post_meta( $post_id, '_video_thumbnail', $new_thumbnail, true );
-
-			// Set attachment as featured image if enabled
-			if ( get_option( 'video_thumbnails_set_featured' ) == 1 && get_option( 'video_thumbnails_save_media' ) == 1 && !has_post_thumbnail( $post_id ) ) {
-				set_post_thumbnail( $post_id, $attach_id );
-			}
 		}
-		return $new_thumbnail;
+
+		return $attach_id;
+
+	} // End of save to media library function
+
+	// Post editor Ajax reset script
+	function ajax_reset_script() {
+		echo '<!-- Video Thumbnails Ajax Search -->' . PHP_EOL;
+		echo '<script type="text/javascript">' . PHP_EOL;
+		echo 'function video_thumbnails_reset(id) {' . PHP_EOL;
+		echo '  var data = {' . PHP_EOL;
+		echo '    action: "reset_video_thumbnail",' . PHP_EOL;
+		echo '    post_id: id' . PHP_EOL;
+		echo '  };' . PHP_EOL;
+		echo '  document.getElementById(\'video-thumbnails-preview\').innerHTML=\'Working... <img src="' . home_url( 'wp-admin/images/loading.gif' ) . '"/>\';' . PHP_EOL;
+		echo '  jQuery.post(ajaxurl, data, function(response){' . PHP_EOL;
+		echo '    document.getElementById(\'video-thumbnails-preview\').innerHTML=response;' . PHP_EOL;
+		echo '  });' . PHP_EOL;
+		echo '};' . PHP_EOL;
+		echo '</script>' . PHP_EOL;
+	}
+
+	// Ajax reset callback
+	function ajax_reset_callback() {
+		global $wpdb; // this is how you get access to the database
+
+		$post_id = $_POST['post_id'];
+
+		delete_post_meta( $post_id, VIDEO_THUMBNAILS_FIELD );
+
+		$video_thumbnail = get_video_thumbnail( $post_id );
+
+		if ( is_wp_error( $video_thumbnail ) ) {
+			echo $video_thumbnail->get_error_message();
+		} else if ( $video_thumbnail != null ) {
+			echo '<img src="' . $video_thumbnail . '" style="max-width:100%;" />';
+		} else {
+			echo 'No video thumbnail for this post.';
+		}
+
+		die();
+	}
+
+	function bulk_posts_query_callback() {
+		$args = array(
+			'showposts' => -1,
+			'post_type' => $this->settings->options['post_types'],
+			'fields'    => 'ids'
+		);
+		$query = new WP_Query( $args );
+		echo json_encode( $query->posts );
+		die();
+	}
+
+	function get_thumbnail_for_post_callback() {
+
+		$post_id = $_POST['post_id'];
+		$thumb = get_post_meta( $post_id, VIDEO_THUMBNAILS_FIELD, true );
+
+		if ( $thumb == '' ) {
+			global $video_thumbnails;
+			$thumb = $video_thumbnails->get_video_thumbnail( $post_id );
+			if ( $thumb ) {
+				$type = 'new';
+			}
+		} else {
+			$type = 'existing';
+		}
+
+		if ( $thumb != '' ) {
+			$result = array(
+				'type' => $type,
+				'url' => $thumb
+			);
+		} else {
+			$result = array();
+		}
+
+		echo json_encode( $result );
+		die();
+	}
+
+	function bulk_scanning_page() {
+
+		if ( ! current_user_can( 'manage_options' ) ) {
+			wp_die( __( 'You do not have sufficient permissions to access this page.' ) );
+		}
+
+		?>
+		<div class="wrap">
+
+			<div id="icon-tools" class="icon32"></div><h2>Bulk Video Thumbnail Generator</h2>
+
+			<p>Use this tool to scan all of your posts for Video Thumbnails.</p>
+
+			<p><a id="video-thumbnails-scan-all-posts" href="#" class="button button-primary">Scan All Posts</a></p>
+
+			<div id="vt-bulk-scan-results">
+				<div class="progress-bar-container">
+					<span class="percentage">0%</span>
+					<div class="progress-bar">&nbsp;</div>
+				</div>
+				<div class="stats">
+					<div class="scanned"></div>
+					<div class="found"></div>
+				</div>
+				<ul class="log"></ul>
+			</div>
+
+		</div>
+		<?php
 
 	}
-};
+
+}
+
+$video_thumbnails = new Video_Thumbnails();
+
+do_action( 'video_thumbnails_plugin_loaded' );
+
+// End class
+
+// Get video thumbnail function
+function get_video_thumbnail( $post_id = null ) {
+	global $video_thumbnails;
+	return $video_thumbnails->get_video_thumbnail( $post_id );
+}
 
 // Echo thumbnail
 function video_thumbnail( $post_id = null ) {
 	if ( ( $video_thumbnail = get_video_thumbnail( $post_id ) ) == null ) { echo plugins_url() . '/video-thumbnails/default.jpg'; }
 	else { echo $video_thumbnail; }
-};
-
-// Create Meta Fields on Edit Page
-
-add_action( 'admin_init', 'video_thumbnail_admin_init' );
-
-function video_thumbnail_admin_init() {
-	$video_thumbnails_post_types = get_option( 'video_thumbnails_post_types' );
-	if ( is_array( $video_thumbnails_post_types ) ) {
-		foreach ( $video_thumbnails_post_types as $type ) {
-			add_meta_box( 'video_thumbnail', 'Video Thumbnail', 'video_thumbnail_admin', $type, 'side', 'low' );
-		}
-	}
-}
-
-function video_thumbnail_admin() {
-	global $post;
-	$custom = get_post_custom( $post->ID );
-	$video_thumbnail = $custom["_video_thumbnail"][0];
-
-	if ( isset( $video_thumbnail ) && $video_thumbnail != '' ) {
-		echo '<p id="video-thumbnails-preview"><img src="' . $video_thumbnail . '" style="max-width:100%;" /></p>';	}
-
-	if ( get_post_status() == 'publish' || get_post_status() == 'private' ) {
-		if ( isset( $video_thumbnail ) && $video_thumbnail != '' ) {
-			echo '<p><a href="#" id="video-thumbnails-reset" onclick="video_thumbnails_reset(\'' . $post->ID . '\' );return false;">Reset Video Thumbnail</a></p>';
-		} else {
-			echo '<p id="video-thumbnails-preview">We didn\'t find a video thumbnail for this post.</p>';
-			echo '<p><a href="#" id="video-thumbnails-reset" onclick="video_thumbnails_reset(\'' . $post->ID . '\' );return false;">Search Again</a></p>';
-		}
-	} else {
-		if ( isset( $video_thumbnail ) && $video_thumbnail != '' ) {
-			echo '<p><a href="#" id="video-thumbnails-reset" onclick="video_thumbnails_reset(\'' . $post->ID . '\' );return false;">Reset Video Thumbnail</a></p>';
-		} else {
-			echo '<p>A video thumbnail will be found for this post when it is published.</p>';
-		}
-	}
-}
-
-// AJAX Searching
-
-if ( in_array( basename( $_SERVER['PHP_SELF'] ), apply_filters( 'video_thumbnails_editor_pages', array( 'post-new.php', 'page-new.php', 'post.php', 'page.php' ) ) ) ) {
-	add_action( 'admin_head', 'video_thumbnails_ajax' );
-}
-
-function video_thumbnails_ajax() {
-?>
-
-<!-- Video Thumbnails Researching Ajax -->
-<script type="text/javascript">
-function video_thumbnails_reset(id) {
-
-	var data = {
-		action: 'video_thumbnails',
-		post_id: id
-	};
-
-	document.getElementById('video-thumbnails-preview').innerHTML='Working... <img src="<?php echo home_url( 'wp-admin/images/loading.gif' ); ?>"/>';
-
-	// since 2.8 ajaxurl is always defined in the admin header and points to admin-ajax.php
-	jQuery.post(ajaxurl, data, function(response){
-		document.getElementById('video-thumbnails-preview').innerHTML=response;
-	});
-};
-</script>
-<?php
-}
-
-add_action( 'wp_ajax_video_thumbnails', 'video_thumbnails_callback' );
-
-function video_thumbnails_callback() {
-	global $wpdb; // this is how you get access to the database
-
-	$post_id = $_POST['post_id'];
-
-	delete_post_meta( $post_id, '_video_thumbnail' );
-
-	$video_thumbnail = get_video_thumbnail( $post_id );
-
-	if ( is_wp_error( $video_thumbnail ) ) {
-		echo $video_thumbnail->get_error_message();
-	} else if ( $video_thumbnail != null ) {
-		echo '<img src="' . $video_thumbnail . '" style="max-width:100%;" />';
-	} else {
-		echo 'We didn\'t find a video thumbnail for this post. (be sure you have saved changes first)';
-	}
-
-	die();
-}
-
-// Find video thumbnail when saving a post, but not on autosave
-
-add_action( 'new_to_publish', 'save_video_thumbnail', 10, 1 );
-add_action( 'draft_to_publish', 'save_video_thumbnail', 10, 1 );
-add_action( 'pending_to_publish', 'save_video_thumbnail', 10, 1 );
-add_action( 'future_to_publish', 'save_video_thumbnail', 10, 1 );
-add_action( 'private_to_publish', 'save_video_thumbnail', 10, 1 );
-
-// Finds thumbnail when posting from XML-RPC
-// (this action passes the post ID as an argument so 'get_video_thumbnail' is used instead)
-
-add_action( 'xmlrpc_publish_post', 'get_video_thumbnail', 10, 1 );
-
-function save_video_thumbnail( $post ) {
-	$post_type = get_post_type( $post->ID );
-	$video_thumbnails_post_types = get_option( 'video_thumbnails_post_types' );
-	if ( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE ) {
-		return null;
-	} else {
-		// Check that Video Thumbnails are enabled for current post type
-		if ( in_array( $post_type, (array) $video_thumbnails_post_types ) || $post_type == $video_thumbnails_post_types ) {
-			get_video_thumbnail( $post->ID );
-		} else {
-			return null;
-		}
-	}
-}
-
-// Set Default Options
-
-register_activation_hook( __FILE__, 'video_thumbnails_activate' );
-register_deactivation_hook( __FILE__, 'video_thumbnails_deactivate' );
-
-function video_thumbnails_activate() {
-	add_option( 'video_thumbnails_save_media', '1' );
-	add_option( 'video_thumbnails_set_featured', '1' );
-	add_option( 'video_thumbnails_custom_field', '' );
-	add_option( 'video_thumbnails_post_types', array( 'post' ) );
-}
-
-function video_thumbnails_deactivate() {
-	delete_option( 'video_thumbnails_save_media' );
-	delete_option( 'video_thumbnails_set_featured' );
-	delete_option( 'video_thumbnails_custom_field' );
-	delete_option( 'video_thumbnails_post_types' );
-}
-
-// Check for cURL
-
-register_activation_hook( __FILE__, 'video_thumbnails_curl_check' );
-
-function video_thumbnails_curl_check() {
-	if ( ! function_exists( 'curl_init' ) ) {
-		deactivate_plugins( basename( __FILE__ ) ); // Deactivate ourself
-		wp_die( 'Sorry, but this plugin requires <a href="http://curl.haxx.se/libcurl/">libcurl</a> to be activated on your server.' );
-	}
-}
-
-// AJAX for Past Posts
-
-if ( isset ( $_GET['page'] ) && ( $_GET['page'] == 'video-thumbnail-options' ) ) {
-	add_action( 'admin_head', 'video_thumbnails_past_ajax' );
-}
-
-function video_thumbnails_past_ajax() {
-?>
-
-<!-- Video Thumbnails Past Post Ajax -->
-<script type="text/javascript">
-function video_thumbnails_past(id) {
-
-	var data = {
-		action: 'video_thumbnails_past',
-		post_id: id
-	};
-
-	// since 2.8 ajaxurl is always defined in the admin header and points to admin-ajax.php
-	jQuery.post(ajaxurl, data, function(response){
-
-		document.getElementById(id+'_result').innerHTML = response;
-
-	});
-
-};
-
-<?php
-$video_thumbnails_post_types = get_option( 'video_thumbnails_post_types' );
-$posts = get_posts( array(
-	'showposts' => -1,
-	'post_type' => $video_thumbnails_post_types
-) );
-
-if ( $posts ) {
-	foreach ( $posts as $post ) {
-		$post_ids[] = $post->ID;
-	}
-	$ids = implode( ', ', $post_ids );
-}
-?>
-
-var scanComplete = false;
-
-function scan_video_thumbnails(){
-
-	if(scanComplete==false){
-		scanComplete = true;
-		var ids = new Array(<?php echo $ids; ?>);
-		for (var i = 0; i < ids.length; i++){
-			var container = document.getElementById('video-thumbnails-past');
-			var new_element = document.createElement('li');
-			new_element.setAttribute('id',ids[i]+'_result');
-			new_element.innerHTML = 'Waiting...';
-			container.insertBefore(new_element, container.firstChild);
-		}
-		for (var i = 0; i < ids.length; i++){
-			document.getElementById(ids[i]+'_result').innerHTML = '<span style="color:yellow">&#8226;</span> Working...';
-			video_thumbnails_past(ids[i]);
-		}
-	} else {
-		alert('Scan has already been run, please reload the page before trying again.')
-	}
-
-}
-</script>
-
-<?php
-}
-
-add_action( 'wp_ajax_video_thumbnails_past', 'video_thumbnails_past_callback' );
-
-function video_thumbnails_past_callback() {
-	global $wpdb; // this is how you get access to the database
-
-	$post_id = $_POST['post_id'];
-
-	echo get_the_title( $post_id ) . ' - ';
-
-	$video_thumbnail = get_video_thumbnail( $post_id );
-
-	if ( is_wp_error( $video_thumbnail ) ) {
-		echo $video_thumbnail->get_error_message();
-	} else if ( $video_thumbnail != null ) {
-		echo '<span style="color:green">&#10004;</span> Success!';
-	} else {
-		echo '<span style="color:red">&#10006;</span> Couldn\'t find a video thumbnail for this post.';
-	}
-
-	die();
-}
-
-// Administration
-
-add_action( 'admin_menu', 'video_thumbnails_menu' );
-
-function video_thumbnails_menu() {
-	add_options_page( 'Video Thumbnail Options', 'Video Thumbnails', 'manage_options', 'video-thumbnail-options', 'video_thumbnail_options' );
-}
-
-function video_thumbnails_checkbox_option( $option_name, $option_description ) { ?>
-	<fieldset><legend class="screen-reader-text"><span><?php echo $option_description; ?></span></legend>
-	<label for="<?php echo $option_name; ?>"><input name="<?php echo $option_name; ?>" type="checkbox" id="<?php echo $option_name; ?>" value="1" <?php if ( get_option( $option_name ) == 1 ) echo 'checked="checked"'; ?>/> <?php echo $option_description; ?></label>
-	</fieldset> <?php
-}
-
-function video_thumbnail_options() {
-
-	if ( ! current_user_can( 'manage_options' ) ) {
-		wp_die( __( 'You do not have sufficient permissions to access this page.' ) );
-	}
-
-?>
-
-<div class="wrap">
-
-	<div id="icon-options-general" class="icon32"></div><h2>Video Thumbnails Options</h2>
-
-	<p>Say thanks by donating, any amount is appreciated!<form action="https://www.paypal.com/cgi-bin/webscr" method="post"><input type="hidden" name="cmd" value="_s-xclick"><input type="hidden" name="encrypted" value="-----BEGIN PKCS7-----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-----END PKCS7-----"><input type="image" src="https://www.paypalobjects.com/en_US/i/btn/btn_donateCC_LG.gif" border="0" name="submit" alt="PayPal - The safer, easier way to pay online!"><img alt="" border="0" src="https://www.paypalobjects.com/en_US/i/scr/pixel.gif" width="1" height="1"></form></p>
-
-	<form method="post" action="options.php">
-	<?php wp_nonce_field( 'update-options' ); ?>
-
-	<table class="form-table">
-
-	<tr valign="top">
-	<th scope="row">Save Thumbnail to Media</th>
-	<td><?php video_thumbnails_checkbox_option( 'video_thumbnails_save_media', 'Save local copies of thumbnails using the media library' ); ?></td>
-	</tr>
-
-	<tr valign="top">
-	<th scope="row">Set as Featured Image</th>
-	<td><?php video_thumbnails_checkbox_option( 'video_thumbnails_set_featured', 'Automatically set thumbnail as featured image ("Save Thumbnail to Media" must be enabled)' ); ?></td>
-	</tr>
-
-	<tr valign="top">
-	<th scope="row">Post Types</th>
-	<td>
-	<?php $video_thumbnails_post_types = get_option( 'video_thumbnails_post_types' ); ?>
-		<?php foreach ( get_post_types() as $type ) : if ( $type == 'attachment' OR $type == 'revision' OR $type == 'nav_menu_item' ) continue; ?>
-		<label for="video_thumbnails_post_types_<?php echo $type; ?>">
-			<input id="video_thumbnails_post_types_<?php echo $type; ?>" name="video_thumbnails_post_types[]" type="checkbox" value="<?php echo $type; ?>" <?php if ( is_array( $video_thumbnails_post_types ) ) checked( in_array( $type, $video_thumbnails_post_types ) ); ?> />
-			<?php echo $type; ?>
-		</label>
-		<br />
-		<?php endforeach; ?>
-	</td>
-	</tr>
-	
-	<tr valign="top">
-	<th scope="row">Custom Field (Optional: If your video is stored in a custom field, enter the name of that field here. Otherwise, leave this field blank.)</th> 
-	<td><fieldset><legend class="screen-reader-text"><span>Custom Field (Optional: If your video is stored in a custom field, enter the name of that field here. Otherwise, leave this field blank.)</span></legend> 
-	<input name="video_thumbnails_custom_field" type="text" id="video_thumbnails_custom_field" value="<?php echo get_option( 'video_thumbnails_custom_field' ); ?>" />
-	</fieldset></td>
-	</tr>
-
-	</table>
-
-	<p class="submit">
-	<input type="submit" class="button-primary" value="<?php _e( 'Save Changes' ) ?>" />
-	</p>
-
-	<h3>How to use</h3>
-
-	<p>For themes that use featured images, simply leave the two settings above enabled.</p>
-
-	<p>For more detailed instructions, check out the page for <a href="http://wordpress.org/extend/plugins/video-thumbnails/">Video Thumbnails on the official plugin directory</a>.</p>
-
-	<input type="hidden" name="action" value="update" />
-	<input type="hidden" name="page_options" value="video_thumbnails_save_media,video_thumbnails_set_featured,video_thumbnails_post_types,video_thumbnails_custom_field" />
-
-	</form>
-
-	<h3>Scan All Posts</h3>
-
-	<p>Scan all of your past posts for video thumbnails. Be sure to save any settings before running the scan.</p>
-
-	<p><input type="submit" class="button-primary" onclick="scan_video_thumbnails();" value="Scan Past Posts" /></p>
-
-	<ol id="video-thumbnails-past">
-	</ol>
-
-</div>
-
-<?php
-
 }
 
 ?>

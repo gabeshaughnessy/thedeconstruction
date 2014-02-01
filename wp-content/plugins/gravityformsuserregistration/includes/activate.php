@@ -35,7 +35,7 @@ get_header(); ?>
     <?php if ( empty($_GET['key']) && empty($_POST['key']) ) { ?>
 
         <h2><?php _e('Activation Key Required') ?></h2>
-        <form name="activateform" id="activateform" method="post" action="<?php echo network_site_url('wp-activate.php'); ?>">
+        <form name="activateform" id="activateform" method="post" action="<?php echo network_site_url('?page=gf_activation'); ?>">
             <p>
                 <label for="key"><?php _e('Activation Key:') ?></label>
                 <br /><input type="text" name="key" id="key" value="" size="50" />

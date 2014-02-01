@@ -8,75 +8,83 @@
 class Facebook_Social_Publisher_Meta_Box_Profile {
 
 	/**
-	 * Check page origin before saving
+	 * Check page origin before saving.
 	 *
 	 * @since 1.1
+	 *
 	 * @var string
 	 */
 	const NONCE_NAME = 'facebook_profile_meta_box_noncename';
 
 	/**
-	 * Post meta key for the message
+	 * Post meta key for the message.
 	 *
 	 * @since 1.1
+	 *
 	 * @var string
 	 */
 	const POST_META_KEY_MESSAGE = 'fb_author_message';
 
 	/**
-	 * Post meta key for post to Facebook feature enabled / disabled
+	 * Post meta key for post to Facebook feature enabled / disabled.
 	 *
 	 * @since 1.2
+	 *
 	 * @var string
 	 */
 	const POST_META_KEY_FEATURE_ENABLED = 'post_to_facebook_timeline';
 
 	/**
-	 * Form field name for author profile message
+	 * Form field name for author profile message.
 	 *
 	 * @since 1.1
+	 *
 	 * @var string
 	 */
 	const FIELD_MESSAGE = 'facebook_author_message_box_message';
 
 	/**
-	 * Form field name for feature enabled or disabled
+	 * Form field name for feature enabled or disabled.
 	 *
 	 * @since 1.2
+	 *
 	 * @var string
 	 */
 	const FIELD_FEATURE_ENABLED = 'facebook_author_enabled';
 
 	/**
-	 * Add a meta box to the post editor
+	 * Add a meta box to the post editor.
 	 *
 	 * @since 1.1
+	 *
+	 * @uses add_meta_box()
 	 * @param string $post_type target page post type
-	 * @param array Facebook page info
+	 * @return void
 	 */
 	public static function add_meta_box( $post_type ) {
-		global $facebook, $facebook_loader;
-
 		add_meta_box(
 			'facebook-author-message-box-id',
 			__( 'Facebook Status on Your Timeline', 'facebook' ),
 			array( 'Facebook_Social_Publisher_Meta_Box_Profile', 'content' ),
 			$post_type
 		);
-		add_action( 'admin_enqueue_scripts', array( 'Facebook_Social_Publisher_Meta_Box_Profile', 'enqueue_scripts' ) );
 
-		// attempt to extend the access token while suppressing errors and warnings such as headers sent on session start
-		try {
-			if ( isset( $facebook ) || ( isset( $facebook_loader ) && $facebook_loader->load_php_sdk() ) )
-				$facebook->setExtendedAccessToken();
-		}catch(Exception $e){}
+		if ( ! class_exists( 'Facebook_Social_Publisher_Settings' ) )
+			require_once( dirname( dirname( __FILE__ ) ) . '/settings-social-publisher.php' );
+
+		// only load mentions-specific features if Facebook app configuration supports tags
+		if ( get_option( Facebook_Social_Publisher_Settings::OPTION_OG_ACTION ) )
+			add_action( 'admin_enqueue_scripts', array( 'Facebook_Social_Publisher_Meta_Box_Profile', 'enqueue_scripts' ) );
 	}
 
 	/**
-	 * Load mentions typeahead JavaScript and jQuery UI requirements
+	 * Load mentions typeahead JavaScript and jQuery UI requirements.
 	 *
 	 * @since 1.2
+	 *
+	 * @global \Facebook_Loader $facebook_loader reference plugin directory
 	 * @uses wp_enqueue_script()
+	 * @return void
 	 */
 	public static function enqueue_scripts( ) {
 		global $facebook_loader;
@@ -85,18 +93,24 @@ class Facebook_Social_Publisher_Meta_Box_Profile {
 		if ( defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG )
 			$suffix = '';
 
-		wp_enqueue_script( 'facebook-mentions', plugins_url( 'static/js/admin/mentions' . $suffix . '.js', $facebook_loader->plugin_directory . 'facebook.php' ), array( 'jquery-ui-autocomplete' ), '1.2', true );
-		wp_enqueue_style( 'facebook-mentions', plugins_url( 'static/css/admin/mentions' . $suffix . '.css', $facebook_loader->plugin_directory . 'facebook.php' ), array(), '1.2' );
+		wp_enqueue_script( 'facebook-mentions', plugins_url( 'static/js/admin/mentions' . $suffix . '.js', $facebook_loader->plugin_directory . 'facebook.php' ), array( 'jquery-ui-autocomplete' ), '1.3', true );
+		wp_enqueue_style( 'facebook-mentions', plugins_url( 'static/css/admin/mentions' . $suffix . '.css', $facebook_loader->plugin_directory . 'facebook.php' ), array(), '1.3' );
 	}
 
 	/**
 	 * Add content to the profile publisher meta box
 	 *
 	 * @since 1.0
+	 *
+	 * @global WP_Locale $wp_locale display Like counts in the number format of the current locale
 	 * @param stdClass $post current post
+	 * @return void
 	 */
 	public static function content( $post ) {
 		global $wp_locale;
+
+		if ( ! isset( $post->ID ) )
+			return;
 
 		// Use nonce for verification
 		wp_nonce_field( plugin_basename( __FILE__ ), self::NONCE_NAME );
@@ -116,22 +130,29 @@ class Facebook_Social_Publisher_Meta_Box_Profile {
 
 		echo ' /><p class="howto"><label for="' . $field_message_id . '">'. esc_html( __( 'This message will show as part of the story on your Facebook Timeline.', 'facebook' ) ) .'</label></p>';
 
-		// set JavaScript properties for localized text
-		echo '<script type="text/javascript">jQuery("#' . $field_message_id . '").on("facebook-mentions-onload",function(){';
-		echo 'FB_WP.admin.mentions.autocomplete_nonce=' . json_encode( wp_create_nonce( 'facebook_autocomplete_nonce' ) ) . ';';
-		if ( isset( $wp_locale ) )
-			echo 'FB_WP.admin.mentions.thousands_separator=' . json_encode( $wp_locale->number_format['thousands_sep'] ) . ';';
-		echo 'FB_WP.admin.mentions.messages.likes=' . json_encode( _x( '%s like this', 'number of people who Like a Page', 'facebook' ) ) . ';';
-		echo 'FB_WP.admin.mentions.messages.talking_about=' . json_encode( _x( '%s talking about this', 'number of people talking about a Page', 'facebook' ) ) . ';';
-		echo '});';
-		echo '</script></div>';
+		if ( ! class_exists( 'Facebook_Social_Publisher_Settings' ) )
+			require_once( dirname( dirname( __FILE__ ) ) . '/settings-social-publisher.php' );
+		if ( get_option( Facebook_Social_Publisher_Settings::OPTION_OG_ACTION ) ) {
+			// set JavaScript properties for localized text
+			echo '<script type="text/javascript">jQuery("#' . $field_message_id . '").on("facebook-mentions-onload",function(){';
+			echo 'FB_WP.admin.mentions.autocomplete_nonce=' . json_encode( wp_create_nonce( 'facebook_autocomplete_nonce' ) ) . ';';
+			if ( isset( $wp_locale ) )
+				echo 'FB_WP.admin.mentions.thousands_separator=' . json_encode( $wp_locale->number_format['thousands_sep'] ) . ';';
+			echo 'FB_WP.admin.mentions.messages.likes=' . json_encode( _x( '%s like this', 'number of people who Like a Page', 'facebook' ) ) . ';';
+			echo 'FB_WP.admin.mentions.messages.talking_about=' . json_encode( _x( '%s talking about this', 'number of people talking about a Page', 'facebook' ) ) . ';';
+			echo '});';
+			echo '</script>';
+		}
+		echo '</div>';
 	}
 
 	/**
-	 * Save the custom Status, used when posting to an Fan Page's Timeline
+	 * Save the custom Status, used when posting to a User's Timeline.
 	 *
 	 * @since 1.0
-	 * @param int $post_id post identifier
+	 *
+	 * @param int $post_id WordPress post identifier
+	 * @global void
 	 */
 	public static function save( $post_id ) {
 		// verify if this is an auto save routine.
@@ -153,7 +174,7 @@ class Facebook_Social_Publisher_Meta_Box_Profile {
 		if ( ! class_exists( 'Facebook_Social_Publisher' ) )
 			require_once( dirname(__FILE__) . '/social_publisher.php' );
 		$capability_singular_base = Facebook_Social_Publisher::post_type_capability_base( $post_type );
-	
+
 		if ( ! current_user_can( 'edit_' . $capability_singular_base, $post_id ) )
 			return;
 

@@ -9,7 +9,7 @@
  */
 ?>
 <?php get_header(); ?>
-<div id="content" class="nine columns">
+<div id="content" class="large-9 columns">
 <?php if(have_posts()) : while(have_posts()) : the_post(); ?>
 <article>
 	<div class="post-title ">
@@ -26,7 +26,7 @@
 <?php endif; ?>
 </div><!-- end of content -->
 
-	 <div class="one columns offset-by-eleven">
+	 <div class="large-1 columns offset-large-11">
 	 <?php 
 	 //get_template_part('sidebar'); 
 	 get_template_part('accordion', 'social');

@@ -5,7 +5,14 @@
 <!-- ><h3>Deconstruction News:</h3> -->
 <?php
 //check for newsfeed transient, if it exists, assign variable newfeed to it
+global $enable_transients;
+if($enable_transients == true){
 $newsfeed_posts = get_transient('newsfeed_posts');
+}
+else{
+	$team_list = false;
+
+}
 
 if($newsfeed_posts == false){
 //if it doesn't exist:
@@ -31,8 +38,9 @@ if($newsfeed->have_posts()) : while($newsfeed->have_posts()) : $newsfeed->the_po
  $newsfeed_posts .= '<div class="post-image three columns push left">';
  $newsfeed_posts .= '<a href="'.get_permalink().'" title="View the Post">';	
 	if(has_post_format('video')){
-	
-	$newsfeed_posts .= '<img src="'.get_video_thumbnail().'" width="120" height="80" />' ;
+	if(function_exists('get_video_thumbnail')){
+		$newsfeed_posts .= '<img src="'.get_video_thumbnail().'" width="120" height="80" />' ;
+	}
 
 	}
 	else{
@@ -42,7 +50,7 @@ if($newsfeed->have_posts()) : while($newsfeed->have_posts()) : $newsfeed->the_po
 	$newsfeed_posts .= '</a>';
 $newsfeed_posts .= '</div>';
 $newsfeed_posts .= '<div class="post-excerpt">'.wpautop(get_the_excerpt()).'</div>';
-$newsfeed_posts .= '<a class="twelve columns read more" href="'.get_permalink().'" title="Read More">Read More &rArr;</a>';
+$newsfeed_posts .= '<a class="large-12 columns read more" href="'.get_permalink().'" title="Read More">Read More &rArr;</a>';
 $newsfeed_posts .= '</div>';
 endwhile;
 endif;

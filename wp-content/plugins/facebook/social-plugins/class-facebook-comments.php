@@ -8,20 +8,31 @@
 class Facebook_Comments {
 
 	/**
-	 * Hide comments-related content via CSS
+	 * Limit the strings allowed as an element name wrapping comments retrieved from Facebook servers.
 	 *
-	 * @since 1.1
-	 * @uses wp_enqueue_style
+	 * @since 1.3
+	 *
+	 * @var array
 	 */
-	public static function css_hide_comments() {
-		wp_enqueue_style( 'fb_hide_wp_comments', plugins_url( 'static/css/hide-wp-comments.min.css', dirname(__FILE__) ), array(), '1.1' );
+	public static $allowed_comment_wrapper_elements = array( 'noscript' => true, 'div' => true, 'section' => true );
+
+	/**
+	 * Override default comments template with a Facebook-specific comments template.
+	 *
+	 * @since 1.3
+	 *
+	 * @return string file path to plugin comments template PHP
+	 */
+	public static function comments_template() {
+		return dirname( __FILE__ ) . '/comments.php';
 	}
 
 	/**
 	 * Is Comments Box enabled for the current post type?
 	 *
 	 * @since 1.1.7
-	 * @param object $post post object
+	 *
+	 * @param stdClass|WP_Post $post WordPress post object
 	 * @return bool true if Comments Box enabled
 	 */
 	public static function comments_enabled_for_post_type( $post = null ) {
@@ -37,31 +48,15 @@ class Facebook_Comments {
 	}
 
 	/**
-	 * Override returned comments if Comments Box handles comments for the post type
+	 * Turn on comments open if Comments Box enabled for the post type.
+	 *
+	 * A Comments Box always solicits new comments
 	 *
 	 * @since 1.1.7
-	 * @see comments_template()
-	 * @param array $comments comments for a post
-	 * @param int $post_id post identifier
-	 * @return array to be stored in WP_Query
-	 */
-	public static function comments_array_filter( $comments, $post_id = null ) {
-		if ( ! empty( $comments ) && $post_id ) {
-			$_post = get_post( $post_id );
-			if ( $_post && self::comments_enabled_for_post_type( $_post ) )
-				return array();
-		}
-		return $comments;
-	}
-
-	/**
-	 * Turn on comments open if Comments Box enabled for the post type
-	 * A Comment Box always solicits new comments
 	 *
-	 * @since 1.1.7
 	 * @see comments_open()
 	 * @param bool $open comment status == 'open'
-	 * @param int $post_id post identifier
+	 * @param int $post_id WordPress post identifier
 	 * @return bool are comments open?
 	 */
 	public static function comments_open_filter( $open, $post_id = null ) {
@@ -74,27 +69,85 @@ class Facebook_Comments {
 	}
 
 	/**
-	 * Override post->comment_count returned value
-	 * Short-circuit special template behavior for comment count = 0
-	 * Prevents linking to #respond anchor which leads nowhere
+	 * Kill attempts to comment on a post managed by Facebook Comments Box.
+	 *
+	 * @since 1.3.1
+	 *
+	 * @param int post_id post identifer
+	 * @return void
+	 */
+	public static function pre_comment_on_post( $post_id ) {
+		if ( ! $post_id )
+			return;
+		$_post = get_post( $post_id );
+		if ( $_post && self::comments_enabled_for_post_type( $_post ) ) {
+			// match comments closed message and behavior
+			do_action( 'comment_closed', $post_id );
+			wp_die( __('Sorry, comments are closed for this item.') );
+		}
+	}
+
+	/**
+	 * Add Facebook comment count to the built-in WordPress comment count.
+	 *
+	 * @since 1.4
 	 *
 	 * @see get_comments_number()
-	 * @param int $count comment count
-	 * @param int $post_id post identifier
-	 * @return int comment count
+	 * @global \Facebook_Loader $facebook_loader test for app access token needed to request comments count from Facebook servers
+	 * @param int $count The number of WordPress comments for the post
+	 * @param int $post_id WordPress Post ID
+	 * @return int The number of WordPress comments + Facebook comments for the post
 	 */
-	public static function get_comments_number_filter( $count, $post_id = null ) {
-		if ( $post_id ) {
-			$_post = get_post( $post_id );
-			if ( $_post && self::comments_enabled_for_post_type( $_post ) )
-				return -1;
+	public static function get_comments_number_filter( $count, $post_id ) {
+		global $facebook_loader;
+
+		if ( ! ( isset( $facebook_loader ) && $facebook_loader->app_access_token_exists() ) )
+			return $count;
+
+		if ( ! $post_id )
+			return $count;
+
+		$post = get_post( $post_id );
+		if ( ! ( $post && self::comments_enabled_for_post_type( $post ) ) )
+			return $count;
+
+		$count = absint( $count );
+		$cache_key = 'fb_comments_count_' . $post_id;
+		$fb_count = get_transient( $cache_key );
+		if ( $fb_count === false ) { // allow cached count of 0
+			$fb_count = 0;
+			$url = apply_filters( 'facebook_rel_canonical', get_permalink( $post_id ) );
+			if ( ! $url )
+				return $count;
+
+			if ( ! class_exists( 'Facebook_WP_Extend' ) )
+				require_once( $facebook_loader->plugin_directory . 'includes/facebook-php-sdk/class-facebook-wp.php' );
+			try {
+				// request a summary of all comments for the object represented by the current post URL
+				// minimize data response by limiting to one comment with a single field: id
+				$comments = Facebook_WP_Extend::graph_api_with_app_access_token( 'comments', 'GET', array( 'id' => $url, 'filter' => 'stream', 'summary' => true, 'limit' => 1, 'fields' => 'id' ) );
+			} catch ( WP_FacebookApiException $e ) {
+				return $count;
+			}
+
+			if ( isset( $comments['summary'] ) && isset( $comments['summary']['total_count'] ) ) {
+				$fb_count = absint( $comments['summary']['total_count'] );
+				set_transient( $cache_key, $fb_count, 60*15 );
+			}
 		}
+
+		if ( $fb_count )
+			$count += $fb_count;
+
 		return $count;
 	}
 
 	/**
-	 * Overrides text displayed with comments number, inserting Facebook XFBML to be replaced by a number with the Facebook JavaScript SDK
+	 * Overrides text displayed with comments number, inserting Facebook XFBML to be replaced by a number with the Facebook SDK for JavaScript.
 	 *
+	 * @since 1.1
+	 *
+	 * @global stdClass|WP_Post WordPress post object
 	 * @param string $output number of comments text
 	 * @param number of comments returned by get_comments_number()
 	 * @return string passed output or XFBML string
@@ -108,12 +161,14 @@ class Facebook_Comments {
 	}
 
 	/**
-	 * Build a XFBML string to place on the page for interpretation by the Facebook JavaScript SDK at runtime
+	 * Build a XFBML string to place on the page for interpretation by the Facebook SDK for JavaScript at runtime.
 	 *
 	 * @since 1.1
+	 *
 	 * @return string XFBML string or empty string if no post permalink context or publisher short-circuits via filter
 	 */
 	public static function comments_count_xfbml() {
+		// duplicate_hook
 		$url = esc_url( apply_filters( 'facebook_rel_canonical', get_permalink() ), array( 'http', 'https' ) );
 
 		if ( $url ) {
@@ -125,11 +180,14 @@ class Facebook_Comments {
 	}
 
 	/**
-	 * Remove the WordPress comments menu bar item, replacing with a Facebook comments link
-	 * Check if Facebook comments enabled and if the current user might be able to view a comments edit screen on Facebook
+	 * Remove the WordPress comments menu bar item, replacing with a Facebook comments link.
+	 *
+	 * Check if Facebook comments enabled and if the current user might be able to view a comments edit screen on Facebook.
 	 *
 	 * @since 1.1
+	 *
 	 * @see WP_Admin_Bar->add_menus()
+	 * @return void
 	 */
 	public static function admin_bar_menu() {
 		global $facebook_loader;
@@ -161,8 +219,11 @@ class Facebook_Comments {
 	 * Add a Facebook Comments menu item to the WordPress admin bar
 	 *
 	 * @since 1.1
+	 *
+	 * @global \Facebook_Loader $facebook_loader access Facebook application identifier
  	 * @see wp_admin_bar_comments_menu()
 	 * @param WP_Admin_Bar $wp_admin_bar WordPress admin bar to modify
+	 * @return void
 	 */
 	public static function admin_bar_add_comments_menu( $wp_admin_bar ) {
 		global $facebook_loader;
@@ -176,9 +237,11 @@ class Facebook_Comments {
 	}
 
 	/**
-	 * Retrieve a list of comments for the given URL from the Facebook Graph API
+	 * Retrieve a list of comments for the given URL from the Facebook Graph API.
 	 *
 	 * @since 1.1
+	 *
+	 * @link https://developers.facebook.com/docs/reference/api/comment Individual Facebook Comment object
 	 * @param string $url absolute URL
 	 * @return array list of comments
 	 */
@@ -191,7 +254,7 @@ class Facebook_Comments {
 		if ( ! class_exists( 'Facebook_WP_Extend' ) )
 			require_once( $facebook_loader->plugin_directory . 'includes/facebook-php-sdk/class-facebook-wp.php' );
 		try {
-			$comments = Facebook_WP_Extend::graph_api_with_app_access_token( 'comments', 'GET', array( 'id' => $url ) );
+			$comments = Facebook_WP_Extend::graph_api_with_app_access_token( 'comments', 'GET', array( 'id' => $url, 'filter' => 'toplevel', 'fields' => 'id,from,created_time,message,comments.fields(id,from,created_time,message)' ) );
 		} catch ( WP_FacebookApiException $e ) {
 			return array();
 		}
@@ -203,9 +266,10 @@ class Facebook_Comments {
 	}
 
 	/**
-	 * Remap Facebook comment fields to WordPress comment object
+	 * Remap Facebook comment fields to WordPress comment object.
 	 *
 	 * @since 1.1
+	 *
 	 * @param array $comment comment array returned from Facebook Graph API
 	 * @param int $post_id optional. sets comment_post_ID if present
 	 * @return stdClass WordPress style comment object
@@ -235,12 +299,13 @@ class Facebook_Comments {
 	}
 
 	/**
-	 * Generate HTML for a single Facebook comment
+	 * Generate HTML for a single Facebook comment.
 	 *
 	 * @since 1.1
+	 *
 	 * @param array $comment Facebook comment data
 	 * @param bool include Schema.org comment markup for semantic meaning
-	 * @return string comment markup
+	 * @return string comment HTML markup as a <li>
 	 */
 	public static function single_comment( $comment, $schema_org = true ) {
 		if ( ! is_array( $comment ) )
@@ -307,9 +372,10 @@ class Facebook_Comments {
 	}
 
 	/**
-	 * Possibly generate a nested ol of comments from a comments array
+	 * Possibly generate a nested ol of comments from a comments array.
 	 *
 	 * @since 1.1
+	 *
 	 * @param array $comments comments returned by Facebook
 	 * @return string ol.commentlist or empty string
 	 */
@@ -319,8 +385,13 @@ class Facebook_Comments {
 
 		$comment_list = array();
 
-		// mark up comments in Schema.org structured data
-		// allow publishers to override by returning false for the filter
+		/**
+		 * Mark up comments in Schema.org structured data
+		 *
+		 * @since 1.1
+		 *
+		 * @param bool Default: true
+		 */
 		$schema_org = apply_filters( 'facebook_comment_schema_org', true );
 		if ( ! is_bool( $schema_org ) )
 			$schema_org = true;
@@ -339,21 +410,24 @@ class Facebook_Comments {
 	}
 
 	/**
-	 * Retrieve a list of comments for the current post permalink from Facebook servers
-	 * Generate threaded comment markup for the comments
-	 * Cache the generated HTML for 15 minutes for speed
+	 * Retrieve a list of comments for the current post permalink from Facebook servers.
+	 *
+	 * Generate threaded comment markup for the comments. Cache the generated HTML for 15 minutes for speed.
 	 *
 	 * @since 1.1
+	 *
+	 * @global stdClass|WP_Post WordPress post object
 	 * @param string $wrapper_element the parent element of the list of comments, if any comments exist. noscript (default), div, or section
 	 * @return string list of comments possibly wrapped in a valid wrapper
 	 */
 	public static function comments_markup( $wrapper_element = 'noscript' ) {
 		global $post;
 
-		if ( ! isset( $post ) || ! empty( $post->post_password ) )
+		if ( ! ( isset( $post ) && empty( $post->post_password ) ) )
 			return '';
 
-		$url = apply_filters( 'facebook_rel_canonical', get_permalink() );
+		// duplicate_hook
+		$url = apply_filters( 'facebook_rel_canonical', get_permalink( $post->ID ) );
 		if ( ! $url ) // could happen. kill it early
 			return '';
 
@@ -377,18 +451,19 @@ class Facebook_Comments {
 
 		$html = trim( $html );
 
-		if ( $html && is_string( $wrapper_element ) && in_array( $wrapper_element, array( 'noscript', 'div', 'section' ), true ) )
+		if ( $html && is_string( $wrapper_element ) && isset( self::$allowed_comment_wrapper_elements[$wrapper_element] ) )
 			return '<' . $wrapper_element . '>' . $html . '</' . $wrapper_element . '>';
 
 		return $html;
 	}
 
 	/**
-	 * Generate markup suitable for the Facebook JavaScript SDK based on site options
+	 * Generate markup suitable for the Facebook SDK for JavaScript based on site options.
 	 *
 	 * @since 1.1
+	 *
 	 * @param array $options site options for the comments box social plugin
-	 * @return string HTML5 div with data attributes for interpretation by the Facebook JavaScript SDK at runtime
+	 * @return string HTML5 div with data attributes for interpretation by the Facebook SDK for JavaScript at runtime
 	 */
 	public static function js_sdk_markup( $options ) {
 		if ( ! is_array( $options ) )
@@ -401,7 +476,12 @@ class Facebook_Comments {
 
 		$comments_box = Facebook_Comments_Box::fromArray( $options );
 		if ( $comments_box ) {
-			$comments_jssdk_div = $comments_box->asHTML( array( 'class' => array( 'fb-social-plugin' ) ) );
+			$comments_box_attributes = array( 'class' => array( 'fb-social-plugin', 'comment-form' ) );
+			$wp_comment_form_args = apply_filters( 'comment_form_defaults', array( 'source' => 'facebook', 'id_form' => 'commentform' ) );
+			if ( is_array( $wp_comment_form_args ) && isset( $wp_comment_form_args['id_form'] ) )
+				$comments_box_attributes['id'] = $wp_comment_form_args['id_form'];
+			unset( $wp_comment_form_args );
+			$comments_jssdk_div = $comments_box->asHTML( $comments_box_attributes );
 			if ( $comments_jssdk_div )
 				return "\n" . $comments_jssdk_div . "\n";
 		}
@@ -410,10 +490,12 @@ class Facebook_Comments {
 	}
 
 	/**
-	 * Generate Facebook Comments Box social plugin markup for interpretation by the Facebook JavaScript SDK at runtime
-	 * Includes a list of existing plugins wrapped in a noscript by default to better reflect full page content to search engines and other noscript users
+	 * Generate Facebook Comments Box social plugin markup for interpretation by the Facebook JavaScript SDK at runtime.
+	 *
+	 * Includes a list of existing plugins wrapped in a noscript by default to better reflect full page content to search engines and other noscript users.
 	 *
 	 * @since 1.1
+	 *
 	 * @param array $options chosen options from the Facebook settings page
 	 * @param bool $with_noscript include a list of comments in your page markup wrapped in a noscript element. disable if you publish your posts in a non-dynamic environment such as a HTTP small object CDN and would like all content rendered dynamically at runtime
 	 * @return string Facebook Comments Box markup for interpretation by the Facebook JavaScript SDK + (optional) noscript markup of existing comments
@@ -431,39 +513,63 @@ class Facebook_Comments {
 	}
 
 	/**
-	 * Display comments and comments box after main post content
+	 * Display comments and comments box.
 	 *
-	 * @since 1.1
-	 * @param string $content post content
-	 * @return string post content, possibly with noscript comments content appended and/or comments box markup to be interpreted by the Facebook JavaScript SDK
+	 * Existing Facebook comments are wrapped in a noscript for search engine indexing and styling.
+	 *
+	 * @since 1.3
+	 *
+	 * @global stdClass|WP_Post WordPress post object
+	 * @return string noscript Facebook comments content and/or Comments Box markup to be interpreted by the Facebook JavaScript SDK
 	 */
-	public static function the_content_comments_box( $content ) {
+	public static function comments_box() {
 		global $post;
 
-		if ( ! isset( $post ) )
-			return;
+		$content = '';
+
+		if ( ! ( isset( $post ) && isset( $post->ID ) ) )
+			return $content;
+
+		$post_id = absint( $post->ID );
+		if ( ! $post_id )
+			return $content;
 
 		$options = get_option( 'facebook_comments' );
 
 		if ( ! is_array( $options ) || empty( $options ) )
 			return $content;
 
-		// closed posts can have comments from their previous open state
-		// display noscript version of these comments
-		$comments_markup = self::comments_markup( 'noscript' );
-		if ( $comments_markup )
-			$content .= "\n" . $comments_markup . "\n";
-		else
-			remove_filter( 'comments_open', '__return_true' ); // allow closed comments if no previous comments to display
-		unset( $comments_markup );
+		/**
+		 * Output existing Facebook comments as HTML wrapped in the given HTML element.
+		 *
+		 * Display a static HTML fallback version of existing comments stored on Facebook servers for SEO purposes. Wrap in a <noscript> element by default to only display when the Facebook Comments Box social plugin would not display. Set to an empty string to prevent display of static markup fallback and a sometimes lengthy call to Facebook servers to retrieve comments.
+		 *
+		 * @since 1.3
+		 *
+		 * @see Facebook_Comments::$allowed_comment_wrapper_elements list of allowed values
+		 * @param string HTML element wrapper. Default: noscript.
+		 * @param int current WordPress post idenifier
+		 */
+		$comments_wrapper = apply_filters( 'facebook_comments_wrapper', 'noscript', $post_id );
+
+		if ( $comments_wrapper && isset( self::$allowed_comment_wrapper_elements[$comments_wrapper] ) ) {
+			$comments_markup = self::comments_markup( $comments_wrapper );
+			if ( $comments_markup )
+				$content .= $comments_markup;
+			else
+				remove_filter( 'comments_open', '__return_true' ); // allow closed comments if no previous comments to display
+			unset( $comments_markup );
+		}
+		unset( $comments_wrapper );
 
 		// no option via JS SDK to display comments yet not accept new comments
 		// only display JS SDK version of comments box display if we would like more comments
-		if ( comments_open( $post->ID ) ) {
-			$url = apply_filters( 'facebook_rel_canonical', get_permalink() );
+		if ( comments_open( $post_id ) ) {
+			// duplicate_hook
+			$url = apply_filters( 'facebook_rel_canonical', get_permalink( $post_id ) );
 			if ( $url ) // false could happen. let JS SDK handle compatibility mode
 				$options['href'] = $url;
-			$content .= "\n" . self::js_sdk_markup( $options ) . "\n";
+			$content .= self::js_sdk_markup( $options );
 		}
 
 		return $content;

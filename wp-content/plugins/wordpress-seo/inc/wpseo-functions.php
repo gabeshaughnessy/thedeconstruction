@@ -56,10 +56,15 @@ function get_wpseo_options_arr() {
  * @return array of options
  */
 function get_wpseo_options() {
-	$options = array();
-	foreach ( get_wpseo_options_arr() as $opt ) {
-		$options = array_merge( $options, (array) get_option( $opt ) );
+	static $options;
+
+	if ( !isset( $options ) ) {
+		$options = array();
+		foreach ( get_wpseo_options_arr() as $opt ) {
+			$options = array_merge( $options, (array) get_option( $opt ) );
+		}
 	}
+
 	return $options;
 }
 
@@ -77,7 +82,7 @@ function wpseo_replace_vars( $string, $args, $omit = array() ) {
 
 	// Let's see if we can bail super early.
 	if ( strpos( $string, '%%' ) === false )
-		return trim( preg_replace( '/\s+/u', ' ', $string ) );
+		return trim( preg_replace( '`\s+`u', ' ', $string ) );
 
 	global $sep;
 	if ( !isset( $sep ) || empty( $sep ) )
@@ -100,7 +105,7 @@ function wpseo_replace_vars( $string, $args, $omit = array() ) {
 
 	// Let's see if we can bail early.
 	if ( strpos( $string, '%%' ) === false )
-		return trim( preg_replace( '/\s+/u', ' ', $string ) );
+		return trim( preg_replace( '`\s+`u', ' ', $string ) );
 
 	global $wp_query;
 
@@ -115,6 +120,7 @@ function wpseo_replace_vars( $string, $args, $omit = array() ) {
 		'post_title'    => '',
 		'taxonomy'      => '',
 		'term_id'       => '',
+		'term404'		=> '',
 	);
 
 	if ( isset( $args['post_content'] ) )
@@ -163,13 +169,14 @@ function wpseo_replace_vars( $string, $args, $omit = array() ) {
 		'%%page%%'         => ( $max_num_pages > 1 && $pagenum > 1 ) ? sprintf( $sep . ' ' . __( 'Page %d of %d', 'wordpress-seo' ), $pagenum, $max_num_pages ) : '',
 		'%%pagetotal%%'    => $max_num_pages,
 		'%%pagenumber%%'   => $pagenum,
+		'%%term404%%'	   => sanitize_text_field ( str_replace( '-', ' ', $r->term404 ) ),
 	);
 
 	if ( isset( $r->ID ) ) {
 		$replacements = array_merge( $replacements, array(
 			'%%caption%%'      => $r->post_excerpt,
 			'%%category%%'     => wpseo_get_terms( $r->ID, 'category' ),
-			'%%excerpt%%' 	   => ( !empty( $r->post_excerpt ) ) ? strip_tags( $r->post_excerpt ) : ( ( extension_loaded( 'mbstring' ) === true ) ? mb_substr( strip_shortcodes( strip_tags( $r->post_content ) ), 0, 155, 'UTF-8' ) : substr( strip_shortcodes( strip_tags( utf8_decode( $r->post_content ) ) ), 0, 155 ) ),
+			'%%excerpt%%'      => ( !empty( $r->post_excerpt ) ) ? strip_tags( $r->post_excerpt ) : wp_html_excerpt( strip_shortcodes( $r->post_content ),155 ),
 			'%%excerpt_only%%' => strip_tags( $r->post_excerpt ),
 			'%%focuskw%%'      => wpseo_get_value( 'focuskw', $r->ID ),
 			'%%id%%'           => $r->ID,
@@ -196,11 +203,11 @@ function wpseo_replace_vars( $string, $args, $omit = array() ) {
 	}
 
 	if ( strpos( $string, '%%' ) === false ) {
-		$string = preg_replace( '/\s+/u', ' ', $string );
+		$string = preg_replace( '`\s+`u', ' ', $string );
 		return trim( $string );
 	}
 
-	if ( isset( $wp_query->query_vars['post_type'] ) && preg_match_all( '/%%pt_([^%]+)%%/u', $string, $matches, PREG_SET_ORDER ) ) {
+	if ( isset( $wp_query->query_vars['post_type'] ) && preg_match_all( '`%%pt_([^%]+)%%`u', $string, $matches, PREG_SET_ORDER ) ) {
 		$pt        = get_post_type_object( $wp_query->query_vars['post_type'] );
 		$pt_plural = $pt_singular = $pt->name;
 		if ( isset( $pt->labels->singular_name ) )
@@ -211,22 +218,35 @@ function wpseo_replace_vars( $string, $args, $omit = array() ) {
 		$string = str_replace( '%%pt_plural%%', $pt_plural, $string );
 	}
 
-	if ( preg_match_all( '/%%cf_([^%]+)%%/u', $string, $matches, PREG_SET_ORDER ) ) {
+	if ( preg_match_all( '`%%cf_([^%]+)%%`u', $string, $matches, PREG_SET_ORDER ) ) {
 		global $post;
 		foreach ( $matches as $match ) {
 			$string = str_replace( $match[0], get_post_meta( $post->ID, $match[1], true ), $string );
 		}
 	}
 
-	if ( preg_match_all( '/%%ct_desc_([^%]+)?%%/u', $string, $matches, PREG_SET_ORDER ) ) {
+	if ( preg_match_all( '`%%ct_desc_([^%]+)?%%`u', $string, $matches, PREG_SET_ORDER ) ) {
 		global $post;
 		foreach ( $matches as $match ) {
 			$terms  = get_the_terms( $post->ID, $match[1] );
-			$string = str_replace( $match[0], get_term_field( 'description', $terms[0]->term_id, $match[1] ), $string );
+			if( is_array( $terms ) && count( $terms ) > 0 ) {
+				$term = current( $terms );
+				$string = str_replace( $match[0], get_term_field( 'description', $term->term_id, $match[1] ), $string );
+			}
+			else {
+				// Make sure that the variable is removed ?
+				$string = str_replace( $match[0], '', $string );
+
+				/* Check for WP_Error object (=invalid taxonomy entered) and if it's an error,
+				 notify in admin dashboard */
+				if( is_wp_error( $terms ) && is_admin() ) {
+					add_action( 'admin_notices', 'wpseo_invalid_custom_taxonomy' );
+				}
+			}
 		}
 	}
 
-	if ( preg_match_all( '/%%ct_([^%]+)%%(single%%)?/u', $string, $matches, PREG_SET_ORDER ) ) {
+	if ( preg_match_all( '`%%ct_([^%]+)%%(single%%)?`u', $string, $matches, PREG_SET_ORDER ) ) {
 		foreach ( $matches as $match ) {
 			$single = false;
 			if ( isset( $match[2] ) && $match[2] == 'single%%' )
@@ -237,9 +257,21 @@ function wpseo_replace_vars( $string, $args, $omit = array() ) {
 		}
 	}
 
-	$string = preg_replace( '/\s+/u', ' ', $string );
+	$string = preg_replace( '`\s+`u', ' ', $string );
 	return trim( $string );
 }
+
+
+/**
+ * Throw a notice about an invalid custom taxonomy used
+ *
+ * @since 1.4.14
+ */
+function wpseo_invalid_custom_taxonomy() {
+	echo '<div class="error"><p>' . sprintf( __( 'The taxonomy you used in (one of your) %s variables is <strong>invalid</strong>. Please %sadjust your settings%s.' ), '%%ct_desc_<custom-tax-name>%%', '<a href="' . admin_url( 'admin.php?page=wpseo_titles#top#taxonomies' ) . '">', '</a>' ) . '</p></div>';
+}
+
+
 
 /**
  * Retrieve a post's terms, comma delimited.
@@ -250,27 +282,35 @@ function wpseo_replace_vars( $string, $args, $omit = array() ) {
  * @return string either a single term or a comma delimited string of terms.
  */
 function wpseo_get_terms( $id, $taxonomy, $return_single = false ) {
-	// If we're on a specific tag, category or taxonomy page, return that and bail.
+
+	$output = '';
+
+	// If we're on a specific tag, category or taxonomy page, use that.
 	if ( is_category() || is_tag() || is_tax() ) {
 		global $wp_query;
 		$term = $wp_query->get_queried_object();
-		return $term->name;
+		$output = $term->name;
 	}
-
-	if ( empty( $id ) || empty( $taxonomy ) )
-		return '';
-
-	$output = '';
-	$terms  = get_the_terms( $id, $taxonomy );
-	if ( $terms ) {
-		foreach ( $terms as $term ) {
-			if ( $return_single )
-				return $term->name;
-			$output .= $term->name . ', ';
+	else if ( !empty( $id ) && !empty( $taxonomy ) ) {
+		$terms  = get_the_terms( $id, $taxonomy );
+		if ( $terms ) {
+			foreach ( $terms as $term ) {
+				if ( $return_single ) {
+					$output = $term->name;
+					break;
+				}
+				else {
+					$output .= $term->name . ', ';
+				}
+			}
+			$output = rtrim( trim( $output ), ',' );
 		}
-		return rtrim( trim( $output ), ',' );
 	}
-	return '';
+	/**
+	 * Allows filtering of the terms list used to replace %%category%%, %%tag%% and %%ct_<custom-tax-name>%% variables
+	 * @api	string	$output	Comma-delimited string containing the terms
+	 */
+	return apply_filters( 'wpseo_terms', $output );
 }
 
 /**
@@ -307,21 +347,151 @@ function wpseo_get_term_meta( $term, $taxonomy, $meta ) {
  * @return string $text string without shortcodes
  */
 function wpseo_strip_shortcode( $text ) {
-	return preg_replace( '|\[[^\]]+\]|s', '', $text );
+	return preg_replace( '`\[[^\]]+\]`s', '', $text );
+}
+
+/**
+ * Redirect /sitemap.xml to /sitemap_index.xml
+ */
+function wpseo_xml_redirect_sitemap() {
+	global $wp_query;
+	
+	$current_url =( isset($_SERVER["HTTPS"] ) && $_SERVER["HTTPS"]=='on' ) ? 'https://' : 'http://';
+	$current_url .= $_SERVER["SERVER_NAME"] . $_SERVER["REQUEST_URI"];
+
+	// must be 'sitemap.xml' and must be 404
+	if ( home_url( '/sitemap.xml' ) == $current_url && $wp_query->is_404) {
+		wp_redirect( home_url( '/sitemap_index.xml' ) );
+	}
 }
 
 /**
  * Initialize sitemaps. Add sitemap rewrite rules and query var
  */
-function xml_sitemaps_init() {
+function wpseo_xml_sitemaps_init() {
 	$options = get_option( 'wpseo_xml' );
 	if ( !isset( $options['enablexmlsitemap'] ) || !$options['enablexmlsitemap'] )
 		return;
 
+	// redirects sitemap.xml to sitemap_index.xml
+	add_action( 'template_redirect', 'wpseo_xml_redirect_sitemap', 0 );
+
+	if ( !is_object( $GLOBALS['wp'] ) ) {
+		return;
+	}
+
 	$GLOBALS['wp']->add_query_var( 'sitemap' );
 	$GLOBALS['wp']->add_query_var( 'sitemap_n' );
+	$GLOBALS['wp']->add_query_var( 'xslt' );
 	add_rewrite_rule( 'sitemap_index\.xml$', 'index.php?sitemap=1', 'top' );
 	add_rewrite_rule( '([^/]+?)-sitemap([0-9]+)?\.xml$', 'index.php?sitemap=$matches[1]&sitemap_n=$matches[2]', 'top' );
+	add_rewrite_rule( 'sitemap\.xslt$', 'index.php?xslt=1', 'top' );
 }
+add_action( 'init', 'wpseo_xml_sitemaps_init', 1 );
 
-add_action( 'init', 'xml_sitemaps_init', 1 );
+/**
+ * Notify search engines of the updated sitemap.
+ */
+function wpseo_ping_search_engines( $sitemapurl = null ) {
+	$options    = get_option( 'wpseo_xml' );
+	$base       = $GLOBALS['wp_rewrite']->using_index_permalinks() ? 'index.php/' : '';
+	if ( $sitemapurl  == null )
+		$sitemapurl = urlencode( home_url( $base . 'sitemap_index.xml' ) );
+
+	// Always ping Google and Bing, optionally ping Ask and Yahoo!
+	wp_remote_get( 'http://www.google.com/webmasters/tools/ping?sitemap=' . $sitemapurl );
+	wp_remote_get( 'http://www.bing.com/webmaster/ping.aspx?sitemap=' . $sitemapurl );
+
+	if ( isset( $options['xml_ping_yahoo'] ) && $options['xml_ping_yahoo'] )
+		wp_remote_get( 'http://search.yahooapis.com/SiteExplorerService/V1/updateNotification?appid=3usdTDLV34HbjQpIBuzMM1UkECFl5KDN7fogidABihmHBfqaebDuZk1vpLDR64I-&url=' . $sitemapurl );
+
+	if ( isset( $options['xml_ping_ask'] ) && $options['xml_ping_ask'] )
+		wp_remote_get( 'http://submissions.ask.com/ping?sitemap=' . $sitemapurl );
+}
+add_action( 'wpseo_ping_search_engines', 'wpseo_ping_search_engines' );
+
+function wpseo_store_tracking_response() {
+	if ( ! wp_verify_nonce( $_POST['nonce'], 'wpseo_activate_tracking' ) )
+		die();
+
+	$options = get_option( 'wpseo' );
+	$options['tracking_popup'] = 'done';
+
+	if ( $_POST['allow_tracking'] == 'yes' )
+		$options['yoast_tracking'] = 'on';
+
+	update_option( 'wpseo', $options );
+}
+add_action('wp_ajax_wpseo_allow_tracking', 'wpseo_store_tracking_response');
+
+/**
+ * WPML plugin support: Set titles for custom types / taxonomies as translatable.
+ * It adds new keys to a wpml-config.xml file for a custom post type title, metadesc, title-ptarchive and metadesc-ptarchive fields translation.
+ * Documentation: http://wpml.org/documentation/support/language-configuration-files/
+ * 
+ * @global $sitepress
+ * @param array $config
+ * @return array
+ */
+function wpseo_wpml_config( $config ) {
+    global $sitepress;
+
+	if ( ( is_array( $config ) && isset( $config['wpml-config']['admin-texts']['key'] ) ) && ( is_array( $config['wpml-config']['admin-texts']['key'] ) && $config['wpml-config']['admin-texts']['key'] !== array() ) ) {
+	    $admin_texts = $config['wpml-config']['admin-texts']['key'];
+	    foreach ( $admin_texts as $k => $val ) {
+	        if ( $val['attr']['name'] === 'wpseo_titles' ) {
+	            $translate_cp = array_keys( $sitepress->get_translatable_documents() );
+	            if ( is_array( $translate_cp ) && $translate_cp !== array() ) {
+		            foreach ( $translate_cp as $post_type ) {
+		                $admin_texts[$k]['key'][]['attr']['name'] = 'title-'. $post_type;
+		                $admin_texts[$k]['key'][]['attr']['name'] = 'metadesc-'. $post_type;
+		                $admin_texts[$k]['key'][]['attr']['name'] = 'title-ptarchive-'. $post_type;
+		                $admin_texts[$k]['key'][]['attr']['name'] = 'metadesc-ptarchive-'. $post_type;
+
+		                $translate_tax = $sitepress->get_translatable_taxonomies(false, $post_type);
+		                if ( is_array( $translate_tax ) && $translate_tax !== array() ) {
+			                foreach ( $translate_tax as $taxonomy ) {
+			                    $admin_texts[$k]['key'][]['attr']['name'] = 'title-'. $taxonomy;
+			                    $admin_texts[$k]['key'][]['attr']['name'] = 'metadesc-'. $taxonomy;
+			                }
+						}
+		            }
+				}
+	            break;
+	        }
+	    }
+	    $config['wpml-config']['admin-texts']['key'] = $admin_texts;
+	}
+
+    return $config;
+}
+add_filter( 'icl_wpml_config_array', 'wpseo_wpml_config' );
+
+
+/**
+ * (Un-)schedule the yoast tracking cronjob if the tracking option has changed
+ * 
+ * Needs to be done here, rather than in the Yoast_Tracking class as class-tracking.php may not be loaded
+ *
+ * @todo - check if this has any impact on other Yoast plugins which may use the same tracking schedule
+ * hook. If so, may be get any other yoast plugin options, check for the tracking status and
+ * unschedule based on the combined status
+ *
+ * @param	mixed	$disregard	Not needed - Option name if option was added, old value if option was updated
+ * @param	array	$value		The new value of the option after add/update
+ * @return	void
+ */
+function schedule_yoast_tracking( $disregard, $value ) {
+	$current_schedule = wp_next_scheduled( 'yoast_tracking' );
+	$tracking = ( isset( $value['yoast_tracking'] ) && $value['yoast_tracking'] ) ? true : false;
+
+	if( $tracking === true && $current_schedule === false ) {
+		// The tracking checks daily, but only sends new data every 7 days.
+		wp_schedule_event( time(), 'daily', 'yoast_tracking' );
+	}
+	else if( $tracking === false && $current_schedule !== false ){
+		wp_clear_scheduled_hook( 'yoast_tracking' );
+	}
+}
+add_action( 'add_option_wpseo', 'schedule_yoast_tracking', 10, 2 );
+add_action( 'update_option_wpseo', 'schedule_yoast_tracking', 10, 2 );

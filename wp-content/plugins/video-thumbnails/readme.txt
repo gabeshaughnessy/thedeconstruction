@@ -1,10 +1,10 @@
 === Video Thumbnails ===
 Contributors: sutherlandboswell
 Donate link: http://wie.ly/u/donate
-Tags: Video, Thumbnails, YouTube, Vimeo, Blip.tv, Justin.tv, Dailymotion, Metacafe, Image, Featured Image, Post Thumbnail
-Requires at least: 3.0
-Tested up to: 3.4.2
-Stable tag: 1.8.2
+Tags: Video, Thumbnails, YouTube, Vimeo, Vine, Twitch, Dailymotion, Youku, Rutube, Featured Image
+Requires at least: 3.1
+Tested up to: 3.8
+Stable tag: 2.4
 
 Video Thumbnails simplifies the process of automatically displaying video thumbnails in your WordPress template.
 
@@ -16,14 +16,26 @@ Video Thumbnails currently supports these video services:
 
 * YouTube
 * Vimeo
+* Facebook
+* Vine
 * Justin.tv
-* Blip.tv
+* Twitch
 * Dailymotion
 * Metacafe
+* Blip
+* Google Drive
+* Funny or Die
+* CollegeHumor
+* MPORA
+* Wistia
+* Youku
+* Rutube
 
 Video Thumbnails even works with most video embedding plugins, including:
 
+* [Refactored Video Importer](https://refactored.co/plugins/video-importer)
 * [Viper's Video Quicktags](http://wordpress.org/extend/plugins/vipers-video-quicktags/)
+* [Automatic Youtube Video Posts Plugin](http://wordpress.org/extend/plugins/automatic-youtube-video-posts/)
 * [Simple Video Embedder](http://wordpress.org/extend/plugins/simple-video-embedder/)
 * [Vimeo Shortcode](http://blog.esimplestudios.com/2010/08/embedding-vimeo-videos-in-wordpress/)
 * [WP YouTube Lyte](http://wordpress.org/extend/plugins/wp-youtube-lyte/)
@@ -39,6 +51,16 @@ Some functions are available to advanced users who want to customize their theme
 1. Activate the plugin through the 'Plugins' menu in WordPress
 
 == Frequently Asked Questions ==
+
+= No video thumbnail for this post =
+
+1. Ensure you have saved any changes to your post.
+1. If you are using a a plugin or theme that stores videos in a special location other than the main post content area, be sure you've entered the correct custom field on the settings page. If you don't know the name of the field your video is being saved in, please contact the developer of that theme or plugin.
+1. Copy and paste your embed code into the "Test Markup for Video" section of the Debugging page. If this doesn't find the thumbnail, you'll want to be sure to include the embed code you scanned when you request support. If it does find a thumbnail, please double check that you have the Custom Field set correctly in the settings page if you are using a a plugin or theme that stores videos in a special location.
+1. Go to the Debugging page and click "Test Image Downloading" to test your server's ability to save an image from a video source.
+1. Try posting a video from other sources to help narrow down the problem.
+1. Check the support threads to see if anyone has had the same issue.
+1. If you are still unable to resolve the problem, start a thread with a good descriptive title ("Error" or "No thumbnails" is a bad title) and be sure to include the results of your testing as well. Also be sure to include the name of your theme, any video plugins you're using, and any other details you can think of.
 
 = My theme isn't showing thumbnails, what's wrong? =
 
@@ -68,7 +90,7 @@ The settings page includes a checklist of all your post types so you can pick an
 
 The best solution is to use the Featured Image setting and [the_post_thumbnail](http://codex.wordpress.org/Function_Reference/the_post_thumbnail) template tag.
 
-As an alternative you could assign a class to the element and style it with CSS, or even use a library like [TimThumb](http://code.google.com/p/timthumb/) to resize your images.
+As an alternative you could assign a class to the element and style it with CSS.
 
 = I edited my theme and now I'm seeing the thumbnail and the video, how do I only display the thumbnail? =
 
@@ -76,7 +98,7 @@ Every theme is different, so this can be tricky if you aren't familiar with Word
 
 = Why are there black bars on some YouTube thumbnails? =
 
-This is an unfortunate side effect of widescreen videos on YouTube. The thumbnail YouTube provides is always the same ratio, which creates black bars when a video is widescreen. Some themes will crop featured images and it may not be visible, but if you are comfortable editing your theme, I recommend using [TimThumb](http://code.google.com/p/timthumb/) to resize and crop your images.
+This is an unfortunate side effect of some old YouTube videos not having widescreen thumbnails. As of version 2.0, the plugin checks for HD thumbnails so this issue should be less common.
 
 = Why did it stop finding thumbnails for Vimeo? =
 
@@ -85,8 +107,85 @@ The Vimeo API has a rate limit, so in rare cases you may exceed this limit. Try 
 == Screenshots ==
 
 1. The Video Thumbnail meta box on the Edit Post page
+1. Settings page
 
 == Changelog ==
+
+= 2.4 =
+* Added support for Vine
+* Added support for Google Drive videos
+* Rewritten bulk video thumbnail scanner
+* Added troubleshooting link in meta box when no video thumbnail is found
+* Changed provider test to compare file hashes in case thumbnail URLs change
+
+= 2.3 =
+* Added support for archived Twitch videos
+* Fixed issue with Funny or Die thumbnails
+
+= 2.2 =
+* Added support for Rutube
+
+= 2.1 =
+* Changes under the hood to ensure the first video is found
+* Improved YouTube regex
+
+= 2.0.10 =
+* Reduced overhead on settings pages
+
+= 2.0.9 =
+* Fixed Vimeo protocol-relative embeds
+* Fixed bug with PNG image types
+
+= 2.0.8 =
+* Better fix for AYVP featured image bug
+
+= 2.0.7 =
+* Fix for bug that prevented featured images from being set for posts imported by AYVP
+
+= 2.0.6 =
+* Fix for "Fatal error: Cannot use object of type WP_Error as array" bug
+
+= 2.0.5 =
+* Added support for Blip URLs
+
+= 2.0.4 =
+* Fixed bug with file names when the post title uses non-latin characters
+
+= 2.0.3 =
+* Fixed problem caused by YouTube removing http: or https: from their default embed code
+
+= 2.0.2 =
+* Added descriptive messages for errors during provider tests
+* Fix possible fatal error on activation when VimeoAPIException is already declared
+* Fix possible undefined index warnings for provider settings
+
+= 2.0.1 =
+* Added support for Facebook's iFrame player
+
+= 2.0 =
+* Completely rewritten for better performance, more organized code, and easier maintenance
+* Added support for Funny or Die
+* Added support for MPORA
+* Added support for Wistia
+* Added support for Facebook videos
+* Added support for CollegeHumor
+* Added support for Youku
+* Added support for HD YouTube thumbnails
+* Added support for higher resolution Vimeo thumbnails
+* Added support for private Vimeo videos (API credentials required)
+* Added support for Vimeo channel URLs
+* Added support for [Automatic Youtube Video Posts Plugin](http://wordpress.org/extend/plugins/automatic-youtube-video-posts/)
+* Added filters to make plugin extensible
+* Removed cURL requirement (still requires ability to make external requests)
+* Better checks for blank thumbnails before added to media library
+* Adds 'video_thumbnail' field to video thumbnails saved in the media library
+* Option to clear all video thumbnails (clears custom field from posts and deletes video thumbnails added after 2.0 from library)
+* Better file names
+* Added provider tests on debugging page to help troubleshoot
+* Added a markup detection on debugging page
+* Added "Installation Information" section to debugging page with helpful troubleshooting info
+* Settings improvements
+* Bug fixes
 
 = 1.8.2 =
 * Fixes issue where some servers were unable to download thumbnails from YouTube
@@ -228,6 +327,12 @@ The Vimeo API has a rate limit, so in rare cases you may exceed this limit. Try 
 
 == Upgrade Notice ==
 
+= 2.1 =
+Changes to the scanning process may affect any custom code you've developed for Video Thumbnails
+
+= 2.0 =
+Despite being a major upgrade, your settings should remain intact. Please report any problems so they can be fixed quickly!
+
 = 1.0 =
 This is the single biggest update to Video Thumbnails so far, so be sure to check out the new settings page and documentation.
 
@@ -240,4 +345,4 @@ This version adds the thumbnail URL to the post's meta data, meaning any outside
 
 == Roadmap ==
 
-Version 2.0 is in the works and will mainly include code reorganization and optimizations, but suggestions for new features are always welcome.
+With the release of 2.0, focus will be put on ensuring more widespread support and providing tools for other developers.

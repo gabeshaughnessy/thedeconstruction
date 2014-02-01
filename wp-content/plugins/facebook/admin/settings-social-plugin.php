@@ -45,6 +45,7 @@ class Facebook_Social_Plugin_Settings {
 	 * @since 1.1
 	 * @param string $name HTML name attribute
 	 * @param array $existing_value stored preference
+	 * @param string $scope 'all' to include home and archive conditionals
 	 * @return string labeled checkboxes
 	 */
 	public static function show_on_choices( $name, $existing_value = '', $scope = 'posts' ) {
@@ -72,7 +73,7 @@ class Facebook_Social_Plugin_Settings {
 	 * Describe the show_on setting
 	 *
 	 * @since 1.1
-	 * @param string $plugin_name translated name of the social plugin
+	 * @param string $social_plugin_name translated name of the social plugin
 	 * @return string description text
 	 */
 	public static function show_on_description( $social_plugin_name ) {
@@ -85,18 +86,20 @@ class Facebook_Social_Plugin_Settings {
 	/**
 	 * List of font choices as a HTML option list
 	 *
-	 * @param string $exsiting_value existing font preference
+	 * @since 1.1
+	 * @param string $existing_value existing font preference
 	 * @return string HTML <option>s suitable for use as children of a select
 	 */
 	public static function font_choices( $existing_value = '' ) {
 		if ( ! class_exists( 'Facebook_Social_Plugin' ) )
 			require_once( dirname( dirname(__FILE__) ) . '/social-plugins/class-facebook-social-plugin.php' );
 
-		if ( ! ( is_string( $existing_value ) && in_array( $existing_value, Facebook_Social_Plugin::$font_choices, true ) ) )
+		if ( ! ( is_string( $existing_value ) && isset( Facebook_Social_Plugin::$font_choices[$existing_value] ) ) )
 			$existing_value = '';
 
+		$choices = array_keys( Facebook_Social_Plugin::$font_choices );
 		$options = '<option value=""' . selected( $existing_value, '', false ) . '></option>';
-		foreach( Facebook_Social_Plugin::$font_choices as $font ) {
+		foreach( $choices as $font ) {
 			$options .= '<option value="' . $font . '"' . selected( $font, $existing_value, false ) . ' style="font-family:\'' . $font . '\'">' . $font . '</option>';
 		}
 
@@ -117,17 +120,18 @@ class Facebook_Social_Plugin_Settings {
 		if ( ! class_exists( 'Facebook_Social_Plugin' ) )
 			require_once( dirname( dirname(__FILE__) ) . '/social-plugins/class-facebook-social-plugin.php' );
 
-		if ( ! ( is_string( $existing_value ) && $existing_value && in_array( $existing_value, Facebook_Social_Plugin::$colorscheme_choices, true ) ) )
+		if ( ! ( is_string( $existing_value ) && $existing_value && isset( Facebook_Social_Plugin::$colorscheme_choices[$existing_value] ) ) )
 			$existing_value = 'light';
 
+		$choices = array_keys( Facebook_Social_Plugin::$colorscheme_choices );
 		$checkboxes = '';
-		foreach( Facebook_Social_Plugin::$colorscheme_choices as $color_scheme ) {
+		foreach( $choices as $color_scheme ) {
 			$checkboxes .= '<label';
 			// match background color and text color of the Facebook color scheme options
 			// provides a hint of final display. May change but possibly helpful in making a decision
 			if ( isset( self::$color_scheme_styles[$color_scheme] ) )
 				$checkboxes .= ' style="padding:0.5em;' . self::$color_scheme_styles[$color_scheme] . '"';
-			$checkboxes .= '><input type="radio" name="' . $name . '" value="' . $color_scheme . '"' . checked( $existing_value, $color_scheme, false ) . ' />';
+			$checkboxes .= '><input type="radio" name="' . $name . '" value="' . esc_attr( $color_scheme ) . '"' . checked( $existing_value, $color_scheme, false ) . ' />';
 			$checkboxes .= ' ' . esc_html( __( $color_scheme, 'facebook' ) ) . '</label> ';
 		}
 		return rtrim( $checkboxes );

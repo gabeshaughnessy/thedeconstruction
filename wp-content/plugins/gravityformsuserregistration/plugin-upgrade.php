@@ -10,14 +10,8 @@ class RGUserUpgrade{
     }
 
     public static function check_update($plugin_path, $plugin_slug, $plugin_url, $offering, $key, $version, $option){
-        $version_info = function_exists('get_site_transient') ? get_site_transient("gforms_userregistration_version") : get_transient("gforms_userregistration_version");
 
-        //making the remote request for version information
-        if(!$version_info){
-            //Getting version number
-            $version_info = self::get_version_info($offering, $key, $version);
-            self::set_version_info($version_info);
-        }
+        $version_info = self::get_version_info($offering, $key, $version, true);
 
         if ($version_info == -1)
             return $option;
@@ -84,27 +78,33 @@ class RGUserUpgrade{
         exit;
     }
 
+    public static function get_version_info($offering, $key, $version, $use_cache=true){
 
-    public static function get_version_info($offering, $key, $version){
+        $version_info = function_exists('get_site_transient') ? get_site_transient("gforms_userregistration_version") : get_transient("gforms_userregistration_version");
+        if(!$version_info || !$use_cache){
 
-        $body = "key=$key";
-        $options = array('method' => 'POST', 'timeout' => 3, 'body' => $body);
-        $options['headers'] = array(
-            'Content-Type' => 'application/x-www-form-urlencoded; charset=' . get_option('blog_charset'),
-            'Content-Length' => strlen($body),
-            'User-Agent' => 'WordPress/' . get_bloginfo("version"),
-            'Referer' => get_bloginfo("url")
-        );
-        $url = GRAVITY_MANAGER_URL . "/version.php?" . self::get_remote_request_params($offering, $key, $version);
-        $raw_response = wp_remote_request($url, $options);
+            $body = "key=$key";
+            $options = array('method' => 'POST', 'timeout' => 3, 'body' => $body);
+            $options['headers'] = array(
+                'Content-Type' => 'application/x-www-form-urlencoded; charset=' . get_option('blog_charset'),
+                'Content-Length' => strlen($body),
+                'User-Agent' => 'WordPress/' . get_bloginfo("version"),
+                'Referer' => get_bloginfo("url")
+            );
+            $url = GRAVITY_MANAGER_URL . "/version.php?" . self::get_remote_request_params($offering, $key, $version);
+            $raw_response = wp_remote_request($url, $options);
 
-        if ( is_wp_error( $raw_response ) || 200 != $raw_response['response']['code'])
-            return -1;
-        else
-        {
-            $ary = explode("||", $raw_response['body']);
-            return array("is_valid_key" => $ary[0], "version" => $ary[1], "url" => $ary[2]);
+            if ( is_wp_error( $raw_response ) || 200 != $raw_response['response']['code']){
+                $version_info = -1;
+            }
+            else
+            {
+                $ary = array_pad(explode("||", $raw_response['body']), 3, null);
+                $version_info = array("is_valid_key" => $ary[0], "version" => $ary[1], "url" => $ary[2]);
+            }
+            self::set_version_info($version_info);
         }
+        return $version_info;
     }
 
     public static function get_remote_request_params($offering, $key, $version){

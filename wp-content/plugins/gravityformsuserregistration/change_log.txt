@@ -1,5 +1,55 @@
 -----------------------------------------------------------
-Version 1.5.beta1
+Version 1.7
+    - Fixed issue with invalid site domain and path when creating a new site
+    - Fixed issue with email activation link displaying errors when mapping BBPress fields
+	- Fixed issue where $base global variable in wp-config.php may not have the trailing slash, causing the site url created to be bad
+	- Fixed bug where PayPal integration caused user to be registered regardless of being set to manual/email activation
+	
+-----------------------------------------------------------
+Version 1.6
+    - Updated automatic upgrade so that it caches remote requests for 12 hours (even on plugin's page)
+    - Updated multisite username and email validation to only apply if the correct page is being validated
+    - Updated to allow mapping to POST fields for Update User feed
+    - Fixed issue with form action on activate.php when invalid activation key provided
+    - Fixed issue with display name not being set correctly on an create feed
+    - Fixed issue were BP on single site installs was overwriting standard user meta fields (ie first name, last name, nicename)
+    - Fixed issue where email validation allowed update feeds to use already used email addresses
+    - Added better support for file uploads on forms with update feeds
+    - Fixed issue where multisite validation on Update feeds generated error when using existing email
+
+-----------------------------------------------------------
+Version 1.5
+    - Added support for custom registration page for multi-site installs
+    - Fixed link location for drop down on Pending Activations page which takes user to view All pending or form-specific pending
+    - Fixed issue where All pending activations was returning no records
+    - Fixed issue where usernames with spaces were not displaying in pending activation table
+    - Added "back to list" link on successful activation on Pending Activations page
+    - Updated Pending Activations table to only show form column when viewing All Pending Activations
+    - Updated UI to remove tabs
+    - Fixed issue where update_user() function was not correctly saving the user's email
+    - Fixed errors when populating an update fields with values containing single quotes
+    - Added support for specifying user activation type (manual, by email)
+    - Updated roles drop down on feed page to order by a custom sort (subscriber first)
+    - Fixed issue when updating user's website meta on an update feed
+    - Fixed issue with mapping category fields to BuddyPress
+    - Fixed error on update feed form when Buddy Press is uninstalled
+    - Fixed issue with checkboxes not being saved correctly when unchecked from an update feed
+    - Fixed issue with date fields not being formatted correctly when populating fields in an update feed
+    - Fixed issue with plugin-upgrade.php where failed remote response generated several notices
+    - Added support for saving processed config in entry meta and retrieving this from get_active_config() function
+    - Fixed issue where multiple file upload fields were not be populated correctly (powered by update feed)
+    - BP functions bound to gform_user_registered were not being bound in the admin as the gform_user_registered hook was not previously fired in the admin (now fires when manually activating a pending activation)
+    - Fixed issue where "wp_" prefix was being used instead of "$wpdb->prefix" Busted!
+    - refactored form population for update feeds
+    - added support for list fields for update feeds
+    - fixed issue with date field population for update feeds
+    - Fixed issue with hardcoded table prefix
+    - Fixed issue with AJAX call when admin is configured to force SSL
+    - Fixed issue where Gravity Forms was being required and failing to find plugin
+    - Fixed issue where values being populated back into form for update feeds were not escaping single quotes which caused errors
+    - Fixed issue where unescaped single quotes were causing issues on feed editor
+    - Fixed issue where custom meta fields with 0 as a value weren't saving to the database
+    - Fixed notices when form inputs array doesn't exist which caused AJAX spinner to remain and no form fields were displayed
     - fixed compatability issue with BP 1.6 where BP profile function is no longer available
     - added "gform_disable_registration" hook to allow add-ons to prevent User Registration from registering/updating a user
     - fixed issue where using wp_get_current_user() function was failing to update users when wait for payment option was checked
@@ -15,8 +65,8 @@ Version 1.5.beta1
     - Added support for user activation on a per feed basis
     - Added support for "update" feed types
     - Added new conditional logic options (greater than, less than, contains starts with, ends with) and support for other conditional fields
-    - Fixed notices    
-    
+    - Fixed notices
+
 -----------------------------------------------------------
 Version 1.4
     - Fixed typo

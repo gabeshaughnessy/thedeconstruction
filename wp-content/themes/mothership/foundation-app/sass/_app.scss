@@ -75,17 +75,40 @@ text-align:  center;
 
 #top-nav {
 .nav-bar{
+	width: 100%;
 	.menu-item {
-		a, a:focus, a:hover{
-			width: 130px; 
-			height: 160px;
+		float: left;
+		display: block;
+		list-style: none;
+		padding: 10px 25px 0 0;
+		width: 16.66%;
+		box-sizing: border-box;
+		margin: 0;
+
+
+		a, a:focus{
+			width: 100%; 
+			height: auto;
+			display: block;
+			background-size: contain;
 			background-repeat: no-repeat;
 			background-color: #ffffff;
-			padding: 122px 10px;
-			margin: 0 auto -160px;
+			background-position: 0 0;
+			padding: 25px 0;
+			margin: 0 auto;
 			color: #000000;
-			text-align: center;
-			font-size: 1.5em;
+			text-align: right;
+			font-size: 1.2em;
+			text-transform: uppercase;
+			opacity: 1;
+			-webkit-transition: all .5s;
+			transition: all .5s;
+			&:hover{
+				opacity: .5;
+			}
+			&:active{
+				-webkit-transform: scale(.9);
+			}
 		} 
 	}
 	}
@@ -93,7 +116,9 @@ text-align:  center;
 
 .nav-bar{
 	background: none;
-	height: 160px;
+	width: 100%;
+	min-height: 40px;
+	margin: 0;
 	.menu_text {
 		padding-top: 130px;
 		font-size: 1.5em;
@@ -102,7 +127,7 @@ text-align:  center;
 	}
 	.menu_home {
 		a, a:focus, a:hover{
-		background-image: url('../images/catscra130x130.jpg');
+		background-image: url('images/catscra130x130.jpg');
 		}
 	}
 
@@ -110,32 +135,32 @@ text-align:  center;
 
 	.menu_faq {
 		a, a:focus, a:hover{
-		background-image: url('../images/unicorn_faq130x130.jpg');
+		background-image: url('images/unicorn_faq130x130.jpg');
 		}
 	}
 
 	.menu_register {
 		a, a:focus, a:hover{
-		background-image: url('../images/crane_register130x130.jpg');
+		background-image: url('images/crane_register130x130.jpg');
 		}
 	}
 
 	.menu_manifesto {
 		a, a:focus, a:hover{
-		background-image: url('../images/manifesto130x130.jpg');
+		background-image: url('images/manifesto130x130.jpg');
 		}
 	}
 
 	.menu_news {
 		a, a:focus, a:hover{
-		background-image: url('../images/computer130.jpg');
+		background-image: url('images/computer130.jpg');
 		
 		}
 	}
 
 	.menu_contact {
 		a, a:focus, a:hover{
-		background-image: url('../images/keyboard_contact130x130.jpg');
+		background-image: url('images/keyboard_contact130x130.jpg');
 		}
 }
 }

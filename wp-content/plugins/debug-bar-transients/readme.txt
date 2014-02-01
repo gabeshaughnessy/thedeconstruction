@@ -3,8 +3,8 @@ Contributors: ocean90
 Tags: debug bar, transients, debug
 Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=VR8YU922B7K46
 Requires at least: 3.3
-Tested up to: 3.5
-Stable tag: 0.3
+Tested up to: 3.8.1
+Stable tag: 0.4
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -27,8 +27,8 @@ Once installed, you will have access to the following information:
 
 *This plugin is inspired by the [Debug Bar Cron](http://wordpress.org/extend/plugins/debug-bar-cron/) plugin.*
 
-= Feedback = 
-If you want, you can drop me a line @[ocean90](http://twitter.com/ocean90) on Twitter or @[Dominik Schilling](https://plus.google.com/u/0/101675293278434581718/) on Google+.
+= Feedback =
+If you want, you can drop me a line @[ocean90](http://twitter.com/ocean90) on Twitter or @[Dominik Schilling](https://plus.google.com/101675293278434581718/) on Google+.
 
 = More =
 Try also some of my [other plugins](http://profiles.wordpress.org/users/ocean90) or visit my site [wpGrafie.de](http://wpgrafie.de/).
@@ -64,6 +64,15 @@ To upload the plugin through WordPress, instead of FTP:
 1. Upload the downloaded zip file on the 'Add New' plugins screen (see the 'Upload' tab) in your WordPress admin area and activate.
 
 == Changelog ==
+
+= 0.4.0 =
+* Enhancement: Totals per transient type at the top of the page - props [Jrf](http://profiles.wordpress.org/jrf)
+* Bug fix: duplicate nonce - props [Jrf](http://profiles.wordpress.org/jrf)
+* Bug fix: show some useful information about invalid transients and prevent PHP notice - props [Jrf](http://profiles.wordpress.org/jrf)
+* Bug fix: HTML validation errors - props [Jrf](http://profiles.wordpress.org/jrf)
+* i18n: Dutch translation - props [Jrf](http://profiles.wordpress.org/jrf)
+* Enhancement: Updated core transient names
+
 = 0.3.0 =
 * Fixed a missing pre close tag
 * Fixed the height and width for the values in Opera and Firefox
