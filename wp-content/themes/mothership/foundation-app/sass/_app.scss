@@ -9,12 +9,6 @@
 	}
 }
 /* Navigation */
-.logged-in.admin-bar{
-padding-top: 48px;
-	.top-bar-container {
-	//top: 27px;
-	}
-}
 #top-nav .nav-bar {
 	margin-top: 0;
 }
@@ -39,7 +33,7 @@ padding-top: 48px;
 					width: 1px;
 					height: 24px;
 					margin: 0px 1em;
-					@media #{$tablet}{
+					@media screen and (max-width: $tablet-screen){
 						display: none;
 						margin: 0;
 					}

@@ -7328,39 +7328,34 @@ a.th {
 
 /* Navigation */
 /* line 12, ../sass/_app.scss */
-.logged-in.admin-bar {
-  padding-top: 48px;
-}
-
-/* line 18, ../sass/_app.scss */
 #top-nav .nav-bar {
   margin-top: 0;
 }
 
-/* line 22, ../sass/_app.scss */
+/* line 16, ../sass/_app.scss */
 .top-bar {
   background-color: #fff;
 }
-/* line 24, ../sass/_app.scss */
+/* line 18, ../sass/_app.scss */
 .top-bar .top-bar-menu {
   margin-top: 8px;
 }
-/* line 27, ../sass/_app.scss */
+/* line 21, ../sass/_app.scss */
 .top-bar ul {
   float: left;
   width: 100%;
 }
 @media only screen and (min-width: 1024px) {
-  /* line 27, ../sass/_app.scss */
+  /* line 21, ../sass/_app.scss */
   .top-bar ul {
     width: auto;
   }
 }
-/* line 34, ../sass/_app.scss */
+/* line 28, ../sass/_app.scss */
 .top-bar ul li {
   float: left;
 }
-/* line 36, ../sass/_app.scss */
+/* line 30, ../sass/_app.scss */
 .top-bar ul li.divider {
   border-right: 1px solid #ccc;
   display: block;
@@ -7368,14 +7363,14 @@ a.th {
   height: 24px;
   margin: 0px 1em;
 }
-@media only screen and (min-width: 1024px) {
-  /* line 36, ../sass/_app.scss */
+@media screen and (max-width: 1024px) {
+  /* line 30, ../sass/_app.scss */
   .top-bar ul li.divider {
     display: none;
     margin: 0;
   }
 }
-/* line 48, ../sass/_app.scss */
+/* line 42, ../sass/_app.scss */
 .top-bar ul .name h1 a {
   background: url("images/top-bar-logo.jpg") no-repeat 0 5px;
   text-indent: -9000%;
@@ -7383,17 +7378,17 @@ a.th {
   height: auto;
   margin-right: 10px;
 }
-/* line 58, ../sass/_app.scss */
+/* line 52, ../sass/_app.scss */
 .top-bar .top-bar-section ul {
   background: #fff;
 }
 @media screen and (max-width: 1024px) {
-  /* line 58, ../sass/_app.scss */
+  /* line 52, ../sass/_app.scss */
   .top-bar .top-bar-section ul {
     margin-bottom: 1em;
   }
 }
-/* line 65, ../sass/_app.scss */
+/* line 59, ../sass/_app.scss */
 .top-bar .top-bar-section ul li a {
   background: #fff;
   color: #333;
@@ -7403,47 +7398,47 @@ a.th {
   line-height: 1.4;
   font-weight: normal;
 }
-/* line 73, ../sass/_app.scss */
+/* line 67, ../sass/_app.scss */
 .top-bar .top-bar-section ul li a:hover {
   color: #666;
   background: #fff;
 }
 
-/* line 83, ../sass/_app.scss */
+/* line 77, ../sass/_app.scss */
 .uppercase {
   text-transform: uppercase;
 }
 
 /* Form custom styles */
-/* line 87, ../sass/_app.scss */
+/* line 81, ../sass/_app.scss */
 .gform_wrapper .gfield input[type="text"] {
   padding: 2px 4px;
   font-size: 14px;
 }
 
 /* tooltip fix */
-/* line 93, ../sass/_app.scss */
+/* line 87, ../sass/_app.scss */
 .tooltip {
   margin-top: -20px;
 }
 
 /* Sidebar */
-/* line 97, ../sass/_app.scss */
+/* line 91, ../sass/_app.scss */
 .sidebar > li {
   list-style: none;
 }
 
 /* MEDIA QUERIES */
 @media only screen and (max-width: 767px) {
-  /* line 105, ../sass/_app.scss */
+  /* line 99, ../sass/_app.scss */
   #top-nav .nav-bar {
     background: #fff;
   }
-  /* line 108, ../sass/_app.scss */
+  /* line 102, ../sass/_app.scss */
   #top-nav .nav-bar .menu-item {
     border: 1px dotted #ddd;
   }
-  /* line 110, ../sass/_app.scss */
+  /* line 104, ../sass/_app.scss */
   #top-nav .nav-bar .menu-item a, #top-nav .nav-bar .menu-item a:focus, #top-nav .nav-bar .menu-item a:hover {
     background-image: none;
     width: 100%;
@@ -7458,11 +7453,11 @@ a.th {
   }
 }
 @media only screen and (min-width: 767px) {
-  /* line 131, ../sass/_app.scss */
+  /* line 125, ../sass/_app.scss */
   #top-nav .nav-bar {
     width: 100%;
   }
-  /* line 133, ../sass/_app.scss */
+  /* line 127, ../sass/_app.scss */
   #top-nav .nav-bar .menu-item {
     float: left;
     display: block;
@@ -7472,7 +7467,7 @@ a.th {
     box-sizing: border-box;
     margin: 0;
   }
-  /* line 143, ../sass/_app.scss */
+  /* line 137, ../sass/_app.scss */
   #top-nav .nav-bar .menu-item a, #top-nav .nav-bar .menu-item a:focus {
     width: 100%;
     height: auto;
@@ -7488,7 +7483,7 @@ a.th {
     -webkit-transition: all .5s;
     transition: all .5s;
   }
-  /* line 158, ../sass/_app.scss */
+  /* line 152, ../sass/_app.scss */
   #top-nav .nav-bar .menu-item a .icon, #top-nav .nav-bar .menu-item a:focus .icon {
     background-size: contain;
     background-repeat: no-repeat;
@@ -7499,79 +7494,79 @@ a.th {
     clear: both;
     margin: 0 auto;
   }
-  /* line 169, ../sass/_app.scss */
+  /* line 163, ../sass/_app.scss */
   #top-nav .nav-bar .menu-item a:hover, #top-nav .nav-bar .menu-item a:focus:hover {
     opacity: .5;
   }
-  /* line 172, ../sass/_app.scss */
+  /* line 166, ../sass/_app.scss */
   #top-nav .nav-bar .menu-item a:active, #top-nav .nav-bar .menu-item a:focus:active {
     -webkit-transform: scale(0.9);
   }
 
-  /* line 180, ../sass/_app.scss */
+  /* line 174, ../sass/_app.scss */
   .nav-bar {
     background: none;
     width: 100%;
     min-height: 40px;
     margin: 0;
   }
-  /* line 185, ../sass/_app.scss */
+  /* line 179, ../sass/_app.scss */
   .nav-bar .menu_text {
     padding-top: 130px;
     font-size: 1.5em;
     text-align: center;
   }
-  /* line 192, ../sass/_app.scss */
+  /* line 186, ../sass/_app.scss */
   .nav-bar .menu_home a .icon, .nav-bar .menu_home a:focus .icon, .nav-bar .menu_home a:hover .icon {
     background-image: url("images/catscra130x130.jpg");
   }
-  /* line 200, ../sass/_app.scss */
+  /* line 194, ../sass/_app.scss */
   .nav-bar .menu_faq a .icon, .nav-bar .menu_faq a:focus .icon, .nav-bar .menu_faq a:hover .icon {
     background-image: url("images/unicorn_faq130x130.jpg");
   }
-  /* line 206, ../sass/_app.scss */
+  /* line 200, ../sass/_app.scss */
   .nav-bar .menu_register a .icon, .nav-bar .menu_register a:focus .icon, .nav-bar .menu_register a:hover .icon {
     background-image: url("images/crane_register130x130.jpg");
   }
-  /* line 212, ../sass/_app.scss */
+  /* line 206, ../sass/_app.scss */
   .nav-bar .menu_manifesto a .icon, .nav-bar .menu_manifesto a:focus .icon, .nav-bar .menu_manifesto a:hover .icon {
     background-image: url("images/manifesto130x130.jpg");
   }
-  /* line 218, ../sass/_app.scss */
+  /* line 212, ../sass/_app.scss */
   .nav-bar .menu_news a .icon, .nav-bar .menu_news a:focus .icon, .nav-bar .menu_news a:hover .icon {
     background-image: url("images/computer130.jpg");
   }
-  /* line 225, ../sass/_app.scss */
+  /* line 219, ../sass/_app.scss */
   .nav-bar .menu_contact a .icon, .nav-bar .menu_contact a:focus .icon, .nav-bar .menu_contact a:hover .icon {
     background-image: url("images/keyboard_contact130x130.jpg");
   }
 
-  /* line 232, ../sass/_app.scss */
+  /* line 226, ../sass/_app.scss */
   .nav-bar > li {
     margin-right: 25px;
     border: none;
   }
-  /* line 236, ../sass/_app.scss */
+  /* line 230, ../sass/_app.scss */
   .nav-bar > li.active {
     background: none;
     border-color: none;
   }
-  /* line 240, ../sass/_app.scss */
+  /* line 234, ../sass/_app.scss */
   .nav-bar > li.hover {
     background: none;
     border-color: none;
   }
-  /* line 245, ../sass/_app.scss */
+  /* line 239, ../sass/_app.scss */
   .nav-bar > li.active:hover {
     background: none;
     border-color: none;
   }
-  /* line 250, ../sass/_app.scss */
+  /* line 244, ../sass/_app.scss */
   .nav-bar > li:hover {
     background: none;
     border-color: none;
   }
-  /* line 254, ../sass/_app.scss */
+  /* line 248, ../sass/_app.scss */
   .nav-bar > li:last-child {
     border: none;
   }
@@ -7579,12 +7574,12 @@ a.th {
 /* end @media only screen and (max-width: 767px) */
 /*End Navigation */
 /* Header */
-/* line 267, ../sass/_app.scss */
+/* line 261, ../sass/_app.scss */
 header .logo img {
   margin-top: 20px;
 }
 
-/* line 275, ../sass/_app.scss */
+/* line 269, ../sass/_app.scss */
 header .header_description p {
   font-weight: bold;
   font-size: 2.2em;
@@ -7592,36 +7587,36 @@ header .header_description p {
 
 /*End Header*/
 /* TEAM LIST */
-/* line 285, ../sass/_app.scss */
+/* line 279, ../sass/_app.scss */
 .team-list {
   list-style: none;
 }
-/* line 288, ../sass/_app.scss */
+/* line 282, ../sass/_app.scss */
 .team-list .team-image img {
   margin: 0 auto 4px;
 }
 
 /* end team list */
 /* Post Styles */
-/* line 302, ../sass/_app.scss */
+/* line 296, ../sass/_app.scss */
 .post-title .author {
   color: #888;
 }
 
 /* ___ FOOTER ___ */
-/* line 310, ../sass/_app.scss */
+/* line 304, ../sass/_app.scss */
 .post-footer a.read.more {
   text-align: right;
   margin: 0px 0px 20px 0px;
   font-size: 18px;
 }
-/* line 318, ../sass/_app.scss */
+/* line 312, ../sass/_app.scss */
 .post-footer h4.post-title {
   text-align: center;
   font-size: 20px;
   text-transform: uppercase;
 }
-/* line 327, ../sass/_app.scss */
+/* line 321, ../sass/_app.scss */
 .post-footer .title h5 {
   text-align: left;
   text-transform: uppercase;
@@ -7631,12 +7626,12 @@ header .header_description p {
 
 /* end FOOTER */
 /*Social */
-/* line 344, ../sass/_app.scss */
+/* line 338, ../sass/_app.scss */
 ul.menu {
   clear: both;
 }
 
-/* line 349, ../sass/_app.scss */
+/* line 343, ../sass/_app.scss */
 ul.menu li {
   margin: 5px;
   list-style: none;
@@ -7644,7 +7639,7 @@ ul.menu li {
   width: 50px;
 }
 
-/* line 362, ../sass/_app.scss */
+/* line 356, ../sass/_app.scss */
 ul.accordion.social {
   background: #fff;
   list-style: none;
@@ -7653,30 +7648,30 @@ ul.accordion.social {
   position: relative;
   border: 0;
 }
-/* line 374, ../sass/_app.scss */
+/* line 368, ../sass/_app.scss */
 ul.accordion.social .facebook.active .content {
   overflow: visible !important;
 }
-/* line 378, ../sass/_app.scss */
+/* line 372, ../sass/_app.scss */
 ul.accordion.social > li {
   border-top: 0;
   border-bottom: 0;
   float: left;
   margin: 0 15px;
 }
-/* line 385, ../sass/_app.scss */
+/* line 379, ../sass/_app.scss */
 ul.accordion.social > li .title {
   border-left: 0;
   border-right: 0;
   background: #fff;
 }
-/* line 389, ../sass/_app.scss */
+/* line 383, ../sass/_app.scss */
 ul.accordion.social > li .title::after {
   border-width: 14px;
   top: 26px;
   right: 25px;
 }
-/* line 394, ../sass/_app.scss */
+/* line 388, ../sass/_app.scss */
 ul.accordion.social > li .title h5 {
   display: block;
   text-indent: -9999%;
@@ -7687,23 +7682,23 @@ ul.accordion.social > li .title h5 {
   width: 50px;
   height: 50px;
 }
-/* line 408, ../sass/_app.scss */
+/* line 402, ../sass/_app.scss */
 ul.accordion.social > li.facebook h5 {
   background-image: url("images/facebook50x50.png");
 }
-/* line 413, ../sass/_app.scss */
+/* line 407, ../sass/_app.scss */
 ul.accordion.social > li.google h5 {
   background-image: url("images/google-plus50x50.png");
 }
-/* line 418, ../sass/_app.scss */
+/* line 412, ../sass/_app.scss */
 ul.accordion.social > li.twitter h5 {
   background-image: url("images/twitter50x50.png");
 }
-/* line 423, ../sass/_app.scss */
+/* line 417, ../sass/_app.scss */
 ul.accordion.social > li.newsletter h5 {
   background-image: url("images/email-list50x50.png");
 }
-/* line 428, ../sass/_app.scss */
+/* line 422, ../sass/_app.scss */
 ul.accordion.social > li .content {
   border-left: 0;
   border-right: 0;
@@ -7711,24 +7706,24 @@ ul.accordion.social > li .content {
 
 /*End Social*/
 /* CHAT */
-/* line 443, ../sass/_app.scss */
+/* line 437, ../sass/_app.scss */
 body div.quick-chat-container {
   padding: 4px;
 }
-/* line 446, ../sass/_app.scss */
+/* line 440, ../sass/_app.scss */
 body div.quick-chat-container .quick-chat-history-container {
   box-shadow: inset 0 0 13px #aaa;
   padding: 8px;
   background: #fff;
   border: 1px solid #ccc;
 }
-/* line 455, ../sass/_app.scss */
+/* line 449, ../sass/_app.scss */
 body div.quick-chat-container .quick-chat-users-container .quick-chat-single-user {
   margin: 4px 0 0 0;
 }
 
 /*Modal Buttons */
-/* line 462, ../sass/_app.scss */
+/* line 456, ../sass/_app.scss */
 .modal_btn {
   -moz-box-shadow: inset 0px 1px 0px 0px #858585;
   -webkit-box-shadow: inset 0px 1px 0px 0px #858585;
@@ -7751,7 +7746,7 @@ body div.quick-chat-container .quick-chat-users-container .quick-chat-single-use
   text-shadow: 1px 1px 0px #949494;
 }
 
-/* line 482, ../sass/_app.scss */
+/* line 476, ../sass/_app.scss */
 .classname:hover {
   background: -webkit-gradient(linear, left top, left bottom, color-stop(0.05, black), color-stop(1, #3d3d3d));
   background: -moz-linear-gradient(center top, black 5%, #3d3d3d 100%);
@@ -7759,7 +7754,7 @@ body div.quick-chat-container .quick-chat-users-container .quick-chat-single-use
   background-color: #000000;
 }
 
-/* line 487, ../sass/_app.scss */
+/* line 481, ../sass/_app.scss */
 .classname:active {
   position: relative;
   top: 1px;
@@ -7768,21 +7763,21 @@ body div.quick-chat-container .quick-chat-users-container .quick-chat-single-use
 /* This imageless css button was generated by CSSButtonGenerator.com */
 /*End Modals */
 /*Content area*/
-/* line 496, ../sass/_app.scss */
+/* line 490, ../sass/_app.scss */
 #main-content-area {
   padding-bottom: 40px;
   overflow: hidden;
 }
 
 /*Home Page*/
-/* line 502, ../sass/_app.scss */
+/* line 496, ../sass/_app.scss */
 .home_content p {
   text-align: justify;
 }
 
 /* Options for Navigation on Small Screens */
 @media only screen and (max-width: 767px) {
-  /* line 514, ../sass/_app.scss */
+  /* line 508, ../sass/_app.scss */
   #top-nav .menu_home a, #top-nav .menu_home a:focus, #top-nav .menu_home a:hover, #top-nav .menu_faq a, #top-nav .menu_faq a:focus, #top-nav .menu_faq a:hover, #top-nav .menu_register a, #top-nav .menu_register a:focus, #top-nav .menu_register a:hover, #top-nav .menu_manifesto a, #top-nav .menu_manifesto a:focus, #top-nav .menu_manifesto a:hover, #top-nav .menu_news a, #top-nav .menu_news a:focus, #top-nav .menu_news a:hover, #top-nav .menu_contact a, #top-nav .menu_contact a:focus, #top-nav .menu_contact a:hover {
     background-image: none;
     width: 130px;
@@ -7794,11 +7789,11 @@ body div.quick-chat-container .quick-chat-users-container .quick-chat-single-use
     color: #000000;
   }
 
-  /* line 527, ../sass/_app.scss */
+  /* line 521, ../sass/_app.scss */
   .nav-bar {
     height: auto;
   }
-  /* line 529, ../sass/_app.scss */
+  /* line 523, ../sass/_app.scss */
   .nav-bar .menu_text {
     padding-top: 0px;
     font-size: 1.1em;
@@ -7806,7 +7801,7 @@ body div.quick-chat-container .quick-chat-users-container .quick-chat-single-use
   }
 
   /* Social ACCORDION */
-  /* line 538, ../sass/_app.scss */
+  /* line 532, ../sass/_app.scss */
   ul.accordion.social {
     max-width: 330px;
     border: 0;
