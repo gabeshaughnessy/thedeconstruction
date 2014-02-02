@@ -79,21 +79,21 @@ $default-float: left;
 
 // Colors
 
-// $primary-color: #2ba6cb;
-// $secondary-color: #e9e9e9;
-// $alert-color: #c60f13;
-// $success-color: #5da423;
+ $primary-color: #333;
+ $secondary-color: #666;
+ $alert-color: #a55;
+ $success-color: #5aa;
 
 // Make sure border radius matches unless we want it different.
 
-// $global-radius: 3px;
-// $global-rounded: 1000px;
+ $global-radius: 0px;
+ $global-rounded: 1000px;
 
 // Inset shadow shiny edges and depressions.
 
-// $shiny-edge-size: 0 1px 0;
-// $shiny-edge-color: rgba(#fff, .5);
-// $shiny-edge-active-color: rgba(#000, .2);
+ $shiny-edge-size: 0 1px 0;
+ $shiny-edge-color: rgba(#999, .5);
+ $shiny-edge-active-color: rgba(#000, .2);
 
 // Control whether or not CSS classes come through in the CSS files.
 
@@ -124,10 +124,10 @@ $default-float: left;
 // $include-html-tooltip-classes: $include-html-classes;
 
 // Media Queries
-
-// $small-screen: 768px;
-// $medium-screen: 1280px;
-// $large-screen: 1440px;
+ $tiny-screen : 400px;
+ $small-screen: 768px;
+ $medium-screen: 1280px;
+ $large-screen: 1440px;
 
 // $screen: "only screen";
 // $small: "only screen and (min-width: #{$small-screen})";

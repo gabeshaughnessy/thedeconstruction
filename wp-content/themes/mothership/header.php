@@ -78,11 +78,20 @@ $theme_options = get_option('mothership_options');
 	<?php 
 	if(!is_author()){?>
 	<!-- <div class="logo twelve columns last"><h1><?php bloginfo('name'); ?></h1></div> -->
-	
+	<?php
+          if(function_exists('edge_suite_view')){
+            echo '<div class="large-10 large-offset-1 columns centered">';
+            echo edge_suite_view();
+			echo '</div>';
+          }
+    else { ?>
+
 	<div class="logo large-10 large-offset-1 columns centered"><h1><img src="<?php bloginfo('stylesheet_directory') ?>/images/deconstruction_logo.jpg"/></h1></div>
 	
 	<div class="header_description ten columns centered"><p><?php bloginfo('description'); ?></p></div>
-	<?php  } ?>
+
+		<?php   }
+}//end is author ?>
 </header>
 <div id="main-content-area" class="row">
 <?php } ?>

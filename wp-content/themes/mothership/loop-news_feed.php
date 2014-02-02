@@ -35,7 +35,7 @@ if($newsfeed->have_posts()) : while($newsfeed->have_posts()) : $newsfeed->the_po
 <?php $newsfeed_posts .= '<div class="news-item">'; ?>
 
 <?php $newsfeed_posts .= '<h4 class="post-title"><a href="'.get_permalink().'"title="View the Post">'.get_the_title().'</a></h4>';
- $newsfeed_posts .= '<div class="post-image three columns push left">';
+ $newsfeed_posts .= '<div class="post-image large-3 columns push left">';
  $newsfeed_posts .= '<a href="'.get_permalink().'" title="View the Post">';	
 	if(has_post_format('video')){
 	if(function_exists('get_video_thumbnail')){
