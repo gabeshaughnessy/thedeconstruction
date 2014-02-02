@@ -24,17 +24,21 @@ function decon_enqueue_scripts() {
 		get_template_directory_uri() . '/foundation/javascripts/jquery.foundation.accordion.js',
 		array('jquery', 'foundation')
 	);
-	//Foundation App
 	wp_enqueue_script(
-		'foundation-app',
-		get_template_directory_uri() . '/foundation/javascripts/app.js',
-		array('foundation')
+		'foundation-reveal',
+		get_template_directory_uri() . '/foundation/javascripts/jquery.foundation.reveal.js',
+		array('foundation', 'jquery')
+	);
+	wp_enqueue_script(
+		'foundation-top-bar',
+		get_template_directory_uri() . '/foundation/javascripts/jquery.foundation.topbar.js',
+		array('foundation', 'jquery')
 	);
 	//Global JS
 	wp_enqueue_script(
 		'global_scripts',
 		get_template_directory_uri() . '/js/global.js',
-		array('foundation', 'jquery')
+		array('foundation', 'jquery', 'foundation-reveal')
 	);
 }
 add_action('wp_enqueue_scripts', 'decon_enqueue_scripts');
