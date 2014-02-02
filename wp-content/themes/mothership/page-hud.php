@@ -80,7 +80,8 @@ if($i % $columns == 1){
 	$display_name = $team['data']->display_name;
 	$team_profile_url = home_url('/').'team/'.$team['data']->user_nicename;
 	$team_location = get_user_meta($team['ID'], 'team-location', true);
-	$team_list .= '<li class="large-'.12/$columns.' columns panel"><div class="flex-video twelve columns">'.$team_stream.'</div><div class="team-details twelve columns"><a class="" title="View the Team Profile Page" href="'. $team_profile_url.'" class="team-link"><h6>'. $display_name. '</h6></a><p class="team-location ">'.$team_location.'</p></div></li>';
+	$column_count = 12/$columns;
+	$team_list .= '<li class="large-'.$column_count.' columns panel"><div class="flex-video twelve columns">'.$team_stream.'</div><div class="team-details twelve columns"><a class="" title="View the Team Profile Page" href="'. $team_profile_url.'" class="team-link"><h6>'. $display_name. '</h6></a><p class="team-location ">'.$team_location.'</p></div></li>';
 	$i++;
 }
 $team_list .= '</ul>';
