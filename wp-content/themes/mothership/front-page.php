@@ -30,8 +30,8 @@ get_template_part('accordion', 'social');
 </div>
 
 <!-- end of content -->
-
-	</div><!-- end of main content container -->
+<?php get_template_part('loop', 'blog'); ?>
+</div><!-- end of main content container -->
 
 <div class="post-footer row">
 	<div class="large-6 columns">

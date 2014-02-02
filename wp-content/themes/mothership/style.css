@@ -7599,24 +7599,39 @@ header .header_description p {
 /* end team list */
 /* Post Styles */
 /* line 296, ../sass/_app.scss */
+.post-title {
+  margin-bottom: 1em;
+}
+
+/* line 299, ../sass/_app.scss */
 .post-title .author {
   color: #888;
 }
 
-/* ___ FOOTER ___ */
+/* line 302, ../sass/_app.scss */
+.more-link {
+  font-weight: bold;
+  margin: 1em 0;
+}
 /* line 304, ../sass/_app.scss */
+.more-link:hover {
+  color: #999;
+}
+
+/* ___ FOOTER ___ */
+/* line 314, ../sass/_app.scss */
 .post-footer a.read.more {
   text-align: right;
   margin: 0px 0px 20px 0px;
   font-size: 18px;
 }
-/* line 312, ../sass/_app.scss */
+/* line 322, ../sass/_app.scss */
 .post-footer h4.post-title {
   text-align: center;
   font-size: 20px;
   text-transform: uppercase;
 }
-/* line 321, ../sass/_app.scss */
+/* line 331, ../sass/_app.scss */
 .post-footer .title h5 {
   text-align: left;
   text-transform: uppercase;
@@ -7626,12 +7641,12 @@ header .header_description p {
 
 /* end FOOTER */
 /*Social */
-/* line 338, ../sass/_app.scss */
+/* line 348, ../sass/_app.scss */
 ul.menu {
   clear: both;
 }
 
-/* line 343, ../sass/_app.scss */
+/* line 353, ../sass/_app.scss */
 ul.menu li {
   margin: 5px;
   list-style: none;
@@ -7639,7 +7654,7 @@ ul.menu li {
   width: 50px;
 }
 
-/* line 356, ../sass/_app.scss */
+/* line 366, ../sass/_app.scss */
 ul.accordion.social {
   background: #fff;
   list-style: none;
@@ -7648,30 +7663,30 @@ ul.accordion.social {
   position: relative;
   border: 0;
 }
-/* line 368, ../sass/_app.scss */
+/* line 378, ../sass/_app.scss */
 ul.accordion.social .facebook.active .content {
   overflow: visible !important;
 }
-/* line 372, ../sass/_app.scss */
+/* line 382, ../sass/_app.scss */
 ul.accordion.social > li {
   border-top: 0;
   border-bottom: 0;
   float: left;
   margin: 0 15px;
 }
-/* line 379, ../sass/_app.scss */
+/* line 389, ../sass/_app.scss */
 ul.accordion.social > li .title {
   border-left: 0;
   border-right: 0;
   background: #fff;
 }
-/* line 383, ../sass/_app.scss */
+/* line 393, ../sass/_app.scss */
 ul.accordion.social > li .title::after {
   border-width: 14px;
   top: 26px;
   right: 25px;
 }
-/* line 388, ../sass/_app.scss */
+/* line 398, ../sass/_app.scss */
 ul.accordion.social > li .title h5 {
   display: block;
   text-indent: -9999%;
@@ -7682,48 +7697,66 @@ ul.accordion.social > li .title h5 {
   width: 50px;
   height: 50px;
 }
-/* line 402, ../sass/_app.scss */
+/* line 412, ../sass/_app.scss */
 ul.accordion.social > li.facebook h5 {
   background-image: url("images/facebook50x50.png");
 }
-/* line 407, ../sass/_app.scss */
+/* line 417, ../sass/_app.scss */
 ul.accordion.social > li.google h5 {
   background-image: url("images/google-plus50x50.png");
 }
-/* line 412, ../sass/_app.scss */
+/* line 422, ../sass/_app.scss */
 ul.accordion.social > li.twitter h5 {
   background-image: url("images/twitter50x50.png");
 }
-/* line 417, ../sass/_app.scss */
+/* line 427, ../sass/_app.scss */
 ul.accordion.social > li.newsletter h5 {
   background-image: url("images/email-list50x50.png");
 }
-/* line 422, ../sass/_app.scss */
+/* line 432, ../sass/_app.scss */
 ul.accordion.social > li .content {
   border-left: 0;
   border-right: 0;
 }
 
+/* line 444, ../sass/_app.scss */
+.share-section .share-text {
+  float: left;
+  font-weight: bold;
+  line-height: 36px;
+}
+/* line 450, ../sass/_app.scss */
+.share-section .accordion.social li {
+  margin: 0 8px;
+}
+/* line 453, ../sass/_app.scss */
+.share-section .accordion.social li .title h5 {
+  width: 26px;
+  height: 26px;
+  background-size: contain;
+  background-repeat: no-repeat;
+}
+
 /*End Social*/
 /* CHAT */
-/* line 437, ../sass/_app.scss */
+/* line 467, ../sass/_app.scss */
 body div.quick-chat-container {
   padding: 4px;
 }
-/* line 440, ../sass/_app.scss */
+/* line 470, ../sass/_app.scss */
 body div.quick-chat-container .quick-chat-history-container {
   box-shadow: inset 0 0 13px #aaa;
   padding: 8px;
   background: #fff;
   border: 1px solid #ccc;
 }
-/* line 449, ../sass/_app.scss */
+/* line 479, ../sass/_app.scss */
 body div.quick-chat-container .quick-chat-users-container .quick-chat-single-user {
   margin: 4px 0 0 0;
 }
 
 /*Modal Buttons */
-/* line 456, ../sass/_app.scss */
+/* line 486, ../sass/_app.scss */
 .modal_btn {
   -moz-box-shadow: inset 0px 1px 0px 0px #858585;
   -webkit-box-shadow: inset 0px 1px 0px 0px #858585;
@@ -7746,7 +7779,7 @@ body div.quick-chat-container .quick-chat-users-container .quick-chat-single-use
   text-shadow: 1px 1px 0px #949494;
 }
 
-/* line 476, ../sass/_app.scss */
+/* line 506, ../sass/_app.scss */
 .classname:hover {
   background: -webkit-gradient(linear, left top, left bottom, color-stop(0.05, black), color-stop(1, #3d3d3d));
   background: -moz-linear-gradient(center top, black 5%, #3d3d3d 100%);
@@ -7754,7 +7787,7 @@ body div.quick-chat-container .quick-chat-users-container .quick-chat-single-use
   background-color: #000000;
 }
 
-/* line 481, ../sass/_app.scss */
+/* line 511, ../sass/_app.scss */
 .classname:active {
   position: relative;
   top: 1px;
@@ -7763,21 +7796,21 @@ body div.quick-chat-container .quick-chat-users-container .quick-chat-single-use
 /* This imageless css button was generated by CSSButtonGenerator.com */
 /*End Modals */
 /*Content area*/
-/* line 490, ../sass/_app.scss */
+/* line 520, ../sass/_app.scss */
 #main-content-area {
   padding-bottom: 40px;
   overflow: hidden;
 }
 
 /*Home Page*/
-/* line 496, ../sass/_app.scss */
+/* line 526, ../sass/_app.scss */
 .home_content p {
   text-align: justify;
 }
 
 /* Options for Navigation on Small Screens */
 @media only screen and (max-width: 767px) {
-  /* line 508, ../sass/_app.scss */
+  /* line 538, ../sass/_app.scss */
   #top-nav .menu_home a, #top-nav .menu_home a:focus, #top-nav .menu_home a:hover, #top-nav .menu_faq a, #top-nav .menu_faq a:focus, #top-nav .menu_faq a:hover, #top-nav .menu_register a, #top-nav .menu_register a:focus, #top-nav .menu_register a:hover, #top-nav .menu_manifesto a, #top-nav .menu_manifesto a:focus, #top-nav .menu_manifesto a:hover, #top-nav .menu_news a, #top-nav .menu_news a:focus, #top-nav .menu_news a:hover, #top-nav .menu_contact a, #top-nav .menu_contact a:focus, #top-nav .menu_contact a:hover {
     background-image: none;
     width: 130px;
@@ -7789,11 +7822,11 @@ body div.quick-chat-container .quick-chat-users-container .quick-chat-single-use
     color: #000000;
   }
 
-  /* line 521, ../sass/_app.scss */
+  /* line 551, ../sass/_app.scss */
   .nav-bar {
     height: auto;
   }
-  /* line 523, ../sass/_app.scss */
+  /* line 553, ../sass/_app.scss */
   .nav-bar .menu_text {
     padding-top: 0px;
     font-size: 1.1em;
@@ -7801,7 +7834,7 @@ body div.quick-chat-container .quick-chat-users-container .quick-chat-single-use
   }
 
   /* Social ACCORDION */
-  /* line 532, ../sass/_app.scss */
+  /* line 562, ../sass/_app.scss */
   ul.accordion.social {
     max-width: 330px;
     border: 0;

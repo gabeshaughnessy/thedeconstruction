@@ -1,6 +1,6 @@
-<?php 
-global $post;
-
+<?php
+function socialAccordion($post){
+$socialAccordion = '';
 //this is to output the page title and content for a 'page for posts' page as set under  'settings' - 'reading'
     if( is_home() && !is_paged() && get_option('page_for_posts') ) {
       $posts_page_id = get_option('page_for_posts'); 
@@ -30,30 +30,34 @@ $social_meta = array();
         $social_meta['facebook_url'] = "https://www.facebook.com/sharer/sharer.php?u=";
         //facebook documentation: https://developers.facebook.com/docs/plugins/share-button/
         //facebook link format: https://www.facebook.com/sharer/sharer.php?u=https%3A%2F%2Fparse.com
-?>
-<ul class="accordion social">
-  <li class="facebook">
+
+$socialAccordion .= '<ul class="accordion social"> ';
+$socialAccordion .=  '<li class="facebook">
     <div class="title">
-      <a onclick="javascript:window.open(this.href,'', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=600,width=600'); return false; " class="icon jv_facebook" title="Share on Facebook" href="<?php echo $social_meta['facebook_url'].urlencode(get_permalink($post->ID)); ?>"><h5>Facebook</h5></a>
+      <a onclick="javascript:window.open(this.href,"", "menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=600,width=600"); return false;" class="icon jv_facebook" title="Share on Facebook" href="'.$social_meta["facebook_url"].urlencode(get_permalink($post->ID)).'"><h5>Facebook</h5></a>
     </div>
-  </li>
-  <li class="google">
+  </li>';
+$socialAccordion .=  ' <li class="google">
     <div class="title">
-      <a onclick="javascript:window.open(this.href,'','menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=600,width=600'); return false;" class="icon decon_googleplus" title="Share on Google+" href="<?php echo $social_meta['googleplus_url'].urlencode(get_permalink($post->ID)); ?>"><h5>Google+</h5></a>
+      <a onclick="javascript:window.open(this.href,"","menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=600,width=600"); return false;" class="icon decon_googleplus" title="Share on Google+" href="'.$social_meta["googleplus_url"].urlencode(get_permalink($post->ID)).'"><h5>Google+</h5></a>
     </div>
-  </li>
-  <li class="twitter">
+  </li>';
+$socialAccordion .=  ' <li class="twitter">
     <div class="title">
-      <a onclick="javascript:window.open('<?php echo $social_meta['twitter_url'].urlencode(get_permalink($post->ID));
+      <a onclick="javascript:window.open("'.$social_meta["twitter_url"].urlencode(get_permalink($post->ID)).'
                 //twitter widget.js conflicts with this unless we put the URL directly in the onclick function
-             ?>','','menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=600,width=600');return false; "class="icon decon_twitter" title="Tweet" href="#jv_twitter"><h5>Twitter</h5></a>
+             ","","menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=600,width=600
+             );return false; "class="icon decon_twitter" title="Tweet" href="#jv_twitter"><h5>Twitter</h5></a>
     </div>
-  </li>
+  </li>';
+$socialAccordion .=  '
   <li class="newsletter">
     <div class="title">
-      <a onclick="javascript:window.open(this.href,'','menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=600,width=600'); return false;" class="icon" href="mailto:?subject=<?php the_title(); ?>&amp;body=<?php echo get_permalink($post->ID); ?>" title="Share by Email"><h5>Email</h5></a>
+      <a onclick="javascript:window.open(this.href,"","menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=600,width=600"); return false;" class="icon" href="mailto:?subject="'.get_the_title().'&amp;body='. get_permalink($post->ID).'" title="Share by Email"><h5>Email</h5></a>
     </div>
    
-  </li>
-  
-</ul>
+  </li>';
+$socialAccordion .=  '</ul>';
+return $socialAccordion;  
+}
+?>

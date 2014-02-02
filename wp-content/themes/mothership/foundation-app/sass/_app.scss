@@ -293,8 +293,18 @@ header {
 /* end team list */
 
 /* Post Styles */
+.post-title {
+	margin-bottom: 1em;
+}
 .post-title .author {
 	color: #888;
+}
+.more-link {
+	font-weight: bold;
+	&:hover{
+		color: #999;
+	}
+	margin: 1em 0;
 }
 /* ___ FOOTER ___ */
 
@@ -429,6 +439,26 @@ ul.accordion {
 		
 	}
 	
+}
+.share-section {
+	.share-text{
+		float: left;
+		font-weight: bold;
+		line-height: 36px;
+	}
+	.accordion.social{
+		li{
+			margin: 0 8px;
+			.title{
+				h5{
+					width: 26px;
+					height: 26px;
+					background-size: contain;
+					background-repeat: no-repeat;
+				}
+			}
+		}
+	}
 }
 /*End Social*/
 

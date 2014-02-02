@@ -3,6 +3,7 @@
 //Initialize Admin Pages 
 require_once('lib/admin-page-class/admin-page-class.php');
 require_once('lib/admin-page-class/theme-options.php');
+require_once('social-accordion.php');
 
 //REWRITES
 require_once('lib/rewrites.php');

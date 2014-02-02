@@ -15,6 +15,7 @@
 <?php wp_footer(); ?>
 </footer>
 <?php get_template_part('modal'); ?>
+<?php get_template_part('modal', 'newsletter'); ?>
 </body>
 </html>
 <?php }
