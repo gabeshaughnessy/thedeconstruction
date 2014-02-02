@@ -444,7 +444,7 @@ ul.accordion {
 	.share-text{
 		float: left;
 		font-weight: bold;
-		line-height: 36px;
+		line-height: 24px;
 	}
 	.accordion.social{
 		li{
@@ -455,6 +455,7 @@ ul.accordion {
 					height: 26px;
 					background-size: contain;
 					background-repeat: no-repeat;
+					margin: 0;
 				}
 			}
 		}
