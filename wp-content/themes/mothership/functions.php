@@ -3,7 +3,8 @@
 //Initialize Admin Pages 
 require_once('lib/admin-page-class/admin-page-class.php');
 require_once('lib/admin-page-class/theme-options.php');
-require_once('social-accordion.php');
+require_once('functions-social.php');
+require_once('functions-caching.php');
 
 //REWRITES
 require_once('lib/rewrites.php');
@@ -226,6 +227,7 @@ add_theme_support( 'post-thumbnails' );
 set_post_thumbnail_size( 120, 9999, true );
 if ( function_exists( 'add_image_size' ) ) { 
 	add_image_size( 'one-column', 120, 9999, true ); //(cropped)
+	add_image_size( 'social', 700, 700, false ); //(not-cropped)
  }
  
  /* Dashboard - remove fields */

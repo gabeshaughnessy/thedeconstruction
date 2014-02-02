@@ -30,7 +30,7 @@ get_template_part('accordion', 'social');
 </div>
 
 <!-- end of content -->
-<?php get_template_part('loop', 'blog'); ?>
+
 </div><!-- end of main content container -->
 
 <div class="post-footer row">
@@ -57,5 +57,12 @@ get_template_part('accordion', 'social');
 		</div>
 	
 	</div>
+	<div class="row">
+		<div class="large-12 columns"><h2 >Deconstruction: Blog</h2>		<hr></div>
+
+		<?php get_template_part('loop', 'blog'); ?>
+		<div class="large-12 columns"><p><a class="more-link" href="/news">Read the Blog</a></p></div>
+	</div>
 </div>
+
 <?php get_footer(); ?>
