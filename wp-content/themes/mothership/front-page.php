@@ -37,7 +37,7 @@ get_template_part('accordion', 'social');
 	<div class="large-6 columns">
 			<div class="title">
 				
-				<h5>Deconstruct: News</h5>
+				<h5>Deconstruct: Event News</h5>
 				<hr>
 			</div>
 	
