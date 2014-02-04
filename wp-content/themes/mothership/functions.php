@@ -239,6 +239,7 @@ if ( function_exists( 'add_image_size' ) ) {
  	remove_meta_box( 'dashboard_secondary', 'dashboard', 'side' );
  	remove_meta_box( 'dashboard_incoming_links', 'dashboard', 'normal' );
  	remove_meta_box( 'dashboard_right_now', 'dashboard', 'normal' );
+ 	remove_meta_box ('dashboard_activity', 'dashboard', 'normal');
  } 
  
  // Hoook into the 'wp_dashboard_setup' action to register our function
