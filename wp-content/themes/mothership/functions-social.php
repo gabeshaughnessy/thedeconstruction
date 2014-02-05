@@ -30,9 +30,9 @@ $socialTags = '';
     $socialTags .= '<meta name="twitter:card" content="summary" >';
     $socialTags .= '<meta name="twitter:image" content="'.(isset( $social_meta['image'])?  $social_meta['image'] : "").'" >';
   } 
-  $socialTags .= '<meta name="twitter:site" content="thedeconstruction" >';
+  $socialTags .= '<meta name="twitter:site" content="Deconstruction" >';
   $socialTags .= '<meta name="twitter:url" content="'.get_permalink($post->ID).'" >';
-  $socialTags .= '<meta name="twitter:creator" content="thedeconstruction" >';
+  $socialTags .= '<meta name="twitter:creator" content="Deconstruction" >';
   $socialTags .= '<meta name="twitter:title" content="'.wp_title("",false).'" >';
   $socialTags .= '<meta name="twitter:description" content="'.strip_tags(get_the_excerpt($post->ID)).'" >';
 
