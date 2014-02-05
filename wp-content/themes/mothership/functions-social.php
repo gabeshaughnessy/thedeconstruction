@@ -4,7 +4,7 @@ function getSocialTags($post){
 
  $attached_image = wp_get_attachment_image_src( get_post_thumbnail_id( $post->ID ), 'social');
  if(!empty($attached_image) && isset($attached_image[0])){
-  error_log(print_r($attached_image, true));
+  
   $social_meta['image'] = $attached_image[0];
  }  
  $has_video = false;
@@ -49,11 +49,26 @@ $socialTags = '';
   
   $video_id = get_field('decon_video_id', $post->ID);
   if( $has_video == true){
+    $json = file_get_contents('http://www.youtube.com/oembed?url=http://www.youtube.com/watch?v='.$video_id.'&format=json');
+    $obj = json_decode($json);
+    if(isset($obj->width)){
+      $og_width = $obj->width;
+    }
+    if(isset($obj->height)){
+      $og_height = $obj->height;
+    }
+    if(!isset($og_width)){
+      $og_width = '1280';
+    }
+    if(!isset($og_height)){
+      $og_width = '720';
+    }
+
     $socialTags .= '<meta property="og:type" content="video" >';
     $socialTags .= '<meta property="og:image" content="http://i1.ytimg.com/vi/'.$video_id.'/maxresdefault.jpg" >';
     $socialTags .= '<meta property="og:video" content="http://www.youtube.com/v/'.$video_id.'?version=3&autohide=1" >';
-    $socialTags .= '<meta property="og:video:width" content="1920" >';
-    $socialTags .= '<meta property="og:video:height" content="1080" >';
+    $socialTags .= '<meta property="og:video:width" content="'.$og_width.'" >';
+    $socialTags .= '<meta property="og:video:height" content="'.$og_height.'" >';
     $socialTags .= '<meta name="twitter:card" content="player">';
     $socialTags .= '<meta name="twitter:image" content="http://i1.ytimg.com/vi/'.$video_id.'/maxresdefault.jpg">';
     $socialTags .= '<meta name="twitter:app:name:iphone" content="YouTube">';
@@ -66,8 +81,8 @@ $socialTags = '';
     $socialTags .= '<meta name="twitter:app:id:googleplay" content="com.google.android.youtube">';
     $socialTags .= '<meta name="twitter:app:url:googleplay" content="http://www.youtube.com/watch?v='.$video_id.'">';
     $socialTags .= '<meta name="twitter:player" content="https://www.youtube.com/embed/'.$video_id.'">';
-    $socialTags .= '<meta name="twitter:player:width" content="1920">';
-    $socialTags .= '<meta name="twitter:player:height" content="1080">';
+    $socialTags .= '<meta name="twitter:player:width" content="'.$og_width.'">';
+    $socialTags .= '<meta name="twitter:player:height" content="'.$og_height.'">';
   }
 
 rewind_posts();
