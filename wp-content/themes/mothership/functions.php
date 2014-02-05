@@ -2,7 +2,7 @@
 
 /* DEFINE ENVIRONMENT GLOBAL */
 $host = $_SERVER['HTTP_HOST'];
-if (stristr($host, 'com') == FALSE){ 
+if (stristr($host, 'org') == FALSE){ 
 	define ('DECON_ENVIRONMENT', "development");
     }
     elseif ((stristr($host, 'staging') !== FALSE)){
