@@ -7,10 +7,13 @@ function getSocialTags($post){
   $social_meta['image'] = $attached_image[0];
  }  
  $has_video = false;
-
+  $video_id = get_field('decon_video_id', $post->ID);
+  if($video_id != ''){
+    $has_video = true;
+  }
 $socialTags = '';
   $socialTags .= '<meta property="og:site_name" content="'.get_bloginfo('name').'" >';
-  $socialTags .= '<meta property="og:url" content="'.get_bloginfo('url').'" >';
+  $socialTags .= '<meta property="og:url" content="'.get_permalink($post->ID).'" >';
   $socialTags .= '<meta property="og:type" content="article" >';
   $socialTags .= '<meta property="og:title" content="'.wp_title("",false).'" >';
   $socialTags .= '<meta property="og:description" content="'.strip_tags(get_the_excerpt($post->ID)).'"  >';
@@ -23,22 +26,17 @@ $socialTags = '';
   //TWITTER
   if($has_video == false){
     $socialTags .= '<meta name="twitter:card" content="summary" >';
-  }
-  else {
-    $socialTags .= '<meta name="twitter:card" content="player" >';
-
-  }
-  
+  } 
   $socialTags .= '<meta name="twitter:site" content="@thedeconstruction" >';
-  $socialTags .= '<meta name="twitter:url" content="'.get_bloginfo('url').'" >';
+  $socialTags .= '<meta name="twitter:url" content="'.get_permalink($post->ID).'" >';
   $socialTags .= '<meta name="twitter:creator" content="@thedeconstruction" >';
   $socialTags .= '<meta name="twitter:title" content="'.wp_title("",false).'" >';
   $socialTags .= '<meta name="twitter:description" content="'.strip_tags(get_the_excerpt($post->ID)).'" >';
   $socialTags .= '<meta name="twitter:image" content="'.(isset( $social_meta['image'])?  $social_meta['image'] : "").'" >';
   
   $video_id = get_field('decon_video_id', $post->ID);
-  if($video_id != ''){
-    $has_video = true;
+  if( $has_video == true){
+   
     $socialTags .= '<meta property="og:video" content="http://www.youtube.com/watch?v='.$video_id.'" >';
     $socialTags .= '<meta property="og:video:width" content="1920" >';
     $socialTags .= '<meta property="og:video:height" content="1080" >';
