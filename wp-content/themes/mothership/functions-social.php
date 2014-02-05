@@ -45,7 +45,6 @@ $socialTags = '';
     $socialTags .= '<meta property="og:video:width" content="1920" >';
     $socialTags .= '<meta property="og:video:height" content="1080" >';
     $socialTags .= '<meta name="twitter:card" content="player">';
-    $socialTags .= '<meta name="twitter:player:stream" content="http://www.youtube.com/watch?v='.$video_id.'">';
     $socialTags .= '<meta name="twitter:image" content="http://i1.ytimg.com/vi/'.$video_id.'/maxresdefault.jpg">';
     $socialTags .= '<meta name="twitter:app:name:iphone" content="YouTube">';
     $socialTags .= '<meta name="twitter:app:id:iphone" content="544007664">';
