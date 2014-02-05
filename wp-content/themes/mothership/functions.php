@@ -266,9 +266,9 @@ function my_embed_oembed_html($html, $url, $attr, $post_id) {
 /* IMAGES */
 
 add_theme_support( 'post-thumbnails' );
-set_post_thumbnail_size( 120, 9999, true );
+set_post_thumbnail_size( 120, 120, true );
 if ( function_exists( 'add_image_size' ) ) { 
-	add_image_size( 'one-column', 120, 9999, true ); //(cropped)
+	add_image_size( 'one-column', 120, 120, true ); //(cropped)
 	add_image_size( 'social', 700, 700, false ); //(not-cropped)
  }
  
