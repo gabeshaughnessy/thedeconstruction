@@ -17,11 +17,9 @@ $socialTags = '';
   //$socialTags .= '<meta property="og:author" content="" >';
   $socialTags .= '<meta property="og:image" content="'.(isset( $social_meta['image'])?  $social_meta['image'] : "").'" >';
   
-  if($has_video == true){
-    $socialTags .= '<meta property="og:video" content="" >';
-    $socialTags .= '<meta property="og:video:width" content="" >';
-    $socialTags .= '<meta property="og:video:height" content="" >';
-   } 
+  
+
+   
   //TWITTER
   if($has_video == false){
     $socialTags .= '<meta name="twitter:card" content="summary" >';
@@ -41,6 +39,9 @@ $socialTags = '';
   $video_id = get_field('decon_video_id', $post->ID);
   if($video_id != ''){
     $has_video = true;
+    $socialTags .= '<meta property="og:video" content="http://www.youtube.com/watch?v='.$video_id.'" >';
+    $socialTags .= '<meta property="og:video:width" content="1920" >';
+    $socialTags .= '<meta property="og:video:height" content="1080" >';
     $socialTags .= '<meta name="twitter:card" content="player">';
     $socialTags .= '<meta name="twitter:player:stream" content="http://www.youtube.com/watch?v='.$video_id.'">';
     $socialTags .= '<meta name="twitter:image" content="http://i1.ytimg.com/vi/'.$video_id.'/maxresdefault.jpg">';
