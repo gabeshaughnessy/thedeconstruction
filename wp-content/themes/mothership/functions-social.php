@@ -39,7 +39,6 @@ $socialTags = '';
   $socialTags .= '<meta name="twitter:image" content="'.(isset( $social_meta['image'])?  $social_meta['image'] : "").'" >';
   
   $video_id = get_field('decon_video_id', $post->ID);
-error_log('video id'.$video_id);
   if($video_id != ''){
     $has_video = true;
     $socialTags .= '<meta name="twitter:card" content="player">';
