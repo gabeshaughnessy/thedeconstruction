@@ -1,5 +1,47 @@
 <?php  /* Theme Functions */
 
+/* DEFINE ENVIRONMENT GLOBAL */
+$host = $_SERVER['HTTP_HOST'];
+if (stristr($host, 'com') == FALSE){ 
+	define ('DECON_ENVIRONMENT', "development");
+    }
+    elseif ((stristr($host, 'staging') !== FALSE)){
+        define('DECON_ENVIRONMENT', "staging");
+        }
+        else{
+            define('DECON_ENVIRONMENT', "production");
+            } 
+/* Plugins Activiation */
+/* ################################################################################# */
+
+    if (DECON_ENVIRONMENT != 'development') {
+       define('ACF_LITE', true);
+    }
+
+    /* Advanced Custome Fields */
+    require_once('lib/plugins/advanced-custom-fields/acf.php');
+    /* ACF Add-ons */
+    //include_once( 'lib/plugins/advanced-custom-fields/add-ons/acf-repeater/acf-repeater.php' );
+    //include_once( 'lib/plugins/advanced-custom-fields/add-ons/acf-flexible-content/acf-flexible-content.php' );
+    //include_once( 'lib/plugins/advanced-custom-fields/add-ons/acf-options-page/acf-options-page.php' ); 
+    //include_once( 'lib/plugins/advanced-custom-fields/add-ons/acf-field-date-time-picker/acf-date_time_picker.php' ); 
+
+    if ( DECON_ENVIRONMENT != 'development' ) {
+        // If this is staging or production
+            // load ACF declarations
+            require_once('lib/plugins/advanced-custom-fields/register_fields.php'); 
+        }
+        else{            
+            add_action( 'admin_menu', 'decon_acf_menu', 9 );
+            function decon_acf_menu(){
+                add_submenu_page( 'edit.php?post_type=acf', __('Custom Fields','acf'), __('Custom Fields','acf'), 'manage_options', 'edit.php?post_type=acf');
+                add_submenu_page( 'edit.php?post_type=acf', __('Import ACF','acf'), __('Import ACF','acf'), 'manage_options', 'admin.php?import=wordpress');
+
+                }
+
+    }
+
+
 //Initialize Admin Pages 
 require_once('lib/admin-page-class/admin-page-class.php');
 require_once('lib/admin-page-class/theme-options.php');
