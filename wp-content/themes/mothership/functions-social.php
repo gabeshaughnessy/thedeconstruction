@@ -12,11 +12,19 @@ function getSocialTags($post){
   if($video_id != ''){
     $has_video = true;
   }
+
+if(get_the_excerpt($post->ID) != ''){
+  $description = get_the_excerpt($post->ID);
+}
+else {
+  $description = wp_title("",false);
+}
+
 $socialTags = '';
   $socialTags .= '<meta property="og:site_name" content="'.get_bloginfo('name').'" >';
   $socialTags .= '<meta property="og:url" content="'.get_permalink($post->ID).'" >';
   $socialTags .= '<meta property="og:title" content="'.wp_title("",false).'" >';
-  $socialTags .= '<meta property="og:description" content="'.strip_tags(get_the_excerpt($post->ID)).'"  >';
+  $socialTags .= '<meta property="og:description" content="'.$description.'"  >';
   //$socialTags .= '<meta property="og:author" content="" >';
 
   
@@ -34,7 +42,9 @@ $socialTags = '';
   $socialTags .= '<meta name="twitter:url" content="'.get_permalink($post->ID).'" >';
   $socialTags .= '<meta name="twitter:creator" content="Deconstruction" >';
   $socialTags .= '<meta name="twitter:title" content="'.wp_title("",false).'" >';
-  $socialTags .= '<meta name="twitter:description" content="'.strip_tags(get_the_excerpt($post->ID)).'" >';
+  
+
+  $socialTags .= '<meta name="twitter:description" content="'.$description.'" >';
 
   
   $video_id = get_field('decon_video_id', $post->ID);
