@@ -4,6 +4,7 @@ function getSocialTags($post){
 
  $attached_image = wp_get_attachment_image_src( get_post_thumbnail_id( $post->ID ), 'social');
  if(!empty($attached_image) && isset($attached_image[0])){
+  error_log(print_r($attached_image, true));
   $social_meta['image'] = $attached_image[0];
  }  
  $has_video = false;
@@ -18,25 +19,27 @@ $socialTags = '';
   $socialTags .= '<meta property="og:title" content="'.wp_title("",false).'" >';
   $socialTags .= '<meta property="og:description" content="'.strip_tags(get_the_excerpt($post->ID)).'"  >';
   //$socialTags .= '<meta property="og:author" content="" >';
-  $socialTags .= '<meta property="og:image" content="'.(isset( $social_meta['image'])?  $social_meta['image'] : "").'" >';
+
   
   
 
    
   //TWITTER
   if($has_video == false){
+    $socialTags .= '<meta property="og:image" content="'.(isset( $social_meta['image'])?  $social_meta['image'] : "").'" >';
     $socialTags .= '<meta name="twitter:card" content="summary" >';
+    $socialTags .= '<meta name="twitter:image" content="'.(isset( $social_meta['image'])?  $social_meta['image'] : "").'" >';
   } 
   $socialTags .= '<meta name="twitter:site" content="@thedeconstruction" >';
   $socialTags .= '<meta name="twitter:url" content="'.get_permalink($post->ID).'" >';
   $socialTags .= '<meta name="twitter:creator" content="@thedeconstruction" >';
   $socialTags .= '<meta name="twitter:title" content="'.wp_title("",false).'" >';
   $socialTags .= '<meta name="twitter:description" content="'.strip_tags(get_the_excerpt($post->ID)).'" >';
-  $socialTags .= '<meta name="twitter:image" content="'.(isset( $social_meta['image'])?  $social_meta['image'] : "").'" >';
+
   
   $video_id = get_field('decon_video_id', $post->ID);
   if( $has_video == true){
-   
+    $socialTags .= '<meta property="og:image" content="http://i1.ytimg.com/vi/'.$video_id.'/maxresdefault.jpg" >';
     $socialTags .= '<meta property="og:video" content="http://www.youtube.com/watch?v='.$video_id.'" >';
     $socialTags .= '<meta property="og:video:width" content="1920" >';
     $socialTags .= '<meta property="og:video:height" content="1080" >';
