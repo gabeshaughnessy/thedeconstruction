@@ -38,10 +38,25 @@ $socialTags = '';
   $socialTags .= '<meta name="twitter:description" content="'.strip_tags(get_the_excerpt($post->ID)).'" >';
   $socialTags .= '<meta name="twitter:image" content="'.(isset( $social_meta['image'])?  $social_meta['image'] : "").'" >';
   
-  if($has_video == true){
-    $socialTags .= '<meta name="twitter:video" content="" >';
-    $socialTags .= '<meta name="twitter:video:width" content="" >';
-    $socialTags .= '<meta name="twitter:video:height" content="" >';
+  $video_id = get_field('decon_video_id', $post->ID);
+error_log('video id'.$video_id);
+  if($video_id != ''){
+    $has_video = true;
+    $socialTags .= '<meta name="twitter:card" content="player">';
+    $socialTags .= '<meta name="twitter:player:stream" content="http://www.youtube.com/watch?v='.$video_id.'">';
+    $socialTags .= '<meta name="twitter:image" content="http://i1.ytimg.com/vi/'.$video_id.'/maxresdefault.jpg">';
+    $socialTags .= '<meta name="twitter:app:name:iphone" content="YouTube">';
+    $socialTags .= '<meta name="twitter:app:id:iphone" content="544007664">';
+    $socialTags .= '<meta name="twitter:app:name:ipad" content="YouTube">';
+    $socialTags .= '<meta name="twitter:app:id:ipad" content="544007664">';
+    $socialTags .= '<meta name="twitter:app:url:iphone" content="vnd.youtube://watch/'.$video_id.'">';
+    $socialTags .= '<meta name="twitter:app:url:ipad" content="vnd.youtube://watch/'.$video_id.'">';
+    $socialTags .= '<meta name="twitter:app:name:googleplay" content="YouTube">';
+    $socialTags .= '<meta name="twitter:app:id:googleplay" content="com.google.android.youtube">';
+    $socialTags .= '<meta name="twitter:app:url:googleplay" content="http://www.youtube.com/watch?v='.$video_id.'">';
+    $socialTags .= '<meta name="twitter:player" content="https://www.youtube.com/embed/'.$video_id.'">';
+    $socialTags .= '<meta name="twitter:player:width" content="1920">';
+    $socialTags .= '<meta name="twitter:player:height" content="1080">';
   }
 
 rewind_posts();
