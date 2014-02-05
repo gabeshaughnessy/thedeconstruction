@@ -51,6 +51,7 @@ $socialTags = '';
   if( $has_video == true){
     $json = file_get_contents('http://www.youtube.com/oembed?url=http://www.youtube.com/watch?v='.$video_id.'&format=json');
     $obj = json_decode($json);
+    //error_log(print_r($obj, true));
     if(isset($obj->width)){
       $og_width = $obj->width;
     }
@@ -63,14 +64,23 @@ $socialTags = '';
     if(!isset($og_height)){
       $og_width = '720';
     }
+    if(function_exists('get_video_thumbnail') && get_video_thumbnail($post->ID) != ''){
+    $video_thumbnail  = get_video_thumbnail($post->ID); 
+    }
+    elseif(isset($obj->thumbnail_url)){
+      $video_thumbnail = $obj->thumbnail_url;
+    }
+    else{
+      $video_thumbnail = 'http://i1.ytimg.com/vi/'.$video_id.'/maxresdefault.jpg';
+    }
 
     $socialTags .= '<meta property="og:type" content="video" >';
-    $socialTags .= '<meta property="og:image" content="http://i1.ytimg.com/vi/'.$video_id.'/maxresdefault.jpg" >';
+    $socialTags .= '<meta property="og:image" content="'.$video_thumbnail.'" >';
     $socialTags .= '<meta property="og:video" content="http://www.youtube.com/v/'.$video_id.'?version=3&autohide=1" >';
     $socialTags .= '<meta property="og:video:width" content="'.$og_width.'" >';
     $socialTags .= '<meta property="og:video:height" content="'.$og_height.'" >';
     $socialTags .= '<meta name="twitter:card" content="player">';
-    $socialTags .= '<meta name="twitter:image" content="http://i1.ytimg.com/vi/'.$video_id.'/maxresdefault.jpg">';
+    $socialTags .= '<meta name="twitter:image" content="'.$video_thumbnail.'">';
     $socialTags .= '<meta name="twitter:app:name:iphone" content="YouTube">';
     $socialTags .= '<meta name="twitter:app:id:iphone" content="544007664">';
     $socialTags .= '<meta name="twitter:app:name:ipad" content="YouTube">';
