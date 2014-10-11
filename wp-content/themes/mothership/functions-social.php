@@ -46,8 +46,6 @@ $socialTags = '';
 
   $socialTags .= '<meta name="twitter:description" content="'.$description.'" >';
 
-  
-  $video_id = get_field('decon_video_id', $post->ID);
   if( $has_video == true){
     $json = file_get_contents('http://www.youtube.com/oembed?url=http://www.youtube.com/watch?v='.$video_id.'&format=json');
     $obj = json_decode($json);
