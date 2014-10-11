@@ -1,4 +1,9 @@
 <?php
+
+if(!class_exists('GFForms')){
+    die();
+}
+
 class GFEntryList{
     public static function all_leads_page(){
 
@@ -74,8 +79,13 @@ class GFEntryList{
             case "delete" :
                 check_admin_referer('gforms_entry_list', 'gforms_entry_list');
                 $lead_id = $_POST["action_argument"];
-                RGFormsModel::delete_lead($lead_id);
-                $update_message = __("Entry deleted.", "gravityforms");
+                if(GFCommon::current_user_can_any("gravityforms_delete_entries")){
+                    RGFormsModel::delete_lead($lead_id);
+                    $update_message = __("Entry deleted.", "gravityforms");
+                } else {
+                    $update_message = __("You don't have adequate permissions to delete entries.", "gravityforms");
+                }
+
             break;
 
             case "bulk":
@@ -89,8 +99,12 @@ class GFEntryList{
 
                 switch($bulk_action) {
                     case "delete":
-                        RGFormsModel::delete_leads($leads);
-                        $update_message = sprintf(__("%s deleted.", "gravityforms"), $entry_count);
+                        if(GFCommon::current_user_can_any("gravityforms_delete_entries")){
+                            RGFormsModel::delete_leads($leads);
+                            $update_message = sprintf(__("%s deleted.", "gravityforms"), $entry_count);
+                        } else {
+                            $update_message = __("You don't have adequate permissions to delete entries.", "gravityforms");
+                        }
                     break;
 
                     case "trash":
@@ -143,7 +157,9 @@ class GFEntryList{
         }
 
         if(rgpost("button_delete_permanently")){
-            RGFormsModel::delete_leads_by_form($form_id, $filter);
+            if(GFCommon::current_user_can_any("gravityforms_delete_entries")){
+                RGFormsModel::delete_leads_by_form($form_id, $filter);
+            }
         }
 
         $sort_field = empty($_GET["sort"]) ? 0 : $_GET["sort"];
@@ -720,7 +736,7 @@ class GFEntryList{
                     <li><a class="<?php echo $read !== null ? "current" : ""?>" href="?page=gf_entries&view=entries&id=<?php echo $form_id ?>&filter=unread"><?php _e("Unread", "gravityforms"); ?> <span class="count">(<span id="unread_count"><?php echo $unread_count ?></span>)</span></a> | </li>
                     <li><a class="<?php echo $star !== null ? "current" : ""?>" href="?page=gf_entries&view=entries&id=<?php echo $form_id ?>&filter=star"><?php _e("Starred", "gravityforms"); ?> <span class="count">(<span id="star_count"><?php echo $starred_count ?></span>)</span></a> | </li>
                     <?php
-                    if(GFCommon::akismet_enabled($form_id)){
+                    if(GFCommon::spam_enabled($form_id)){
                         ?>
                         <li><a class="<?php echo $filter == "spam" ? "current" : ""?>" href="?page=gf_entries&view=entries&id=<?php echo $form_id ?>&filter=spam"><?php _e("Spam", "gravityforms"); ?> <span class="count">(<span id="spam_count"><?php echo $spam_count ?></span>)</span></a> | </li>
                         <?php
@@ -771,7 +787,7 @@ class GFEntryList{
                                     <option value='print'><?php _e("Print", "gravityforms") ?></option>
 
                                     <?php
-                                    if(GFCommon::akismet_enabled($form_id)){
+                                    if(GFCommon::spam_enabled($form_id)){
                                         ?>
                                         <option value='spam'><?php _e("Spam", "gravityforms") ?></option>
                                         <?php
@@ -905,7 +921,7 @@ class GFEntryList{
                         }
                         ?>
                         <th scope="col" align="right" width="50">
-                            <a title="<?php _e("click to select columns to display" , "gravityforms") ?>" href="<?php echo trailingslashit(site_url()) ?>?gf_page=select_columns&id=<?php echo $form_id ?>&TB_iframe=true&height=365&width=600" class="thickbox entries_edit_icon"><i class="fa fa-cog"></i></a>
+                            <a title="<?php _e("click to select columns to display" , "gravityforms") ?>" href="<?php echo trailingslashit(site_url(null, "admin")) ?>?gf_page=select_columns&id=<?php echo $form_id ?>&TB_iframe=true&height=365&width=600" class="thickbox entries_edit_icon"><i class="fa fa-cog"></i></a>
                         </th>
                     </tr>
                 </thead>
@@ -997,36 +1013,9 @@ class GFEntryList{
                                             }
                                             else{
                                                 $value = "";
-                                                //looping through lead detail values trying to find an item identical to the column label. Mark with a tick if found.
-                                                $lead_field_keys = array_keys($lead);
-                                                foreach($lead_field_keys as $input_id){
-                                                    //mark as a tick if input label (from form meta) is equal to submitted value (from lead)
-                                                    if(is_numeric($input_id) && absint($input_id) == absint($field_id)){
-                                                        if($lead[$input_id] == $columns[$field_id]["label"]){
-                                                            $value = "<i class='fa fa-check gf_valid'></i>";
-                                                        }
-                                                        else{
-                                                            $field = RGFormsModel::get_field($form, $field_id);
-                                                            if(rgar($field, "enableChoiceValue") || rgar($field, "enablePrice")){
-                                                                foreach($field["choices"] as $choice){
-                                                                    if($choice["value"] == $lead[$field_id]){
-                                                                        $value = "<i class='fa fa-check gf_valid'></i>";
-                                                                        break;
-                                                                    }
-                                                                    else if(rgar($field,"enablePrice")){
-                                                                        $ary = explode("|", $lead[$field_id]);
-                                                                        $val = count($ary) > 0 ? $ary[0] : "";
-                                                                        $price = count($ary) > 1 ? $ary[1] : "";
 
-                                                                        if($val == $choice["value"]){
-                                                                            $value = "<i class='fa fa-check gf_valid'></i>";
-                                                                            break;
-                                                                        }
-                                                                    }
-                                                                }
-                                                            }
-                                                        }
-                                                    }
+                                                if(GFFormsModel::is_checkbox_checked($field_id, $columns[$field_id]["label"], $lead, $form)){
+                                                    $value = "<i class='fa fa-check gf_valid'></i>";
                                                 }
                                             }
                                         break;
@@ -1103,7 +1092,9 @@ class GFEntryList{
                                         case "created_by" :
                                             if(!empty($value)){
                                                 $userdata = get_userdata($value);
-                                                $value = $userdata->user_login;
+                                                if(!empty($userdata)){
+                                                    $value = $userdata->user_login;
+                                                }
                                             }
                                         break;
 
@@ -1195,7 +1186,7 @@ class GFEntryList{
                                                             <?php echo GFCommon::current_user_can_any("gravityforms_delete_entries") || GFCommon::akismet_enabled($form_id) ? "|" : "" ?>
                                                         </span>
                                                         <?php
-                                                        if(GFCommon::akismet_enabled($form_id)){
+                                                        if(GFCommon::spam_enabled($form_id)){
                                                             ?>
                                                             <span class="spam">
                                                                 <a data-wp-lists='delete:gf_entry_list:lead_row_<?php echo $lead["id"] ?>::status=spam&entry=<?php echo $lead["id"] ?>' title="<?php _e("Mark this entry as spam", "gravityforms") ?>" href="<?php echo wp_nonce_url("?page=gf_entries", "gf_delete_entry") ?>"><?php _e("Spam", "gravityforms"); ?></a>
@@ -1319,7 +1310,7 @@ class GFEntryList{
                                 <option value='resend_notifications'><?php _e("Resend Notifications", "gravityforms") ?></option>
                                 <option value='print'><?php _e("Print Entries", "gravityforms") ?></option>
                                 <?php
-                                if(GFCommon::akismet_enabled($form_id)){
+                                if(GFCommon::spam_enabled($form_id)){
                                     ?>
                                     <option value='spam'><?php _e("Spam", "gravityforms") ?></option>
                                     <?php
@@ -1347,6 +1338,8 @@ class GFEntryList{
         </div>
         <?php
     }
+
+
 
     public static function get_icon_url($path){
         $info = pathinfo($path);

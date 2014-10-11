@@ -3,27 +3,30 @@ Contributors: sutherlandboswell
 Donate link: http://wie.ly/u/donate
 Tags: Video, Thumbnails, YouTube, Vimeo, Vine, Twitch, Dailymotion, Youku, Rutube, Featured Image
 Requires at least: 3.2
-Tested up to: 3.8
-Stable tag: 2.5.1
+Tested up to: 3.9.2
+Stable tag: 2.10.2
 
 Video Thumbnails simplifies the process of automatically displaying video thumbnails in your WordPress template.
 
 == Description ==
 
-Video Thumbnails makes it easy to automatically display video thumbnails in your template. When you publish a post, this plugin will find the first video embedded and locate the thumbnail for you. Thumbnails can be saved to your media library and set as a featured image automatically. There's even support for custom post types and custom fields!
+Video Thumbnails makes it easy to automatically display video thumbnails in your template. When you publish a post, this plugin will find the first video embedded and retrieve a thumbnail for you. Thumbnails can be saved to your media library and set as a featured image automatically. There's even support for custom post types and custom fields!
 
-**New!** Get even more power with [Video Thumbnails Pro](https://refactored.co/plugins/video-thumbnails). Enjoy features like maximum image sizes, more powerful bulk scanning options, a customizable upload directory, and more!
+= Video Thumbnails Pro =
 
-Video Thumbnails currently supports these video services:
+[Video Thumbnails Pro](https://refactored.co/plugins/video-thumbnails) adds new options like maximum image sizes, widescreen cropping, more powerful bulk scanning, a customizable upload directory, and more!
+
+= Supported Sites =
 
 * YouTube
 * Vimeo
 * Facebook
 * Vine
-* Justin.tv
 * Twitch
 * Dailymotion
 * Metacafe
+* TED
+* VK
 * Blip
 * Google Drive
 * Funny or Die
@@ -31,28 +34,33 @@ Video Thumbnails currently supports these video services:
 * MPORA
 * Wistia
 * Youku
+* Tudou
+* SAPO
 * Rutube
 
-Video Thumbnails even works with most video embedding plugins, including:
+Video Thumbnails even works with most video plugins, including:
 
 * [Refactored Video Importer](https://refactored.co/plugins/video-importer)
-* [Viper's Video Quicktags](http://wordpress.org/extend/plugins/vipers-video-quicktags/)
-* [Automatic Youtube Video Posts Plugin](http://wordpress.org/extend/plugins/automatic-youtube-video-posts/)
-* [Simple Video Embedder](http://wordpress.org/extend/plugins/simple-video-embedder/)
-* [Vimeo Shortcode](http://blog.esimplestudios.com/2010/08/embedding-vimeo-videos-in-wordpress/)
-* [WP YouTube Lyte](http://wordpress.org/extend/plugins/wp-youtube-lyte/)
+* Viper's Video Quicktags
 
-Video Thumbnails will always be totally free while remaining a full-featured plugin, but if you'd like to support the developer consider purchasing [Video Thumbnails Pro](https://refactored.co/plugins/video-thumbnails). The pro version runs alongside the standard version and adds additional features like maximum image sizes, more powerful bulk scanning options, a customizable upload directory, and more!
+= Help Translate =
 
-Some functions are available to advanced users who want to customize their theme:
+[Register on our translation site](http://translate.refactored.co/blog/) to help bring Video Thumbnails to more languages.
 
-* `<?php video_thumbnail(); ?>` will echo a thumbnail URL or the default image located at `wp-content/plugins/video-thumbnails/default.jpg` if a thumbnail cannot be found. Here is an example: `<img src="<?php video_thumbnail(); ?>" width="300" />`
-* `<?php $video_thumbnail = get_video_thumbnail(); ?>` will return the thumbnail URL or return NULL if none is found. In this example, a thumbnail is only shown if one is found: `<?php if( ( $video_thumbnail = get_video_thumbnail() ) != null ) { echo "<img src='" . $video_thumbnail . "' />"; } ?>`
+= Our Other Plugins =
+
+[Video Thumbnails Pro](https://refactored.co/plugins/video-thumbnails) | [Video Importer](https://refactored.co/plugins/video-importer) | [Retinamatic](http://retinamatic.com/)
+
 
 == Installation ==
 
 1. Upload the `/video-thumbnails/` directory to the `/wp-content/plugins/` directory
 1. Activate the plugin through the 'Plugins' menu in WordPress
+
+Some functions are available to advanced users who want to customize their theme:
+
+* `<?php video_thumbnail(); ?>` will echo a thumbnail URL or the default image located at `wp-content/plugins/video-thumbnails/default.jpg` if a thumbnail cannot be found. Here is an example: `<img src="<?php video_thumbnail(); ?>" width="300" />`
+* `<?php $video_thumbnail = get_video_thumbnail(); ?>` will return the thumbnail URL or return NULL if none is found. In this example, a thumbnail is only shown if one is found: `<?php if( ( $video_thumbnail = get_video_thumbnail() ) != null ) { echo "<img src='" . $video_thumbnail . "' />"; } ?>`
 
 == Frequently Asked Questions ==
 
@@ -65,6 +73,18 @@ Some functions are available to advanced users who want to customize their theme
 1. Try posting a video from other sources to help narrow down the problem.
 1. Check the support threads to see if anyone has had the same issue.
 1. If you are still unable to resolve the problem, start a thread with a good descriptive title ("Error" or "No thumbnails" is a bad title) and be sure to include the results of your testing as well. Also be sure to include the name of your theme, any video plugins you're using, and any other details you can think of.
+
+= Why are there black bars on some YouTube thumbnails? =
+
+Video Thumbnails uses high-resolution widescreen thumbnails whenever they are available. If a video is not in HD, a fullscreen thumbnail is used. This can result in letterboxing when the video is actually widescreen. Users of the [pro version](https://refactored.co/plugins/video-thumbnails) can select an aspect ratio in the settings if this is a constant problem. [More info](https://refactored.co/blog/remove-black-bars-youtube-thumbnails).
+
+= Can I get thumbnails from a specific time? =
+
+No, Video Thumbnails only uses thumbnails provided by the source. If you're posting videos from your own account, many providers allow you to choose the thumbnail.
+
+= Can it get thumbnails for my self-hosted videos? =
+
+No, it will only fetch thumbnails for videos from the list of supported sites. Decoding local video files to create thumbnails would require server resources and packages unavailable to most users, so we only focus on supporting major video sites.
 
 = My theme isn't showing thumbnails, what's wrong? =
 
@@ -100,10 +120,6 @@ As an alternative you could assign a class to the element and style it with CSS.
 
 Every theme is different, so this can be tricky if you aren't familiar with WordPress theme development. You need to edit your template in the appropriate place, replacing `<?php the_content(); >` with `<?php the_excerpt(); >` so that only an excerpt of the post is shown on the home page or wherever you would like to display the video thumbnail.
 
-= Why are there black bars on some YouTube thumbnails? =
-
-This is an unfortunate side effect of some old YouTube videos not having widescreen thumbnails. As of version 2.0, the plugin checks for HD thumbnails so this issue should be less common.
-
 = Why did it stop finding thumbnails for Vimeo? =
 
 The Vimeo API has a rate limit, so in rare cases you may exceed this limit. Try again after a few hours.
@@ -114,6 +130,93 @@ The Vimeo API has a rate limit, so in rare cases you may exceed this limit. Try 
 1. Settings page
 
 == Changelog ==
+
+= 2.10.2 =
+* Added actions hooks before and after generating attachment metadata
+
+= 2.10.1 =
+* Removed Justin.tv due to their shutdown
+
+= 2.10 =
+* Improved debugging page
+
+= 2.9.1 =
+* Improved provider class extensibility
+
+= 2.9 =
+* Added Tudou support
+* Added SAPO support
+* Updated Justin.tv to support the live player now that archives are being removed
+
+= 2.8 =
+* Added support for TED Talks
+* Improved error handling for AJAX on settings page
+
+= 2.7.9 =
+* Better compatibility with image plugins
+* Better Rutube support
+* Fixed bug that prevented API retrieval error messages
+
+= 2.7.8 =
+* Improved Facebook detection
+* Higher resolution Facebook thumbnails (when available)
+
+= 2.7.7 =
+* Improved error handling
+* Fixed bugs
+* Updated German translation
+
+= 2.7.6 =
+* Added Dailymotion support for protocol-relative embeds
+
+= 2.7.5 =
+* Better support for WP Robot
+* Fixed bug related to Automatic YouTube Video Posts
+* Reorganized video thumbnail extensions
+
+= 2.7.4 =
+* Improved VK detection
+* Added German translation (thanks [applewerbung](http://wordpress.org/support/profile/applewerbung))
+* Improved provider and markup tests by applying "the_content" filter
+* Improved permissions checks for debugging
+
+= 2.7.3 =
+* Improved image download test
+* Updated Vimeo and VK tests
+
+= 2.7.2 =
+* Added support for Youku iFrame embed code
+* Fixed Vimeo channel URL test
+
+= 2.7.1 =
+* Fixed load_plugin_textdomain() path
+
+= 2.7 =
+* Video Thumbnails is now translation ready and looking for volunteers
+
+= 2.6.3 =
+* Better Google Drive detection (added support for underscores or dashes in the ID)
+
+= 2.6.2 =
+* Added feature to settings page that automatically detects the custom field
+* Switched to JSON for Vimeo's oEmbed endpoint
+* Added support for the "image/gif" MIME type
+
+= 2.6.1 =
+* Fixed VK bug caused by IDs with a negative int
+
+= 2.6 =
+* Added support for VK iFrame embeds
+* Minor bugfixes and improvements
+
+= 2.5.3 =
+* Fixed bug with Automatic YouTube Video Posts when automatic publishing is disabled or when rescanning existing posts
+* Fixed bug with bulk scanner when 0 posts are queued
+* Improved markup test by checking if server can reach the resulting thumbnail URL
+
+= 2.5.2 =
+* Better support for Automatic YouTube Video Posts
+* Added support tab to settings page
 
 = 2.5.1 =
 * Fixed improper error handling

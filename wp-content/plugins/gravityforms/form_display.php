@@ -1,5 +1,9 @@
 <?php
 
+if(!class_exists('GFForms')){
+    die();
+}
+
 class GFFormDisplay{
 
     public static $submission = array();
@@ -9,6 +13,8 @@ class GFFormDisplay{
     const ON_CONDITIONAL_LOGIC = 2;
 
     public static function process_form($form_id){
+
+        GFCommon::log_debug( "Starting to process form (#{$form_id}) submission." );
 
         //reading form metadata
         $form = RGFormsModel::get_form_meta($form_id);
@@ -28,6 +34,8 @@ class GFFormDisplay{
         $page_number = $source_page_number;
         $target_page = self::get_target_page($form, $page_number, $field_values);
 
+        GFCommon::log_debug("Source page number: {$source_page_number}. Target page number: {$target_page}");
+
         //Loading files that have been uploaded to temp folder
         $files = GFCommon::json_decode(stripslashes(RGForms::post("gform_uploaded_files")));
         if(!is_array($files))
@@ -43,8 +51,13 @@ class GFFormDisplay{
             $is_valid = self::validate($form, $field_values, $page_number, $failed_validation_page);
         }
 
+        GFCommon::log_debug("After validation. Is submission valid? {$is_valid}");
+
         //Upload files to temp folder when going to the next page or when submitting the form and it failed validation
         if( $target_page >= $page_number || ($target_page == 0 && !$is_valid) ){
+
+            GFCommon::log_debug("Uploading files...");
+
             //Uploading files to temporary folder
             $files = self::upload_files($form, $files);
             RGFormsModel::$uploaded_files[$form_id] = $files;
@@ -61,6 +74,8 @@ class GFFormDisplay{
 
         $confirmation = "";
         if($is_valid && $page_number == 0){
+
+
             $ajax = isset($_POST["gform_ajax"]);
 
             //adds honeypot field if configured
@@ -70,11 +85,16 @@ class GFFormDisplay{
             $failed_honeypot = rgar($form,"enableHoneypot") && !self::validate_honeypot($form);
 
             if($failed_honeypot){
+
+                GFCommon::log_debug("Failed Honeypot validation. Displaying confirmation and aborting");
+
                 //display confirmation but doesn't process the form when honeypot fails
                 $confirmation = self::handle_confirmation($form, $lead, $ajax);
                 $is_valid = false;
             }
             else{
+
+                GFCommon::log_debug("Submission is valid. Moving forward.");
 
                 $form = self::update_confirmation($form);
 
@@ -91,6 +111,7 @@ class GFFormDisplay{
                 //after submission hook
                 do_action("gform_after_submission", $lead, $form);
                 do_action("gform_after_submission_{$form["id"]}", $lead, $form);
+
             }
 
             if(is_array($confirmation) && isset($confirmation["redirect"])){
@@ -98,8 +119,15 @@ class GFFormDisplay{
                 do_action("gform_post_submission", $lead, $form);
                 do_action("gform_post_submission_{$form["id"]}", $lead, $form);
 
-                exit;
+				//GFFormsModel::delete_password( $lead, $form );
+
+				exit;
             }
+//			else{
+//
+//				GFFormsModel::delete_password( $lead, $form );
+//
+//			}
         }
         if(!isset(self::$submission[$form_id]))
             self::$submission[$form_id] = array();
@@ -144,6 +172,7 @@ class GFFormDisplay{
             GFCommon::log_debug("upload_files() - temp file info: " . print_r($file_info, true));
 
             if($file_info && move_uploaded_file($_FILES[$input_name]['tmp_name'], $target_path . $file_info["temp_filename"])){
+				GFFormsModel::set_permissions( $target_path . $file_info['temp_filename'] );
                 $files[$input_name] = $file_info["uploaded_filename"];
                 GFCommon::log_debug("upload_files() - file uploaded successfully:  {$file_info["uploaded_filename"]}");
             }
@@ -211,9 +240,11 @@ class GFFormDisplay{
                 }
             }
         }
-        $hash = serialize($product_fields);
+
+        $hash = json_encode($product_fields);
         $checksum = wp_hash(crc32($hash));
         return base64_encode(json_encode(array($hash, $checksum)));
+
     }
 
     private static function has_pages($form){
@@ -302,7 +333,7 @@ class GFFormDisplay{
     }
 
     public static function get_current_page($form_id){
-        $page_number = isset(self::$submission[$form_id]) ? self::$submission[$form_id]["page_number"] : 1;
+        $page_number = isset(self::$submission[$form_id]) ? intval(self::$submission[$form_id]["page_number"]) : 1;
         return $page_number;
     }
 
@@ -384,6 +415,9 @@ class GFFormDisplay{
         $confirmation_message = "";
         $page_number = 1;
 
+	    $view_counter_disabled = apply_filters( 'gform_disable_view_counter', false );
+	    $view_counter_disabled = apply_filters( "gform_disable_view_counter_{$form_id}", $view_counter_disabled );
+
         //If form was submitted, read variables set during form submission procedure
         $submission_info = isset(self::$submission[$form_id]) ? self::$submission[$form_id] : false;
         if($submission_info){
@@ -407,7 +441,7 @@ class GFFormDisplay{
                 }
             }
         }
-        else if(!current_user_can("administrator")){
+        else if(!current_user_can("administrator") && !$view_counter_disabled){
             RGFormsModel::insert_form_view($form_id, $_SERVER['REMOTE_ADDR']);
         }
 
@@ -415,7 +449,7 @@ class GFFormDisplay{
             $form["fields"][] = self::get_honeypot_field($form);
 
         //Fired right before the form rendering process. Allow users to manipulate the form object before it gets displayed in the front end
-        $form = apply_filters("gform_pre_render_$form_id", apply_filters("gform_pre_render", $form, $ajax), $ajax);
+        $form = apply_filters( "gform_pre_render_{$form_id}", apply_filters( 'gform_pre_render', $form, $ajax, $field_values ), $ajax, $field_values );
 
         if($form == null)
             return "<p>" . __("Oops! We could not locate your form.", "gravityforms") . "</p>";
@@ -487,7 +521,7 @@ class GFFormDisplay{
 
             $form_css_class = !empty($form["cssClass"]) ? "class='{$form["cssClass"]}'": "";
 
-            $action = esc_attr($action);
+            $action = esc_url($action);
             $form_string .= apply_filters("gform_form_tag_{$form_id}", apply_filters("gform_form_tag", "<form method='post' enctype='multipart/form-data' {$target} id='gform_{$form_id}' {$form_css_class} action='{$action}'>", $form), $form);
 
             if($display_title || $display_description){
@@ -515,8 +549,8 @@ class GFFormDisplay{
                 else if($form["pagination"]["type"] == "steps"){
                     $form_string .="
                     <div id='gf_page_steps_{$form_id}' class='gf_page_steps'>";
-
-                    for($i=0, $count = sizeof($form["pagination"]["pages"]); $i<$count; $i++){
+                    $pages = isset($form["pagination"]["pages"]) ? $form["pagination"]["pages"] :  array();
+                    for($i=0, $count = sizeof($pages); $i<$count; $i++){
                         $step_number = $i+1;
                         $active_class = $step_number == $current_page ? " gf_step_active" : "";
                         $first_class = $i==0 ? " gf_step_first" : "";
@@ -530,7 +564,7 @@ class GFFormDisplay{
                         $classes = GFCommon::trim_all($classes);
 
                         $form_string .="
-                        <div id='gf_step_{$form_id}_{$step_number}' class='{$classes}'><span class='gf_step_number'>{$step_number}</span>&nbsp;{$form["pagination"]["pages"][$i]}</div>";
+                        <div id='gf_step_{$form_id}_{$step_number}' class='{$classes}'><span class='gf_step_number'>{$step_number}</span>&nbsp;{$pages[$i]}</div>";
                     }
 
                     $form_string .="
@@ -572,7 +606,7 @@ class GFFormDisplay{
                             </ul>";
 
             if($has_pages){
-                $previous_button = self::get_form_button($form["id"], "gform_previous_button_{$form["id"]}", $form["lastPageButton"], __("Previous", "gravityforms"), "button gform_previous_button", __("Previous Page", "gravityforms"), self::get_current_page($form_id) -1);
+                $previous_button = self::get_form_button($form["id"], "gform_previous_button_{$form["id"]}", $form["lastPageButton"], __("Previous", "gravityforms"), "gform_previous_button", __("Previous Page", "gravityforms"), self::get_current_page($form_id) -1);
                 $previous_button = apply_filters("gform_previous_button", $previous_button, $form);
                 $previous_button = apply_filters("gform_previous_button_{$form["id"]}", $previous_button, $form);
                 $form_string .= "</div>" . self::gform_footer($form, "gform_page_footer " . $form['labelPlacement'], $ajax, $field_values, $previous_button, $display_title, $display_description, $is_postback) . "
@@ -674,11 +708,10 @@ class GFFormDisplay{
 
 			//check admin setting for whether the progress bar should start at zero
         	$start_at_zero = rgars($form, "pagination/display_progressbar_on_confirmation");
-			//check for filter
             $start_at_zero = apply_filters("gform_progressbar_start_at_zero", $start_at_zero, $form);
 
             //show progress bar on confirmation
-            if($start_at_zero && $has_pages && !IS_ADMIN && ($form["confirmation"]["type"] == "message" && $form["pagination"]["type"] == "percentage") && $form["pagination"]["display_progressbar_on_confirmation"])
+            if( $start_at_zero && $has_pages && ! IS_ADMIN && ( $form["confirmation"]["type"] == "message" && $form["pagination"]["type"] == "percentage" ) )
             {
                 $progress_confirmation = self::get_progress_bar($form, $form_id,$confirmation_message);
                 if($ajax)
@@ -694,7 +727,7 @@ class GFFormDisplay{
                 }
                 else
                 {
-                 $progress_confirmation = $confirmation_message;
+                    $progress_confirmation = $confirmation_message;
                 }
             }
 
@@ -709,6 +742,9 @@ class GFFormDisplay{
         $form_string = self::get_form_init_scripts($form);
         $current_page = self::get_current_page($form_id);
         $form_string .= "<script type='text/javascript'>" . apply_filters("gform_cdata_open", "") . " jQuery(document).ready(function(){jQuery(document).trigger('gform_post_render', [{$form_id}, {$current_page}]) } ); " . apply_filters("gform_cdata_close", "") . "</script>";
+
+        $form_string = apply_filters( 'gform_footer_init_scripts_filter', $form_string, $form, $current_page );
+        $form_string = apply_filters( 'gform_footer_init_scripts_filter_' . $form['id'], $form_string, $form, $current_page );
 
         if(!isset($_init_forms[$form_id])){
             echo $form_string;
@@ -749,12 +785,14 @@ class GFFormDisplay{
         }
 
         if($button["type"] == "text" || empty($button["imageUrl"])){
+			$class .= ' button';
             $button_text = !empty($button["text"]) ? $button["text"] : $default_text;
             $button_input = "<input type='{$input_type}' id='{$button_input_id}' class='{$class}' value='" . esc_attr($button_text) . "' {$tabindex} {$onclick}/>";
         }
         else{
             $imageUrl = $button["imageUrl"];
-            $button_input= "<input type='image' src='{$imageUrl}' id='{$button_input_id}' class='gform_image_button' alt='{$alt}' {$tabindex} {$onclick}/>";
+			$class .= ' gform_image_button';
+            $button_input= "<input type='image' src='{$imageUrl}' id='{$button_input_id}' class='{$class}' alt='{$alt}' {$tabindex} {$onclick}/>";
         }
         return $button_input;
     }
@@ -763,7 +801,7 @@ class GFFormDisplay{
         $form_id = $form["id"];
         $footer = "
         <div class='" . $class ."'>";
-        $button_input = self::get_form_button($form["id"], "gform_submit_button_{$form["id"]}", $form["button"], __("Submit", "gravityforms"), "button gform_button", __("Submit", "gravityforms"), 0);
+        $button_input = self::get_form_button($form["id"], "gform_submit_button_{$form["id"]}", $form["button"], __("Submit", "gravityforms"), "gform_button", __("Submit", "gravityforms"), 0);
         $button_input = apply_filters("gform_submit_button", $button_input, $form);
         $button_input = apply_filters("gform_submit_button_{$form_id}", $button_input, $form);
         $footer .= $previous_button . " " . $button_input;
@@ -787,8 +825,8 @@ class GFFormDisplay{
             <input type='hidden' class='gform_hidden' name='gform_submit' value='{$form_id}' />
             <input type='hidden' class='gform_hidden' name='gform_unique_id' value='" . esc_attr(GFFormsModel::get_form_unique_id($form_id)) . "' />
             <input type='hidden' class='gform_hidden' name='state_{$form_id}' value='" . self::get_state($form, $field_values) . "' />
-            <input type='hidden' class='gform_hidden' name='gform_target_page_number_{$form_id}' id='gform_target_page_number_{$form_id}' value='" . $next_page . "' />
-            <input type='hidden' class='gform_hidden' name='gform_source_page_number_{$form_id}' id='gform_source_page_number_{$form_id}' value='" . $current_page . "' />
+            <input type='hidden' class='gform_hidden' name='gform_target_page_number_{$form_id}' id='gform_target_page_number_{$form_id}' value='" . esc_attr($next_page) . "' />
+            <input type='hidden' class='gform_hidden' name='gform_source_page_number_{$form_id}' id='gform_source_page_number_{$form_id}' value='" . esc_attr($current_page) . "' />
             <input type='hidden' name='gform_field_values' value='" . esc_attr($field_values_str) ."' />
             {$files_input}
         </div>";
@@ -827,6 +865,11 @@ class GFFormDisplay{
     }
 
     public static function is_empty($field, $form_id=0){
+
+        if(empty($_POST["is_submit_" . $field["formId"]])){
+            return true;
+        }
+
         switch(RGFormsModel::get_input_type($field)){
             case "post_image" :
             case "fileupload" :
@@ -893,15 +936,20 @@ class GFFormDisplay{
     }
 
 
-
+    /**
+     * Validates the range of the number according to the field settings.
+     *
+     * @param array $field
+     * @param array $value A decimal_dot formatted string
+     * @return true|false True on valid or false on invalid
+     */
     private static function validate_range($field, $value){
 
-        if( !GFCommon::is_numeric($value, rgar($field, "numberFormat")) )
+        if( !GFCommon::is_numeric($value, "decimal_dot") )
             return false;
 
-        $number = GFCommon::clean_number($value, rgar($field, "numberFormat"));
-        if( (is_numeric($field["rangeMin"]) && $number < $field["rangeMin"]) ||
-            (is_numeric($field["rangeMax"]) && $number > $field["rangeMax"])
+        if( (is_numeric($field["rangeMin"]) && $value < $field["rangeMin"]) ||
+            (is_numeric($field["rangeMax"]) && $value > $field["rangeMax"])
         )
             return false;
         else
@@ -938,6 +986,11 @@ class GFFormDisplay{
 
         //if Akismet plugin is installed, run lead through Akismet and mark it as Spam when appropriate
         $is_spam = GFCommon::akismet_enabled($form['id']) && GFCommon::is_akismet_spam($form, $lead);
+        $is_spam = apply_filters( 'gform_entry_is_spam', $is_spam, $form, $lead );
+	    $is_spam = apply_filters( "gform_entry_is_spam_{$form['id']}", $is_spam, $form, $lead );
+
+        GFCommon::log_debug("Checking for spam...");
+        GFCommon::log_debug("Is entry considered spam? {$is_spam}.");
 
         if(!$is_spam){
             GFCommon::create_post($form, $lead);
@@ -980,6 +1033,8 @@ class GFFormDisplay{
 
     public static function handle_confirmation($form, $lead, $ajax=false){
 
+        GFCommon::log_debug("Sending confirmation");
+
 		//run the function to populate the legacy confirmation format to be safe
 		$form = self::update_confirmation($form, $lead);
 
@@ -991,40 +1046,40 @@ class GFFormDisplay{
             $confirmation = empty($form["confirmation"]["message"]) ? "{$anchor} " : "{$anchor}<div id='gform_confirmation_wrapper_{$form["id"]}' class='gform_confirmation_wrapper {$cssClass}'><div id='gform_confirmation_message_{$form["id"]}' class='gform_confirmation_message_{$form["id"]} gform_confirmation_message'>" . GFCommon::replace_variables($form["confirmation"]["message"], $form, $lead, false, true, $nl2br) . "</div></div>";
         }
         else{
-            if(!empty($form["confirmation"]["pageId"])){
-                $url = get_permalink($form["confirmation"]["pageId"]);
-                $dynamic_query = GFCommon::replace_variables(trim($form["confirmation"]["queryString"]), $form, $lead, true);
-                if(!empty($dynamic_query))
-                    $url .=  "?" . $dynamic_query;
-            }
-            else{
-                $url = GFCommon::replace_variables(trim($form["confirmation"]["url"]), $form, $lead, false, true);
-                $url_info = parse_url($url);
-                $query_string = rgar($url_info, "query");
-                $dynamic_query = GFCommon::replace_variables(trim($form["confirmation"]["queryString"]), $form, $lead, true);
-                $query_string .= rgempty("query", $url_info) || empty($dynamic_query) ? $dynamic_query : "&" . $dynamic_query;
+			if ( ! empty( $form['confirmation']['pageId'] ) ) {
+				$url = get_permalink( $form['confirmation']['pageId'] );
 
-                if(!empty($url_info["fragment"]))
-                    $query_string .= "#" . rgar($url_info,"fragment");
+			} else {
+				$url = GFCommon::replace_variables( trim( $form['confirmation']['url'] ), $form, $lead, false, true, true, 'text' );
+			}
 
-                $url = $url_info["scheme"] . "://" . rgar($url_info,"host");
-                if(!empty($url_info["port"]))
-                    $url .= ":" . rgar($url_info,"port");
+			$url_info = parse_url( $url );
+			$query_string  = rgar( $url_info, 'query' );
+			$dynamic_query = GFCommon::replace_variables( trim( $form['confirmation']['queryString'] ), $form, $lead, true, false, false, 'text' );
+			$query_string .= rgempty( 'query', $url_info ) || empty( $dynamic_query ) ? $dynamic_query : '&' . $dynamic_query;
 
-                $url .= rgar($url_info,"path");
-                if(!empty($query_string)){
-                    $url .= "?{$query_string}";
-                }
 
-            }
+			if ( ! empty( $url_info['fragment'] ) ) {
+				$query_string .= '#' . rgar( $url_info, 'fragment' );
+			}
 
-            if(headers_sent() || $ajax){
-                //Perform client side redirect for AJAX forms, of if headers have already been sent
-                $confirmation = self::get_js_redirect_confirmation($url, $ajax);
-            }
-            else{
-                $confirmation = array("redirect" => $url);
-            }
+			$url = $url_info['scheme'] . '://' . rgar( $url_info, 'host' );
+			if ( ! empty( $url_info['port'] ) ) {
+				$url .= ':' . rgar( $url_info, 'port' );
+			}
+
+			$url .= rgar( $url_info, 'path' );
+			if ( ! empty( $query_string ) ) {
+				$url .= "?{$query_string}";
+			}
+
+
+			if ( headers_sent() || $ajax ) {
+				//Perform client side redirect for AJAX forms, of if headers have already been sent
+				$confirmation = self::get_js_redirect_confirmation( $url, $ajax );
+			} else {
+				$confirmation = array( 'redirect' => $url );
+			}
         }
 
         $confirmation = apply_filters("gform_confirmation_{$form["id"]}", apply_filters("gform_confirmation", $confirmation, $form, $lead, $ajax), $form, $lead, $ajax);
@@ -1036,6 +1091,8 @@ class GFFormDisplay{
             //Perform client side redirect for AJAX forms, of if headers have already been sent
             $confirmation = self::get_js_redirect_confirmation($confirmation["redirect"], $ajax); //redirecting via client side
         }
+
+        GFCommon::log_debug("Confirmation: " . print_r($confirmation, true));
 
         return $confirmation;
     }
@@ -1073,6 +1130,10 @@ class GFFormDisplay{
         // validate entry limit
         if(self::validate_entry_limit($form))
             return false;
+
+        if(empty($_POST["is_submit_" . $form["id"]])){
+            return false;
+        }
 
         foreach($form["fields"] as &$field){
 
@@ -1117,7 +1178,7 @@ class GFFormDisplay{
                     break;
                 }
 
-                $field["validation_message"] =  apply_filters("gform_duplicate_message_{$form["id"]}", apply_filters("gform_duplicate_message", $default_message, $form), $form);
+                $field["validation_message"] = apply_filters( "gform_duplicate_message_{$form["id"]}", apply_filters("gform_duplicate_message", $default_message, $form, $field, $value ), $form, $field, $value );
 
             }
             else{
@@ -1232,15 +1293,26 @@ class GFFormDisplay{
 
                         case "number" :
 
-                            $value = GFCommon::maybe_add_leading_zero($value);
+                            // the POST value has already been converted from currency or decimal_comma to decimal_dot and then cleaned in get_field_value()
 
-                            if(!rgblank($value) && !self::validate_range($field, $value) && !GFCommon::has_field_calculation($field)) {
+                            $value = GFCommon::maybe_add_leading_zero($value);
+                            $raw_value = $_POST["input_" . $field["id"]]; //Raw value will be tested against the is_numeric() function to make sure it is in the right format.
+
+                            $requires_valid_number = !rgblank($raw_value) && !GFCommon::has_field_calculation($field);
+                            $is_valid_number = self::validate_range($field, $value) && GFCommon::is_numeric($raw_value, $field["numberFormat"]);
+
+                            if( $requires_valid_number && !$is_valid_number ) {
                                 $field["failed_validation"] = true;
                                 $field["validation_message"] = empty($field["errorMessage"]) ? GFCommon::get_range_message($field) : $field["errorMessage"];
                             }
-                            else if($field["type"] == "quantity" && intval($value) != $value){
-                                $field["failed_validation"] = true;
-                                $field["validation_message"] = empty($field["errorMessage"]) ? __("Please enter a valid quantity. Quantity cannot contain decimals.", "gravityforms") : $field["errorMessage"];
+                            else if( $field['type'] == 'quantity' ) {
+                                if( intval( $value ) != $value ) {
+                                    $field['failed_validation'] = true;
+                                    $field['validation_message'] = empty( $field['errorMessage'] ) ? __( 'Please enter a valid quantity. Quantity cannot contain decimals.', 'gravityforms' ) : $field['errorMessage'];
+                                } else if( ! empty( $value ) && ( ! is_numeric( $value ) || intval( $value ) != floatval( $value ) || intval( $value ) < 0 ) ) {
+                                    $field['failed_validation'] = true;
+                                    $field['validation_message'] = empty( $field['errorMessage'] ) ? __( 'Please enter a valid quantity', 'gravityforms' ) : $field['errorMessage'];
+                                }
                             }
 
                         break;
@@ -1410,13 +1482,13 @@ class GFFormDisplay{
 
                         case "fileupload" :
                         case "post_image" :
-
                             $input_name = "input_" . $field["id"];
-                            $allowedExtensions = GFCommon::clean_extensions(explode(",", strtolower($field["allowedExtensions"])));
 
                             if(rgar($field, "multipleFiles")){
                                 $file_names = isset(GFFormsModel::$uploaded_files[$form["id"]][$input_name]) ? GFFormsModel::$uploaded_files[$form["id"]][$input_name] : array();
                             } else {
+								$max_upload_size_in_bytes = isset($field["maxFileSize"]) && $field["maxFileSize"] > 0 ? $field["maxFileSize"] * 1048576: wp_max_upload_size();
+								$max_upload_size_in_mb = $max_upload_size_in_bytes / 1048576;
                                 if(!empty($_FILES[$input_name]["name"]) && $_FILES[$input_name]["error"] > 0){
                                     $uploaded_file_name = isset(GFFormsModel::$uploaded_files[$form["id"]][$input_name]) ? GFFormsModel::$uploaded_files[$form["id"]][$input_name] : "";
                                     if(empty($uploaded_file_name)){
@@ -1424,8 +1496,6 @@ class GFFormDisplay{
                                         switch($_FILES[$input_name]["error"]){
                                             case UPLOAD_ERR_INI_SIZE :
                                             case UPLOAD_ERR_FORM_SIZE :
-                                                $max_upload_size_in_bytes = isset($field["maxFileSize"]) && $field["maxFileSize"] > 0 ? $field["maxFileSize"] * 1048576: wp_max_upload_size();
-                                                $max_upload_size_in_mb = $max_upload_size_in_bytes / 1048576;
                                                 $fileupload_validation_message = sprintf(__("File exceeds size limit. Maximum file size: %dMB", "gravityforms"), $max_upload_size_in_mb);
                                                 break;
                                             default :
@@ -1435,7 +1505,10 @@ class GFFormDisplay{
                                         break;
                                     }
 
-                                }
+                                } elseif ( $_FILES[ $input_name ]['size'] > 0 && $_FILES[ $input_name ]['size'] > $max_upload_size_in_bytes ) {
+									$field["failed_validation"] = true;
+									$field["validation_message"] = sprintf( __( 'File exceeds size limit. Maximum file size: %dMB', 'gravityforms' ), $max_upload_size_in_mb );
+								}
                                 $single_file_name = $_FILES[$input_name]["name"];
                                 $file_names = array(array("uploaded_filename" => $single_file_name));
 
@@ -1443,13 +1516,13 @@ class GFFormDisplay{
 
                             foreach($file_names as $file_name){
                                 $info = pathinfo(rgar($file_name, "uploaded_filename"));
-                                $extension = strtolower(rgget("extension",$info));
+								$allowed_extensions    = isset($field["allowedExtensions"]) && !empty($field["allowedExtensions"]) ? GFCommon::clean_extensions(explode(",", strtolower($field["allowedExtensions"]))) : array();
 
-                                if(empty($field["allowedExtensions"]) && in_array($extension, GFCommon::get_disallowed_file_extensions())){
+								if( empty( $field["allowedExtensions"] ) && GFCommon::file_name_has_disallowed_extension( rgar( $file_name, 'uploaded_filename' ) ) ){
                                     $field["failed_validation"] = true;
                                     $field["validation_message"] = empty($field["errorMessage"]) ? __("The uploaded file type is not allowed.", "gravityforms")  : $field["errorMessage"];
                                 }
-                                else if(!empty($field["allowedExtensions"]) && !empty($info["basename"]) && !in_array($extension, $allowedExtensions)){
+                                else if(!empty($field["allowedExtensions"]) && !empty($info["basename"]) && ! GFCommon::match_file_extension( rgar( $file_name, 'uploaded_filename' ), $allowed_extensions )){
                                     $field["failed_validation"] = true;
                                     $field["validation_message"] = empty($field["errorMessage"]) ? sprintf(__("The uploaded file type is not allowed. Must be one of the following: %s", "gravityforms"), strtolower($field["allowedExtensions"]) )  : $field["errorMessage"];
                                 }
@@ -1467,7 +1540,7 @@ class GFFormDisplay{
                                 $field["failed_validation"] = true;
                                 $field["validation_message"] = rgempty("errorMessage", $field) ? __("This field is required.", "gravityforms") : rgar($field, "errorMessage");
                             }
-                            else if(!empty($quantity) && (!is_numeric($quantity) || intval($quantity) != floatval($quantity)) ) {
+                            else if(!empty($quantity) && (!is_numeric($quantity) || intval($quantity) != floatval($quantity) || intval($quantity) < 0) ) {
                                 $field["failed_validation"] = true;
                                 $field["validation_message"] = __("Please enter a valid quantity", "gravityforms");
                             }
@@ -1534,11 +1607,11 @@ class GFFormDisplay{
             //making sure state wasn't tampered with by validating checksum
             $checksum = wp_hash(crc32($state[0]));
 
-            if($checksum != $state[1]){
+            if($checksum !== $state[1]){
                 return true;
             }
 
-            $_gf_state = unserialize($state[0]);
+            $_gf_state = json_decode($state[0], true);
         }
 
         if(!is_array($value)){
@@ -1600,7 +1673,11 @@ class GFFormDisplay{
         if(!get_option('rg_gforms_disable_css')){
 
             wp_enqueue_style("gforms_reset_css", GFCommon::get_base_url() . "/css/formreset.css", null, GFCommon::$version);
-            wp_enqueue_style("gforms_datepicker_css", GFCommon::get_base_url() . "/css/datepicker.css", null, GFCommon::$version);
+
+            if( self::has_datepicker_field( $form ) ) {
+                wp_enqueue_style("gforms_datepicker_css", GFCommon::get_base_url() . "/css/datepicker.css", null, GFCommon::$version);
+            }
+
             wp_enqueue_style("gforms_formsmain_css", GFCommon::get_base_url() . "/css/formsmain.css", null, GFCommon::$version);
             wp_enqueue_style("gforms_ready_class_css", GFCommon::get_base_url() . "/css/readyclass.css", null, GFCommon::$version);
             wp_enqueue_style("gforms_browsers_css", GFCommon::get_base_url() . "/css/browsers.css", null, GFCommon::$version);
@@ -1642,7 +1719,11 @@ class GFFormDisplay{
         }
 
         if( self::has_enhanced_dropdown( $form ) ) {
-            wp_enqueue_script( 'gform_chosen' );
+            if( wp_script_is( 'chosen', 'registered' ) ) {
+                wp_enqueue_script( 'chosen' );
+            } else {
+                wp_enqueue_script( 'gform_chosen' );
+            }
         }
 
         do_action( 'gform_enqueue_scripts', $form, $ajax );
@@ -1663,13 +1744,17 @@ class GFFormDisplay{
             if( ! wp_style_is( 'gforms_css' ) ) {
 
                 wp_enqueue_style("gforms_reset_css", GFCommon::get_base_url() . "/css/formreset.css", null, GFCommon::$version);
-                wp_enqueue_style("gforms_datepicker_css", GFCommon::get_base_url() . "/css/datepicker.css", null, GFCommon::$version);
                 wp_enqueue_style("gforms_formsmain_css", GFCommon::get_base_url() . "/css/formsmain.css", null, GFCommon::$version);
                 wp_enqueue_style("gforms_ready_class_css", GFCommon::get_base_url() . "/css/readyclass.css", null, GFCommon::$version);
                 wp_enqueue_style("gforms_browsers_css", GFCommon::get_base_url() . "/css/browsers.css", null, GFCommon::$version);
 
                 wp_print_styles(array("gforms_reset_css"));
-                wp_print_styles(array("gforms_datepicker_css"));
+
+                if( self::has_datepicker_field( $form ) ) {
+                    wp_enqueue_style("gforms_datepicker_css", GFCommon::get_base_url() . "/css/datepicker.css", null, GFCommon::$version);
+                    wp_print_styles(array("gforms_datepicker_css"));
+                }
+
                 wp_print_styles(array("gforms_formsmain_css"));
                 wp_print_styles(array("gforms_ready_class_css"));
                 wp_print_styles(array("gforms_browsers_css"));
@@ -1708,8 +1793,12 @@ class GFFormDisplay{
             $scripts[] = 'gform_masked_input';
         }
 
-        if( self::has_enhanced_dropdown( $form ) && ! wp_script_is( 'gform_chosen' ) ) {
-            $scripts[] = 'gform_chosen';
+        if( self::has_enhanced_dropdown( $form ) && ! wp_script_is( 'gform_chosen' ) && ! wp_script_is( 'chosen' ) ) {
+            if( wp_script_is( 'chosen', 'registered' ) ) {
+                $scripts[] = 'chosen';
+            } else {
+                $scripts[] = 'gform_chosen';
+            }
         }
 
         if( ! wp_script_is( 'jquery' ) ) {
@@ -1718,8 +1807,9 @@ class GFFormDisplay{
 
         foreach( $scripts as $script ) {
             wp_enqueue_script( $script );
-            wp_print_scripts( array( $script ) );
         }
+
+        wp_print_scripts( $scripts );
 
         if( wp_script_is( 'gform_gravityforms' ) ) {
             echo '<script type="text/javascript"> ' . GFCommon::gf_global( false ) . ' </script>';
@@ -1727,7 +1817,7 @@ class GFFormDisplay{
 
     }
 
-    private static function has_conditional_logic( $form ) {
+    public static function has_conditional_logic( $form ) {
         $has_conditional_logic = self::has_conditional_logic_legwork( $form );
         return apply_filters( 'gform_has_conditional_logic', $has_conditional_logic, $form );
     }
@@ -1824,11 +1914,16 @@ class GFFormDisplay{
 
                 //radio buttons start at 0 and checkboxes start at 1
                 $choice_index = $input_type == "radio" ? 0 : 1;
+                $is_pricing_field = GFCommon::is_pricing_field( $field['type'] );
 
                 foreach($field["choices"] as $choice){
 
+					if( $input_type == "checkbox" && ($choice_index % 10) == 0){
+						$choice_index++;
+					}
+
                     if(rgar($choice,"isSelected") && $input_type == "select"){
-                        $val = isset($choice["price"]) ? $choice["value"] . "|" . GFCommon::to_number($choice["price"]) :  $choice["value"];
+                        $val = $is_pricing_field ? $choice["value"] . "|" . GFCommon::to_number($choice["price"]) :  $choice["value"];
                         $default_values[$field["id"]] = $val;
                     }
                     else if(rgar($choice,"isSelected")){
@@ -2020,7 +2115,8 @@ class GFFormDisplay{
     public static function get_chosen_init_script($form){
         $chosen_fields = array();
         foreach($form["fields"] as $field){
-            if(rgar($field, "enableEnhancedUI"))
+            $input_type = GFFormsModel::get_input_type($field);
+            if(rgar($field, "enableEnhancedUI") && in_array($input_type, array("select", "multiselect")))
                 $chosen_fields[] = "#input_{$form["id"]}_{$field["id"]}";
         }
         return "gformInitChosenFields('" . implode(",", $chosen_fields) . "','" . esc_attr(apply_filters("gform_dropdown_no_results_text_{$form["id"]}", apply_filters("gform_dropdown_no_results_text", __("No results matched", "gravityforms"), $form["id"]), $form["id"])) . "');";
@@ -2114,7 +2210,7 @@ class GFFormDisplay{
                 continue;
 
             $mask = rgar($field, 'inputMaskValue');
-            $script = "jQuery('#input_{$form['id']}_{$field['id']}').mask('{$mask}').bind('keypress', function(e){if(e.which == 13){jQuery(this).blur();} } );";
+            $script = "jQuery('#input_{$form['id']}_{$field['id']}').mask('" . esc_js($mask). "').bind('keypress', function(e){if(e.which == 13){jQuery(this).blur();} } );";
 
             $script_str .= apply_filters("gform_input_mask_script_{$form['id']}", apply_filters("gform_input_mask_script", $script, $form['id'], $field['id'], $mask), $form['id'], $field['id'], $mask);
         }
@@ -2330,10 +2426,10 @@ class GFFormDisplay{
                 return; //ignore page breaks in the entry detail page
             }
             else if(!IS_ADMIN){
-                $next_button = self::get_form_button($form["id"], "gform_next_button_{$form["id"]}_{$field["id"]}", $field["nextButton"], __("Next", "gravityforms"), "button gform_next_button", __("Next Page", "gravityforms"), $field["pageNumber"]);
+                $next_button = self::get_form_button($form["id"], "gform_next_button_{$form["id"]}_{$field["id"]}", $field["nextButton"], __("Next", "gravityforms"), "gform_next_button", __("Next Page", "gravityforms"), $field["pageNumber"]);
                 $next_button = apply_filters("gform_next_button", $next_button, $form);
                 $next_button = apply_filters("gform_next_button_{$form["id"]}", $next_button, $form);
-                $previous_button = $field["pageNumber"] == 2 ? "" : self::get_form_button($form["id"], "gform_previous_button_{$form["id"]}_{$field["id"]}", $field["previousButton"], __("Previous", "gravityforms"), "button gform_previous_button", __("Previous Page", "gravityforms"), $field["pageNumber"]-2);
+                $previous_button = $field["pageNumber"] == 2 ? "" : self::get_form_button($form["id"], "gform_previous_button_{$form["id"]}_{$field["id"]}", $field["previousButton"], __("Previous", "gravityforms"), "gform_previous_button", __("Previous Page", "gravityforms"), $field["pageNumber"]-2);
                 if(!empty($previous_button)){
                     $previous_button = apply_filters("gform_previous_button", $previous_button, $form);
                     $previous_button = apply_filters("gform_previous_button_{$form["id"]}", $previous_button, $form);
@@ -2403,7 +2499,17 @@ class GFFormDisplay{
 
         $field_id = IS_ADMIN || empty($form) ? "field_$id" : "field_" . $form["id"] . "_$id";
 
-        return "<li id='$field_id' class='$css_class' $style>" . self::get_field_content($field, $value, $force_frontend_label, $form == null ? 0 : $form["id"]) . "</li>";
+        $field_content = self::get_field_content( $field, $value, $force_frontend_label, $form == null ? 0 : $form['id'] );
+        $field_container = "<li id='$field_id' class='$css_class' $style>{FIELD_CONTENT}</li>";
+
+        $field_container = apply_filters( 'gform_field_container',                              $field_container, $field, $form, $css_class, $style, $field_content );
+        $field_container = apply_filters( "gform_field_container_{$form['id']}",                $field_container, $field, $form, $css_class, $style, $field_content );
+        $field_container = apply_filters( "gform_field_container_{$form['id']}_{$field['id']}", $field_container, $field, $form, $css_class, $style, $field_content );
+
+        $field_markup = str_replace( '{FIELD_CONTENT}', $field_content, $field_container );
+
+        return $field_markup;
+
     }
 
     private static function prev_field_has_description($form, $field_id){
@@ -2435,8 +2541,9 @@ class GFFormDisplay{
         $admin_buttons = IS_ADMIN ? "<div class='gfield_admin_icons'><div class='gfield_admin_header_title'>{$field_type_title} : " . __("Field ID", "gravityforms") . " {$field["id"]}</div>" . $delete_field_link . $duplicate_field_link . "<a class='field_edit_icon edit_icon_collapsed' title='" . __("click to expand and edit the options for this field", "gravityforms") . "'><i class='fa fa-caret-down fa-lg'></i></a></div>" : "";
 
         $field_label = $force_frontend_label ? $field["label"] : GFCommon::get_label($field);
-        if(rgar($field, "inputType") == "singleproduct" && !rgempty($field["id"] . ".1", $value))
+        if( (rgar($field, "inputType") == "singleproduct" || rgar($field, "inputType") == "calculation" ) && !rgempty($field["id"] . ".1", $value)){
             $field_label = rgar($value, $field["id"] . ".1");
+		}
 
 
         $field_id = IS_ADMIN || $form_id == 0 ? "input_$id" : "input_" . $form_id . "_$id";
@@ -2487,9 +2594,14 @@ class GFFormDisplay{
                         $target_input_id = $field_id . "_3";
                 }
 
-            case "address" :
-                if(empty($target_input_id))
+			case "address" :
+                if(empty($target_input_id)){
                     $target_input_id = $field_id . "_1";
+				}
+
+            case 'list':
+				if(empty($target_input_id))
+                	$target_input_id = sprintf( 'input_%s_%s_shim', $form_id, $field['id'] );
 
             default :
                 if(empty($target_input_id))
@@ -2657,8 +2769,9 @@ class GFFormDisplay{
 
         foreach($form['confirmations'] as $confirmation) {
 
-            if($confirmation['isDefault'])
+            if( rgar($confirmation, 'isDefault') ){
                 continue;
+			}
 
             if(isset($confirmation['isActive']) && ! $confirmation['isActive'])
                 continue;
