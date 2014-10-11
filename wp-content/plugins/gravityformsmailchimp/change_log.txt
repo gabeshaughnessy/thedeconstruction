@@ -1,4 +1,32 @@
 ------------------------------------------------------------------------------------------------------------------
+Version 2.3
+    - Updated tooltip script from qTip to jQuery UI
+	- Fixed typo "unsubscrbed" in debug statement
+	- Fixed issue where upgrade class was not always included when MailChimp details are written on the plugins page
+
+------------------------------------------------------------------------------------------------------------------
+Version 2.2
+    - Updated automatic upgrade so that it caches remote requests for 12 hours (even on plugin's page)
+    - Fixed issue with groups not being removed correctly when using the filter "gform_mailchimp_keep_existing_groups" to override default functionality and allow groups to be removed.
+	- Updated phone number when set to standard format "(###)### - ####" to send in required format of ###-###-####
+
+------------------------------------------------------------------------------------------------------------------
+Version 2.1
+	- Added Name (Full) as an option to the field mapping list when the form has a Name field set to Normal or Extended format
+
+------------------------------------------------------------------------------------------------------------------
+Version 2.0
+    - Fixed PHP warnings when no API key was set
+    - Added the gform_mailchimp_field_value filter to enable the value to be modified before being sent to the MailChimp API.
+    - Added entry meta to the list of available field mappings
+    - Fixed issue with group conditional logic not displaying all possible operators and value drop down correctly
+    - Fixed issue with special character in main group name
+    - Fixed issue with group conditional logic with non-selection field types
+    - Added new hook "gform_mailchimp_allow_resubscription" which allows disabling support for resubscription
+        add_filter('gform_mailchimp_allow_resubscription', '__return_false()');
+	- Fixed issue saving group settings in admin when sub groups have the same name
+
+------------------------------------------------------------------------------------------------------------------
 Version 1.9
     - Updated Group logic to keep existing groups.
     - Added filter to change logic back to overriding groups

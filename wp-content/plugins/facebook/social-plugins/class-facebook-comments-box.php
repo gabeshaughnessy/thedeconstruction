@@ -4,7 +4,8 @@
  * Enable user commenting for a URL
  *
  * @since 1.1
- * @link https://developers.facebook.com/docs/reference/plugins/comments/ Facebook Comments Box
+ *
+ * @link https://developers.facebook.com/docs/plugins/comments/ Facebook Comments Box
  */
 class Facebook_Comments_Box {
 
@@ -12,70 +13,103 @@ class Facebook_Comments_Box {
 	 * Element and class name used in markup builders
 	 *
 	 * @since 1.1
+	 *
 	 * @var string
 	 */
 	const ID = 'comments';
 
 	/**
 	 * Override the URL related to this comment.
+	 *
 	 * Default is og:url or link[rel=canonical] or document.URL
 	 *
 	 * @since 1.1
+	 *
 	 * @var string
 	 */
 	protected $href;
 
 	/**
-	 * Define a custom width in whole pixels
+	 * Define a custom width in whole pixels.
+	 *
+	 * Minimum recommended width: 400 pixels. The mobile version of the Comments plugin ignores the width parameter, and instead has a fluid width of 100%.
 	 *
 	 * @since 1.1
+	 *
 	 * @var int
 	 */
 	protected $width;
 
 	/**
-	 * Choose a light or dark color scheme to match your site style
+	 * Choose a light or dark color scheme to match your site style.
 	 *
 	 * @since 1.1.11
+	 *
 	 * @param string
 	 */
 	protected $colorscheme;
 
 	/**
-	 * Use a light or dark color scheme
+	 * Use a light or dark color scheme.
 	 *
 	 * @since 1.1.11
+	 *
 	 * @var array
 	 */
-	public static $colorscheme_choices = array( 'light', 'dark' );
+	public static $colorscheme_choices = array( 'light' => true, 'dark' => true );
 
 	/**
 	 * The number of comments to show by default
 	 *
 	 * @since 1.1
+	 *
 	 * @var int
 	 */
 	protected $num_posts;
 
 	/**
+	 * The order to use when displaying comments
+	 *
+	 * @since 1.3
+	 *
+	 * @var string
+	 */
+	protected $order_by;
+
+	/**
+	 * Choices for the order_by property
+	 *
+	 * @since 1.3
+	 *
+	 * @var string
+	 */
+	public static $order_by_choices = array( 'social' => true, 'time' => true, 'reverse_time' => true );
+
+	/**
 	 * Should we force the mobile-optimized version?
+	 *
 	 * Default is auto-detect
+	 *
+	 * @var bool
 	 */
 	protected $mobile;
 
 	/**
-	 * I am a comments box
+	 * I am a comments box.
 	 *
 	 * @since 1.1
+	 *
+	 * @return string name of the social plugin
 	 */
 	public function __toString() {
 		return 'Facebook Comments Box Social Plugin';
 	}
 
 	/**
-	 * Setter for href attribute
+	 * Setter for href attribute.
 	 *
 	 * @since 1.1
+	 *
 	 * @param string $url absolute URL
 	 * @return Facebook_Comments_Box support chaining
 	 */
@@ -87,10 +121,10 @@ class Facebook_Comments_Box {
 	}
 
 	/**
-	 * Width of the like button
-	 * Should be greater than the minimum width of layout + send button (if enabled) + recommend text (if chosen)
+	 * Width of the Comments Box.
 	 *
 	 * @since 1.1
+	 *
 	 * @param int $width width in whole pixels
 	 * @return Facebook_Comments_Box support chaining
 	 */
@@ -105,12 +139,13 @@ class Facebook_Comments_Box {
 	 * Choose a light or dark color scheme
 	 *
 	 * @since 1.1
+	 *
 	 * @see self::colorscheme_choices
 	 * @param string $color_scheme light|dark
 	 * @return Facebook_Comments_Box support chaining
 	 */
 	public function setColorScheme( $color_scheme ) {
-		if ( is_string( $color_scheme ) && in_array( $color_scheme, self::$colorscheme_choices, true ) )
+		if ( is_string( $color_scheme ) && $color_scheme && isset( self::$colorscheme_choices[$color_scheme] ) )
 			$this->colorscheme = $color_scheme;
 		return $this;
 	}
@@ -119,6 +154,7 @@ class Facebook_Comments_Box {
 	 * The maximum number of comments to display by default
 	 *
 	 * @since 1.1
+	 *
 	 * @param int $num positive number of comments
 	 * @return Facebook_Comments_Box support chaining
 	 */
@@ -129,7 +165,24 @@ class Facebook_Comments_Box {
 	}
 
 	/**
+	 * Choose a social, chronological, or reverse chronological comment ordering
+	 *
+	 * @since 1.3
+	 *
+	 * @see self::order_by_choices
+	 * @param string $order_by social|time|
+	 * @return Facebook_Comments_Box support chaining
+	 */
+	public function setOrderBy( $order_by ) {
+		if ( is_string( $order_by ) && $order_by && isset( self::$order_by_choices[$order_by] ) )
+			$this->order_by = $order_by;
+		return $this;
+	}
+
+	/**
 	 * Force the mobile view of comments
+	 *
+	 * @since 1.1
 	 *
 	 * @return Facebook_Comments_Box support chaining
 	 */
@@ -142,6 +195,7 @@ class Facebook_Comments_Box {
 	 * convert an options array into an object
 	 *
 	 * @since 1.1
+	 *
 	 * @param array $values associative array
 	 * @return Facebook_Comments_Box comments box object
 	 */
@@ -163,6 +217,9 @@ class Facebook_Comments_Box {
 		if ( isset( $values['colorscheme'] ) )
 			$comments_box->setColorScheme( $values['colorscheme'] );
 
+		if ( isset( $values['order_by'] ) )
+			$comments_box->setOrderBy( $values['order_by'] );
+
 		if ( isset( $values['mobile'] ) && ( $values['mobile'] === true || $values['mobile'] === 'true' || $values['mobile'] == 1 )  )
 			$comments_box->forceMobile();
 
@@ -173,6 +230,8 @@ class Facebook_Comments_Box {
 	 * Convert the class to data-* attribute friendly associative array
 	 * will become data-key="value"
 	 * Exclude values if default
+	 *
+	 * @since 1.1
 	 *
 	 * @return array associative array
 	 */
@@ -191,6 +250,9 @@ class Facebook_Comments_Box {
 		if ( isset( $this->num_posts ) && is_int( $this->num_posts ) && $this->num_posts > 0 && $this->num_posts !== 10 )
 			$data['num-posts'] = $this->num_posts;
 
+		if ( isset( $this->order_by ) )
+			$data['order-by'] = $this->order_by;
+
 		if ( isset( $this->mobile ) && $this->mobile === true )
 			$data['mobile'] = 'true';
 
@@ -198,7 +260,9 @@ class Facebook_Comments_Box {
 	}
 
 	/**
-	 * Output Like button with data-* attributes
+	 * Output Comments Box with data-* attributes
+	 *
+	 * @since 1.1
 	 *
 	 * @param array $div_attributes associative array. customize the returned div with id, class, or style attributes. social plugin parameters in data.
 	 * @return string HTML div or empty string
@@ -217,6 +281,7 @@ class Facebook_Comments_Box {
 	 * Output XFBML element with attributes
 	 *
 	 * @since 1.1
+	 *
 	 * @return string XFBML element or empty string
 	 */
 	public function asXFBML() {

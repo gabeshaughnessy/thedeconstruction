@@ -204,7 +204,8 @@ class GFUserData{
     
     public static function insert_buddypress_data($bp_rows) {
         global $wpdb, $bp;
-        
+        require_once(WP_PLUGIN_DIR . '/buddypress/bp-xprofile/bp-xprofile-functions.php');
+
         $table = $bp->profile->table_name_data;
         
         foreach($bp_rows as $bp_row) {

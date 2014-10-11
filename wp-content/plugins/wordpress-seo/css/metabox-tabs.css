@@ -97,7 +97,8 @@ ul.wpseo-metabox-tabs li {
 	line-height: 15px !important;
 	font-size: 13px !important;
 	font-style: normal;
-	width: 540px !important;
+	width: auto;
+    max-width: 520px;
 }
 
 #wpseosnippet td {
@@ -169,7 +170,7 @@ ul.wpseo-metabox-tabs li {
 
 table.wpseoanalysis th {
 	text-align: left;
-	font-weight: 14px;
+	font-size: 14px;
 	padding: 15px 0 5px 0;
 }
 
@@ -178,7 +179,7 @@ table.wpseoanalysis th.first {
 }
 
 table.wpseoanalysis td {
-	font-weight: 13px;
+	font-size: 13px;
 	line-height: 16px;
 	margin: 5px 0;
 }
@@ -208,13 +209,13 @@ table.wpseoanalysis td.score {
 
 /* Component containers
 ----------------------------------*/
-.ui-widget-content {
+#wpseotab .ui-widget-content {
 	border: 1px solid #dddddd;
 	background: #f1f1f1;
 	color: #333;
 }
 
-.ui-widget-content a {
+#wpseotab .ui-widget-content a {
 	color: #333;
 }
 
@@ -222,13 +223,13 @@ table.wpseoanalysis td.score {
  * jQuery UI Autocomplete 1.8.12
  * http://docs.jquery.com/UI/Autocomplete#theming
  */
-.ui-autocomplete {
+#wpseotab .ui-autocomplete {
 	position: absolute;
 	cursor: default;
 }
 
 /* workarounds */
-* html .ui-autocomplete {
+* html #wpseotab .ui-autocomplete {
 	width: 1px;
 }
 
@@ -282,6 +283,7 @@ table.wpseoanalysis td.score {
 	background-image: url(../images/score_buttons.png);
 	background-repeat: no-repeat;
 	padding: 0 0 0 0;
+	vertical-align: bottom;
 }
 .wpseo_score_img.good {
 	background-position: -2px -2px;
@@ -300,4 +302,8 @@ table.wpseoanalysis td.score {
 }
 .wpseo_score_img.noindex {
 	background-position: -146px -2px;
+}
+
+img.yoast_help {
+    cursor: pointer;
 }

@@ -31,8 +31,8 @@ $team_url = $curauth->user_url;
 ?>
 </pre>
 <div class="row">
-	<div class="team-image four columns"><?php echo get_wp_user_avatar(get_the_author_meta('ID'), 'medium');  ?></div>
-	<div class="eight columns">
+	<div class="team-image large-4 columns"><?php echo get_wp_user_avatar(get_the_author_meta('ID'), 'medium');  ?></div>
+	<div class="large-8 columns">
 	<h3><?php echo $team_name; ?></h3>
 	<?php if($team_theme != ''){ ?>
 	<p><em>Team Topic</em> - <b>Deconstruct:  <?php echo $team_theme; ?></b></p>
@@ -66,7 +66,7 @@ $team_url = $curauth->user_url;
 
 <div class="row">
 <?php if($team_stream != ''){ ?>
-<div class="twelve columns flex-video"><?php echo $team_stream; ?></div>
+<div class="large-12 columns flex-video"><?php echo $team_stream; ?></div>
 <?php } ?>
 <!-- NO CHAT <div id="team-chat" class="five columns end"><?php echo do_shortcode('[quick-chat  room="'.$team_nicename.'"]'); ?></div> -->
 </div>
@@ -90,7 +90,7 @@ $team_url = $curauth->user_url;
 <?php endif; ?>
 </div><!-- end of content -->
 
-	 <div class="one columns offset-by-eleven">
+	 <div class="large-1 columns offset-by-eleven">
 	 <?php 
 	 //get_template_part('sidebar'); 
 	 get_template_part('accordion', 'social');

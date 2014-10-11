@@ -64,6 +64,7 @@ wp-content/themes/twentyfourteen/
 wp-content/themes/twentythirteen/
 
 # Plugins
+wp-content/plugins/*
 wp-content/plugins/login-logo
 wp-content/plugins/backupwordpress
 wp-content/plugins/akismet
@@ -86,6 +87,7 @@ wp-content/plugins/genesis-simple-headers/
 wp-content/plugins/genesis-simple-sidebars/
 wp-content/plugins/genesis-slider/
 wp-content/plugins/gravityforms/
+wp-content/plugins/gravityformsmailchimp
 wp-content/plugins/gravityforms_1.5.1.zip
 wp-content/plugins/gravityformspolls/
 wp-content/plugins/hyperdb/

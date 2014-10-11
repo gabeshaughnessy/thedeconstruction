@@ -28,7 +28,11 @@
 	/*
 	 * Print the <title> tag based on what is being viewed.
 	 */
-	global $page, $paged;
+	global $page, $paged, $enable_transients;
+
+	$enable_transients = ENABLE_TRANSIENTS;
+
+
 
 	wp_title( '|', true, 'right' );
 
@@ -42,12 +46,15 @@
 
 	?></title>
 <link rel="profile" href="http://gmpg.org/xfn/11" />
-<link rel="stylesheet" type="text/css" media="all" href="<?php echo get_bloginfo( 'stylesheet_directory'); ?>/foundation/stylesheets/foundation.css" />
-<link rel="stylesheet" type="text/css" media="all" href="<?php echo get_bloginfo( 'stylesheet_directory'); ?>/css/app.css" />
+<link rel="stylesheet" type="text/css" media="all" href="<?php echo get_bloginfo( 'stylesheet_directory'); ?>/style.css" />
 
 <link rel="pingback" href="<?php bloginfo( 'pingback_url' ); ?>" />
 <link href='http://fonts.googleapis.com/css?family=Cinzel+Decorative' rel='stylesheet' type='text/css'>
-<meta property="og:image" content="<?php echo home_url(); ?>/wp-content/uploads/2012/12/homecenterimage-300x202.jpg">
+
+<?php //SOCIAL MEDIA METADATA 
+if(have_posts()) : while(have_posts()) : the_post();endwhile;endif;
+	echo getSocialTags($post);
+?>
 <?php //get the theme options to an array
 $theme_options = get_option('mothership_options');
 //access each field by its id
@@ -75,11 +82,20 @@ $theme_options = get_option('mothership_options');
 	<?php 
 	if(!is_author()){?>
 	<!-- <div class="logo twelve columns last"><h1><?php bloginfo('name'); ?></h1></div> -->
-	
-	<div class="logo ten columns centered"><h1><img src="<?php bloginfo('stylesheet_directory') ?>/images/deconstruction_logo.jpg"/></h1></div>
+	<?php
+          if(function_exists('edge_suite_view')){
+            echo '<div class="large-10 large-offset-1 columns centered">';
+            echo edge_suite_view();
+			echo '</div>';
+          }
+    else { ?>
+
+	<div class="logo large-10 large-offset-1 columns centered"><h1><img src="<?php bloginfo('stylesheet_directory') ?>/images/deconstruction_logo.jpg"/></h1></div>
 	
 	<div class="header_description ten columns centered"><p><?php bloginfo('description'); ?></p></div>
-	<?php  } ?>
+
+		<?php   }
+}//end is author ?>
 </header>
 <div id="main-content-area" class="row">
 <?php } ?>

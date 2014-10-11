@@ -3,7 +3,7 @@
 Plugin Name: Gravity Forms MailChimp Add-On
 Plugin URI: http://www.gravityforms.com
 Description: Integrates Gravity Forms with MailChimp allowing form submissions to be automatically sent to your MailChimp account
-Version: 1.9
+Version: 2.3
 Author: rocketgenius
 Author URI: http://www.rocketgenius.com
 
@@ -33,8 +33,8 @@ class GFMailChimp {
     private static $path = "gravityformsmailchimp/mailchimp.php";
     private static $url = "http://www.gravityforms.com";
     private static $slug = "gravityformsmailchimp";
-    private static $version = "1.9";
-    private static $min_gravityforms_version = "1.5";
+    private static $version = "2.3";
+    private static $min_gravityforms_version = "1.7.6.11";
     private static $supported_fields = array("checkbox", "radio", "select", "text", "website", "textarea", "email", "hidden", "number", "phone", "multiselect", "post_title",
 		                            "post_tags", "post_custom_field", "post_content", "post_excerpt");
 
@@ -50,8 +50,6 @@ class GFMailChimp {
 
             add_action('after_plugin_row_' . self::$path, array('GFMailChimp', 'plugin_row') );
 
-           //force new remote request for version info on the plugin page
-            self::flush_version_info();
         }
 
         if(!self::is_gravityforms_supported()){
@@ -64,8 +62,8 @@ class GFMailChimp {
 
             add_filter("transient_update_plugins", array('GFMailChimp', 'check_update'));
             add_filter("site_transient_update_plugins", array('GFMailChimp', 'check_update'));
-
             add_action('install_plugins_pre_plugin-information', array('GFMailChimp', 'display_changelog'));
+            add_action('gform_after_check_update', array("GFMailChimp", 'flush_version_info'));
 
             // paypal plugin integration hooks
             add_action("gform_paypal_action_fields", array("GFMailChimp", "add_paypal_settings"), 10, 2);
@@ -180,6 +178,9 @@ class GFMailChimp {
     }
 
     public static function plugin_row(){
+    	if(!class_exists("RGMailChimpUpgrade"))
+            require_once("plugin-upgrade.php");
+            
         if(!self::is_gravityforms_supported()){
             $message = sprintf(__("Gravity Forms " . self::$min_gravityforms_version . " is required. Activate it now or %spurchase it today!%s"), "<a href='http://www.gravityforms.com'>", "</a>");
             RGMailChimpUpgrade::display_plugin_message($message, true);
@@ -595,13 +596,19 @@ class GFMailChimp {
             }
 			self::log_debug("Retrieving API Info for key " . $settings["apikey"]);
             $api = new MCAPI($settings["apikey"]);
+        } else {
+            self::log_debug("API credentials not set");
+            return null;
         }
 
-        if(!$api || $api->errorCode)
-        {
-        	self::log_error("No response received or an error: " . $api->errorCode . " - " . $api->errorMessage);
+        if(!$api){
+            self::log_error("Failed to set up the API");
             return null;
-		}
+        } elseif ($api->errorCode) {
+            self::log_error("No response received or an error: " . $api->errorCode . " - " . $api->errorMessage);
+            return null;
+        }
+
 		self::log_debug("Successful API response received");
 
         return $api;
@@ -694,10 +701,10 @@ class GFMailChimp {
                     $group_info = explode("__",$enabled_group);
                     $grouping_n = $group_info[0];
                     $group_n = $group_info[1];
-                    $decision = rgpost("mailchimp_group_". $group_n ."_decision");
-                    $field_id =  rgpost("mailchimp_group_". $group_n ."_field_id");
-                    $operator = rgpost("mailchimp_group_". $group_n . "_operator");
-                    $value = rgpost("mailchimp_group_". $group_n . "_value");
+                    $decision = rgpost("mailchimp_group_". $grouping_n . "_" . $group_n ."_decision");
+                    $field_id =  rgpost("mailchimp_group_". $grouping_n . "_" . $group_n ."_field_id");
+                    $operator = rgpost("mailchimp_group_". $grouping_n . "_" . $group_n . "_operator");
+                    $value = rgpost("mailchimp_group_". $grouping_n . "_" . $group_n . "_value");
                     $grouping_label = rgpost($grouping_n . "_grouping_label");
                     $group_label = rgpost("mailchimp_group_". $group_n . "_label");
                     $enabled_groupings[$grouping_n][$group_n] = array("field_id" => $field_id,"operator" => $operator, "enabled" => "true", "value" => $value, "decision" => $decision, "grouping_label" => $grouping_label, "group_label"=> $group_label);
@@ -886,7 +893,8 @@ class GFMailChimp {
                                 if(!empty($group_condition)){
                                     foreach ($group_condition as $condition)
                                     {
-                                        echo 'SetGroupCondition("' . esc_js($condition["groupName"]) . '","' . esc_js($condition["selectedField"]) . '","' . esc_js($condition["selectedValue"]) . '");';
+                                        $input_name = "mailchimp_group_" . esc_js($condition["groupingName"]) . "_" . esc_js($condition["groupName"]) . "_value";
+                                    	echo 'SetGroupCondition("' . esc_js($condition["groupingName"]) . '","' . esc_js($condition["groupName"]) . '","' . esc_js($condition["selectedField"]) . '","' . esc_js($condition["selectedValue"]) . '","' . $input_name . '");';
 
                                     }
                                 }?>
@@ -969,21 +977,20 @@ class GFMailChimp {
                 }
             }
 
-            function SetGroupCondition(groupname, selectedField, selectedValue){
+            function SetGroupCondition(groupingName, groupname, selectedField, selectedValue){
 
                 //load form fields
-                jQuery("#mailchimp_group_"+groupname+"_field_id").html(GetSelectableFields(selectedField, 20));
-                var groupConditionField = jQuery("#mailchimp_group_"+groupname+"_field_id").val();
+                jQuery("#mailchimp_group_"+groupingName+"_"+groupname+"_field_id").html(GetSelectableFields(selectedField, 20));
+                var groupConditionField = jQuery("#mailchimp_group_"+groupingName+"_"+groupname+"_field_id").val();
 
                 if(groupConditionField){
-                    jQuery("#mailchimp_group_"+groupname+"_condition_message").hide();
-                    jQuery("#mailchimp_group_"+groupname+"_condition_fields").show();
-                    console.log(GetFieldValues(groupConditionField, selectedValue, 20, true));
-                    jQuery("#mailchimp_group_"+groupname+"_value").html(GetFieldValues(groupConditionField, selectedValue, 20, true));
+                    jQuery("#mailchimp_group_"+groupingName+"_"+groupname+"_condition_message").hide();
+                    jQuery("#mailchimp_group_"+groupingName+"_"+groupname+"_condition_fields").show();
+                    jQuery("#mailchimp_group_"+groupingName+"_"+groupname+"_container").html(GetFieldValues(groupConditionField, selectedValue, 20, "mailchimp_group_" + groupingName + "_" + groupname + "_value"));
                 }
                 else{
-                    jQuery("#mailchimp_group_"+groupname+"_condition_message").show();
-                    jQuery("#mailchimp_group_"+groupname+"_condition_fields").hide();
+                    jQuery("#mailchimp_group_"+groupingName+"_"+groupname+"_condition_message").show();
+                    jQuery("#mailchimp_group_"+groupingName+"_"+groupname+"_condition_fields").hide();
                 }
             }
 
@@ -999,21 +1006,15 @@ class GFMailChimp {
                     jQuery("#mailchimp_groupings").html(grouping);
 
                     for(var i in groups)
-                        SetGroupCondition(groups[i],"","");
+                        SetGroupCondition(groups[i]["main"], groups[i]["sub"],"","");
 
-                    //initializing mailchimp group tooltip
-                    jQuery('.tooltip_mailchimp_groups').qtip({
-                         content: jQuery('.tooltip_mailchimp_groups').attr('tooltip'), // Use the tooltip attribute of the element for the content
-                         show: { delay: 500, solo: true },
-                         hide: { when: 'mouseout', fixed: true, delay: 200, effect: 'fade' },
-                         style: "gformsstyle",
-                         position: {
-                          corner: {
-                               target: "topRight",
-                               tooltip: "bottomLeft"
-                               }
-                          }
-                      });
+                        jQuery( '.tooltip_mailchimp_groups' ).tooltip({
+                            show: 500,
+                            hide: 1000,
+                            content: function () {
+                                return jQuery(this).prop('title');
+                            }
+                        });
 
                     jQuery("#mailchimp_field_group").slideDown();
 
@@ -1025,13 +1026,13 @@ class GFMailChimp {
                 jQuery("#mailchimp_wait").hide();
             }
 
-            function GetFieldValues(fieldId, selectedValue, labelMaxCharacters, optionsOnly){
+            function GetFieldValues(fieldId, selectedValue, labelMaxCharacters, inputName){
+                if(!inputName){
+                    inputName = 'mailchimp_optin_value';
+                }
 
                 if(!fieldId)
                     return "";
-
-                if(typeof optionsOnly == 'undefined')
-                    optionsOnly = false;
 
                 var str = "";
                 var field = GetFieldById(fieldId);
@@ -1044,7 +1045,7 @@ class GFMailChimp {
 					str += '<?php $dd = wp_dropdown_categories(array("class"=>"optin_select", "orderby"=> "name", "id"=> "mailchimp_optin_value", "name"=> "mailchimp_optin_value", "hierarchical"=>true, "hide_empty"=>0, "echo"=>false)); echo str_replace("\n","", str_replace("'","\\'",$dd)); ?>';
 				}
 				else if(field.choices){
-					str += optionsOnly ? '' : '<select id="mailchimp_optin_value" name="mailchimp_optin_value" class="optin_select">'
+					str += '<select id="' + inputName +'" name="' + inputName +'" class="optin_select">';
 
 	                for(var i=0; i<field.choices.length; i++){
 	                    var fieldValue = field.choices[i].value ? field.choices[i].value : field.choices[i].text;
@@ -1059,13 +1060,13 @@ class GFMailChimp {
 	                if(!isAnySelected && selectedValue){
 	                    str += "<option value='" + selectedValue.replace(/'/g, "&#039;") + "' selected='selected'>" + TruncateMiddle(selectedValue, labelMaxCharacters) + "</option>";
 	                }
-	            	str += optionsOnly ? '' : "</select>";
+	            	str += "</select>";
 				}
 				else
 				{
 					selectedValue = selectedValue ? selectedValue.replace(/'/g, "&#039;") : "";
 					//create a text field for fields that don't have choices (i.e text, textarea, number, email, etc...)
-					str += "<input type='text' placeholder='<?php _e("Enter value", "gravityforms"); ?>' id='mailchimp_optin_value' name='mailchimp_optin_value' value='" + selectedValue.replace(/'/g, "&#039;") + "'>";
+					str += "<input type='text' placeholder='<?php _e("Enter value", "gravityforms"); ?>' id='" + inputName + "' name='" + inputName +"' value='" + selectedValue.replace(/'/g, "&#039;") + "'>";
 				}
 
                 return str;
@@ -1089,6 +1090,7 @@ class GFMailChimp {
             function GetSelectableFields(selectedFieldId, labelMaxCharacters){
                 var str = "";
                 var inputType;
+
                 for(var i=0; i<form.fields.length; i++){
                     fieldLabel = form.fields[i].adminLabel ? form.fields[i].adminLabel : form.fields[i].label;
                     inputType = form.fields[i].inputType ? form.fields[i].inputType : form.fields[i].type;
@@ -1132,7 +1134,7 @@ class GFMailChimp {
 			self::log_debug("Number of groups: " . count($groupings));
             $str = "<div id='mailchimp_groups_container' valign='top' class='margin_vertical_10'>";
 
-            $group_tooltip = "<a tooltip='&lt;h6&gt;Groups&lt;/h6&gt;When one or more groups are enabled, users will be assigned to the groups in addition to being subscribed to the MailChimp list. When disabled, users will not be assigned to groups.' class='tooltip tooltip_mailchimp_groups' onclick='return false;' href='#'>(?)</a>";
+            $group_tooltip = "<a title='&lt;h6&gt;Groups&lt;/h6&gt;When one or more groups are enabled, users will be assigned to the groups in addition to being subscribed to the MailChimp list. When disabled, users will not be assigned to groups.' class='tooltip tooltip_mailchimp_groups' onclick='return false;' href='#'>(?)</a>";
 
             $str .= "   <label for='mailchimp_groups' class='left_header'>" . __("Groups", "gravityformsmailchimp") . " " . $group_tooltip . "</label>";
             $str .= "   <div id='mailchimp_groups'>";
@@ -1140,7 +1142,7 @@ class GFMailChimp {
 
             foreach ($groupings as $grouping){
                 $grouping_label = $grouping['name'];
-                $grouping_name = sanitize_title_with_dashes($grouping_label);
+                $grouping_name = str_replace("%", "", sanitize_title_with_dashes($grouping_label)); //escaping name
 
                 $str .= "<tr>".
                         "   <td>".
@@ -1155,9 +1157,8 @@ class GFMailChimp {
                 foreach ($groups as $group)
                 {
                     $group_label = $group['name'];
-                    $group_name = sanitize_title_with_dashes($group_label);
-                    $group_name = str_replace("%", "", $group_name);
-                    $group_names[] = $group_name;
+                    $group_name = str_replace("%", "", sanitize_title_with_dashes($group_label));
+                    $group_names[] = array("main" => $grouping_name, "sub" => $group_name);
                     $group_enabled = rgars($config,"meta/groups/{$grouping_name}/{$group_name}/enabled");
                     $group_operator = rgars($config,"meta/groups/{$grouping_name}/{$group_name}/operator");
                     $group_value = rgars($config,"meta/groups/{$grouping_name}/{$group_name}/value");
@@ -1193,9 +1194,10 @@ class GFMailChimp {
                     // to build fields drop down menu
                     $group_selectedField = str_replace('"', '\"', rgars($config,"meta/groups/{$grouping_name}/{$group_name}/field_id"));
                     $group_selectedValue = str_replace('"', '\"', rgars($config,"meta/groups/{$grouping_name}/{$group_name}/value"));
-                    $group_condition[$group_name]["groupName"] = $group_name;
-                    $group_condition[$group_name]["selectedField"] = $group_selectedField;
-                    $group_condition[$group_name]["selectedValue"] = $group_selectedValue;
+                    $group_condition[$grouping_name . "_" . $group_name]["groupName"] = $group_name;
+                    $group_condition[$grouping_name . "_" . $group_name]["selectedField"] = $group_selectedField;
+                    $group_condition[$grouping_name . "_" . $group_name]["selectedValue"] = $group_selectedValue;
+                    $group_condition[$grouping_name . "_" . $group_name]["groupingName"] = $grouping_name;
 
 
                     if($group_enabled)
@@ -1223,36 +1225,41 @@ class GFMailChimp {
 
                     $str .="<tr>" .
                         "       <td>".
-                        "           <input type='checkbox' id='mailchimp_group_" . $group_name . "_enable' name='mailchimp_group[]' value='" . $grouping_name . "__" .$group_name . "' onclick=\"if(this.checked){jQuery('#mailchimp_group_" . $group_name . "_condition_field_container').slideDown();} else{jQuery('#mailchimp_group_" . $group_name . "_condition_field_container').slideUp();}\"" . $checkbox_state . "/>".
-                        "           <label for='mailchimp_group_" . $group_name . "_enable'>" . $group_label . "</label>".
+                        "           <input type='checkbox' id='mailchimp_group_" . $grouping_name . "_" . $group_name . "_enable' name='mailchimp_group[]' value='" . $grouping_name . "__" .$group_name . "' onclick=\"if(this.checked){jQuery('#mailchimp_group_" . $grouping_name . "_" . $group_name . "_condition_field_container').slideDown();} else{jQuery('#mailchimp_group_" . $grouping_name . "_" . $group_name . "_condition_field_container').slideUp();}\"" . $checkbox_state . "/>".
+                        "           <label for='mailchimp_group_" . $grouping_name . "_" . $group_name . "_enable'>" . $group_label . "</label>".
                         "       </td>".
                         "   </tr>".
 
                         "   <tr>".
                         "       <td>".
                         "           <input type='hidden' name='mailchimp_group_" . esc_attr($group_name) . "_label' value='" . esc_attr($group_label) . "' />".
-                        "           <div id='mailchimp_group_" . $group_name . "_condition_field_container' " . $group_container_state . " class='mailchimp_group_condition'>".
-                        "               <div id='mailchimp_group_" . $group_name . "_condition_fields' " . $condition_fields_state  . " >".
+                        "           <div id='mailchimp_group_" . $grouping_name . "_" . $group_name . "_condition_field_container' " . $group_container_state . " class='mailchimp_group_condition'>".
+                        "               <div id='mailchimp_group_" . $grouping_name . "_" . $group_name . "_condition_fields' " . $condition_fields_state  . " >".
                                             __("Assign to group", "gravityformsmailchimp").
-                        "                   <select id='mailchimp_group_" . $group_name . "_decision' name='mailchimp_group_" . $group_name . "_decision' onchange=\"if(jQuery(this).val() == 'if'){jQuery('#mailchimp_group_" . $group_name . "_decision_container').fadeIn();}else{jQuery('#mailchimp_group_" . $group_name . "_decision_container').fadeOut();}\">".
+                        "                   <select id='mailchimp_group_" . $grouping_name . "_" . $group_name . "_decision' name='mailchimp_group_" . $grouping_name . "_" . $group_name . "_decision' onchange=\"if(jQuery(this).val() == 'if'){jQuery('#mailchimp_group_" . $grouping_name . "_" . $group_name . "_decision_container').fadeIn();}else{jQuery('#mailchimp_group_" . $grouping_name . "_" . $group_name . "_decision_container').fadeOut();}\">".
                         "                       <option value='always' " . $always_option_state . ">always</option>".
                         "                       <option value='if' " . $if_option_state . ">if</option>".
                         "                   </select>".
 
-                        "                   <span id='mailchimp_group_" . $group_name . "_decision_container' " . $decision_container_state . ">".
-                        "                       <select id='mailchimp_group_" . $group_name . "_field_id' name='mailchimp_group_" . $group_name . "_field_id' class='optin_select' onchange=\"jQuery('#mailchimp_group_" . $group_name . "_value').html(GetFieldValues(jQuery(this).val(), '', 20, true));\">" . $selection_fields . "</select>".
+                        "                   <span id='mailchimp_group_" . $grouping_name . "_" . $group_name . "_decision_container' " . $decision_container_state . ">".
+                        "                       <select id='mailchimp_group_" . $grouping_name . "_" . $group_name . "_field_id' name='mailchimp_group_" . $grouping_name . "_" . $group_name . "_field_id' class='optin_select' onchange=\"jQuery('#mailchimp_group_" . $grouping_name . "_" . $group_name . "_container').html(GetFieldValues(jQuery(this).val(), '', 20, 'mailchimp_group_" . $grouping_name . "_" . $group_name . "_value'));\">" . $selection_fields . "</select>".
 
-                        "                       <select id='mailchimp_group_" . $group_name . "_operator' name='mailchimp_group_" . $group_name . "_operator' >".
-                        "                            <option value='is' " . $is_operator_state . ">is</option>".
-                        "                            <option value='isnot' " . $isnot_operator_state . ">is not</option>".
+                        "                       <select id='mailchimp_group_" . $grouping_name . "_" . $group_name . "_operator' name='mailchimp_group_" . $grouping_name . "_" . $group_name . "_operator' >".
+                        "                            <option value='is' " . self::selected($group_operator,"is") . ">" . __("is", "gravityforms") . "</option>".
+                        "                            <option value='isnot' " . self::selected($group_operator,"isnot") . ">" . __("is not", "gravityforms") . "</option>".
+                        "                            <option value='>' " . self::selected($group_operator,">") . ">" . __("greater than", "gravityforms") . "</option>".
+                        "                            <option value='<' " . self::selected($group_operator,"<") . ">" . __("less than", "gravityforms") . "</option>".
+                        "                            <option value='contains' " . self::selected($group_operator,"contains") . ">" . __("contains", "gravityforms") . "</option>".
+                        "                            <option value='starts_with' " . self::selected($group_operator,"starts_with") . ">" . __("starts with", "gravityforms") . "</option>".
+                        "                            <option value='ends_with' " . self::selected($group_operator,"ends_with") . ">" . __("ends with", "gravityforms") . "</option>".
                         "                       </select>".
 
-                        "                       <select id='mailchimp_group_" . $group_name . "_value' name='mailchimp_group_" . $group_name . "_value' class='optin_select'></select>".
+                        "                       <div id='mailchimp_group_" . $grouping_name . "_" . $group_name . "_container' name='mailchimp_group_" . $grouping_name . "_" . $group_name . "_container' style='display:inline'></div>".
                         "                   </span>".
                         "               </div>".
 
-                        "               <div id='mailchimp_group_" . $group_name . "_condition_message' " . $condition_message_state . ">".
-                                            __("To create a condition, your form must have a drop down, checkbox or multiple choice field.", "gravityformsmailchimp").
+                        "               <div id='mailchimp_group_" . $grouping_name . "_" . $group_name . "_condition_message' " . $condition_message_state . ">".
+                                            __("To create a condition, your form must have a field supported by conditional logic.", "gravityformsmailchimp").
                         "               </div>".
                         "           </div>".
                         "       </td>".
@@ -1269,6 +1276,10 @@ class GFMailChimp {
         {
 			self::log_debug("No groups found");
         }
+    }
+
+    public static function selected($selected, $current){
+        return $selected === $current ? " selected='selected'" : "";
     }
 
     //Target of Member plugin filter. Provides the plugin with Gravity Forms lists of capabilities
@@ -1343,13 +1354,17 @@ class GFMailChimp {
         array_push($form["fields"],array("id" => "ip" , "label" => __("User IP", "gravityformsmailchimp")));
         array_push($form["fields"],array("id" => "source_url" , "label" => __("Source Url", "gravityformsmailchimp")));
         array_push($form["fields"],array("id" => "form_title" , "label" => __("Form Title", "gravityformsmailchimp")));
-
+        $form = self::get_entry_meta($form);
         if(is_array($form["fields"])){
             foreach($form["fields"] as $field){
                 if(is_array(rgar($field, "inputs"))){
 
                     //If this is an address field, add full name to the list
                     if(RGFormsModel::get_input_type($field) == "address")
+                        $fields[] =  array($field["id"], GFCommon::get_label($field) . " (" . __("Full" , "gravityformsmailchimp") . ")");
+
+                    //If this is a name field, add full name to the list
+                    if(RGFormsModel::get_input_type($field) == "name")
                         $fields[] =  array($field["id"], GFCommon::get_label($field) . " (" . __("Full" , "gravityformsmailchimp") . ")");
 
                     foreach($field["inputs"] as $input)
@@ -1361,6 +1376,15 @@ class GFMailChimp {
             }
         }
         return $fields;
+    }
+
+    private static function get_entry_meta($form){
+        $entry_meta = GFFormsModel::get_entry_meta($form["id"]);
+        $keys = array_keys($entry_meta);
+        foreach ($keys as $key){
+            array_push($form["fields"],array("id" => $key , "label" => $entry_meta[$key]['label']));
+        }
+        return $form;
     }
 
     private static function get_address($entry, $field_id){
@@ -1379,6 +1403,26 @@ class GFMailChimp {
         $address .= !empty($address) && !empty($country_value) ? "  $country_value" : $country_value;
 
         return $address;
+    }
+
+    private static function get_name($entry, $field_id){
+
+        //If field is simple (one input), simply return full content
+        $name = rgar($entry,$field_id);
+        if(!empty($name))
+            return $name;
+
+        //Complex field (multiple inputs). Join all pieces and create name
+        $prefix = trim(rgar($entry,$field_id . ".2"));
+        $first = trim(rgar($entry,$field_id . ".3"));
+        $last = trim(rgar($entry,$field_id . ".6"));
+        $suffix = trim(rgar($entry,$field_id . ".8"));
+
+        $name = $prefix;
+        $name .= !empty($name) && !empty($first) ? " $first" : $first;
+        $name .= !empty($name) && !empty($last) ? " $last" : $last;
+        $name .= !empty($name) && !empty($suffix) ? " $suffix" : $suffix;
+        return $name;
     }
 
     public static function get_mapped_field_list($variable_name, $selected_field, $fields){
@@ -1546,12 +1590,21 @@ class GFMailChimp {
             		$field = RGFormsModel::get_field($form, $field_id);
 		            if($field_id == intval($field_id) && RGFormsModel::get_input_type($field) == "address") //handling full address
 		                $merge_vars[$var_tag] = self::get_address($entry, $field_id);
+		            else if($field_id == intval($field_id) && RGFormsModel::get_input_type($field) == "name") //handling full name
+		                $merge_vars[$var_tag] = self::get_name($entry, $field_id);
+		            else if ($field_id == intval($field_id) && RGFormsModel::get_input_type($field) == "phone" && $field["phoneFormat"] == "standard") {
+		            	//reformat phone to go to mailchimp when standard format (US/CAN), needs to be in the format NPA-NXX-LINE 404-555-1212 when US/CAN
+		            	$phone = rgar($entry, $field_id);
+		            	if (preg_match('/^\D?(\d{3})\D?\D?(\d{3})\D?(\d{4})$/', $phone, $matches)){
+                    		$phone = sprintf("%s-%s-%s", $matches[1], $matches[2], $matches[3]);
+						}
+						$merge_vars[$var_tag] = $phone;
+					}
 		            else if($var_tag != "EMAIL") //ignoring email field as it will be handled separatelly
-		                $merge_vars[$var_tag] = rgar($entry, $field_id);
+		                $merge_vars[$var_tag] = apply_filters("gform_mailchimp_field_value", rgar($entry, $field_id), $form["id"], $field_id, $entry);
             		break;
-            }
-
-        }
+        	}
+		}
 
 
         $groupings = $feed["meta"]["groups"];
@@ -1571,18 +1624,25 @@ class GFMailChimp {
                     if(self::assign_group_allowed($form, $feed, $grouping_name, $group_name))
                         $group_list .= $group_label . ",";
                 }
-                if(!empty($group_list))
-                {
-                    $merge_vars["GROUPINGS"][$i]["name"] = $grouping_label;
-                    $merge_vars["GROUPINGS"][$i]["groups"] = substr($group_list, 0, -1);
-                }
+
+                $merge_vars["GROUPINGS"][$i]["name"] = $grouping_label;
+                $merge_vars["GROUPINGS"][$i]["groups"] = empty($group_list) ? "" : substr($group_list, 0, -1);
+
                 $i++;
             }
         }
 		self::log_debug("Checking to see if {$email} is already on the list");
         $member_info = $api->listMemberInfo($feed["meta"]["contact_list_id"], $email);
-        if(absint($member_info["errors"]) > 0 || rgar($member_info["data"][0], "status") != "subscribed"){
-        	//adding member to list, statuses of unsubscribe, pending, cleaned need to be "re-subscribed" to send out confirmation email
+
+        if( absint($member_info["errors"]) > 0 || rgar($member_info["data"][0], "status") != "subscribed" ){
+
+            $allow_resubscription = apply_filters( 'gform_mailchimp_allow_resubscription', apply_filters("gform_mailchimp_allow_resubscription_{$form['id']}", true, $form, $entry, $feed), $form, $entry, $feed );
+            if(rgar($member_info["data"][0], "status") == "unsubscribed" && !$allow_resubscription) {
+                self::log_debug("User is unsubscribed and resubscription is not allowed.");
+                return true;
+            }
+
+        	//adding member to list, statuses of rgar($member_info["data"][0], "status") != "subscribed", pending, cleaned need to be "re-subscribed" to send out confirmation email
         	self::log_debug("{$email} is either not on the list or on the list but the status is not subscribed - status: ". rgar($member_info["data"][0], "status") . "; adding to list");
         	self::log_debug("Calling - listSubscribe, Parameters - List ID: " . $feed["meta"]["contact_list_id"] . ", Email: {$email}, " . " Merge_Vars: " . print_r($merge_vars, true) . ", Email Type: html, Double Opt In: {$double_optin}, Update Existing: false, Replace Interests: true, Send Welcome: {$send_welcome}");
             $retval = $api->listSubscribe($feed["meta"]["contact_list_id"], $email, $merge_vars, "html", $double_optin, false, true, $send_welcome );
@@ -1603,6 +1663,7 @@ class GFMailChimp {
         	self::log_debug("Calling - listUpdateMember, Parameters - List ID: " . $feed["meta"]["contact_list_id"] . ", Email: {$email}, " . " Merge_Vars: " . print_r($merge_vars,true) . ", Email Type: html, Replace Interests: true");
 	        $retval = $api->listUpdateMember($feed["meta"]["contact_list_id"], $email, $merge_vars, "html", true);
         }
+
         //listSubscribe and listUpdateMember return true/false
         if ($retval)
         {
@@ -1666,19 +1727,20 @@ class GFMailChimp {
         $operator = $config["groups"][$grouping][$group]["operator"];
         $decision = $config["groups"][$grouping][$group]["decision"];
 
+
         $field = RGFormsModel::get_field($form, $config["groups"][$grouping][$group]["field_id"]);
         $field_value = RGFormsModel::get_field_value($field, array());
-        $is_value_match = RGFormsModel::is_value_match($field_value, $config["groups"][$grouping][$group]["value"]);
+        $is_value_match = RGFormsModel::is_value_match($field_value, $config["groups"][$grouping][$group]["value"], $operator, $field);
 
-        if(!$config["groups"][$grouping][$group]["enabled"])
+        if(!$config["groups"][$grouping][$group]["enabled"]){
             return false;
-        else if($decision == "always" || empty($field))
+        }
+        else if($decision == "always" || empty($field)){
             return true;
-        else if($decision == "if" && (($operator == "is" && $is_value_match) || ($operator == "isnot" && !$is_value_match)) )
-            return true;
-
-
-        return false;
+        }
+        else{
+            return $is_value_match;
+        }
 
     }
 

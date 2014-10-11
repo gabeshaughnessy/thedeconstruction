@@ -1,5 +1,14 @@
 <?php //check for newsfeed transient, if it exists, assign variable newfeed to it
+global $enable_transients;
+error_log('transients enabled:'.$enable_transients);
+if($enable_transients == true){
 $team_list = get_transient('team-list');
+
+}
+else{
+	$team_list = false;
+
+}
 
 if($team_list == false){
 //if it doesn't exist:
@@ -43,7 +52,7 @@ if($i % $columns == 1){
 	$avatar = get_avatar($team['ID'], $avatar_size);
 	$team_profile_url = home_url('/').'team/'.$team['data']->user_nicename;
 	$team_location = get_user_meta($team['ID'], 'team-location', true);
-	$team_list .= '<li class="'.writeOutNum(12/$columns).' columns"><a class="team-image th" title="View the Team Profile Page" href="'. $team_profile_url. '">'. $avatar . '</a><div class="team-details panel twelve columns"><a class="" title="View the Team Profile Page" href="'. $team_profile_url.'" class="team-link"><h6>'. $display_name. '</h6></a><p class="team-location ">'.$team_location.'</p></div></li>';
+	$team_list .= '<li class="large-'.(12/$columns).' columns"><a class="team-image th" title="View the Team Profile Page" href="'. $team_profile_url. '">'. $avatar . '</a><div class="team-details panel large-12 columns"><a class="" title="View the Team Profile Page" href="'. $team_profile_url.'" class="team-link"><h6>'. $display_name. '</h6></a><p class="team-location ">'.$team_location.'</p></div></li>';
 	$i++;
 }
 $team_list .= '</ul>';

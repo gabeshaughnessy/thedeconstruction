@@ -1,8 +1,52 @@
 <?php  /* Theme Functions */
 
+/* DEFINE ENVIRONMENT GLOBAL */
+$host = $_SERVER['HTTP_HOST'];
+if (stristr($host, 'local' ) !== FALSE){ 
+	define ('DECON_ENVIRONMENT', "development");
+    }
+    elseif ((stristr($host, 'staging') !== FALSE)){
+        define('DECON_ENVIRONMENT', "staging");
+        }
+        else{
+            define('DECON_ENVIRONMENT', "production");
+            } 
+/* Plugins Activiation */
+/* ################################################################################# */
+
+    if (DECON_ENVIRONMENT != 'development') {
+       define('ACF_LITE', true);
+    }
+
+    /* Advanced Custome Fields */
+    require_once('lib/plugins/advanced-custom-fields/acf.php');
+    /* ACF Add-ons */
+    //include_once( 'lib/plugins/advanced-custom-fields/add-ons/acf-repeater/acf-repeater.php' );
+    //include_once( 'lib/plugins/advanced-custom-fields/add-ons/acf-flexible-content/acf-flexible-content.php' );
+    //include_once( 'lib/plugins/advanced-custom-fields/add-ons/acf-options-page/acf-options-page.php' ); 
+    //include_once( 'lib/plugins/advanced-custom-fields/add-ons/acf-field-date-time-picker/acf-date_time_picker.php' ); 
+
+    if ( DECON_ENVIRONMENT != 'development' ) {
+        // If this is staging or production
+            // load ACF declarations
+            require_once('lib/plugins/advanced-custom-fields/register_fields.php'); 
+        }
+        else{            
+            add_action( 'admin_menu', 'decon_acf_menu', 9 );
+            function decon_acf_menu(){
+                add_submenu_page( 'edit.php?post_type=acf', __('Custom Fields','acf'), __('Custom Fields','acf'), 'manage_options', 'edit.php?post_type=acf');
+                add_submenu_page( 'edit.php?post_type=acf', __('Import ACF','acf'), __('Import ACF','acf'), 'manage_options', 'admin.php?import=wordpress');
+
+                }
+
+    }
+
+
 //Initialize Admin Pages 
 require_once('lib/admin-page-class/admin-page-class.php');
 require_once('lib/admin-page-class/theme-options.php');
+require_once('functions-social.php');
+require_once('functions-caching.php');
 
 //REWRITES
 require_once('lib/rewrites.php');
@@ -24,17 +68,21 @@ function decon_enqueue_scripts() {
 		get_template_directory_uri() . '/foundation/javascripts/jquery.foundation.accordion.js',
 		array('jquery', 'foundation')
 	);
-	//Foundation App
 	wp_enqueue_script(
-		'foundation-app',
-		get_template_directory_uri() . '/foundation/javascripts/app.js',
-		array('foundation')
+		'foundation-reveal',
+		get_template_directory_uri() . '/foundation/javascripts/jquery.foundation.reveal.js',
+		array('foundation', 'jquery')
+	);
+	wp_enqueue_script(
+		'foundation-top-bar',
+		get_template_directory_uri() . '/foundation/javascripts/jquery.foundation.topbar.js',
+		array('foundation', 'jquery')
 	);
 	//Global JS
 	wp_enqueue_script(
 		'global_scripts',
 		get_template_directory_uri() . '/js/global.js',
-		array('foundation', 'jquery')
+		array('foundation', 'jquery', 'foundation-reveal')
 	);
 }
 add_action('wp_enqueue_scripts', 'decon_enqueue_scripts');
@@ -218,9 +266,10 @@ function my_embed_oembed_html($html, $url, $attr, $post_id) {
 /* IMAGES */
 
 add_theme_support( 'post-thumbnails' );
-set_post_thumbnail_size( 120, 9999, true );
+set_post_thumbnail_size( 120, 120, true );
 if ( function_exists( 'add_image_size' ) ) { 
-	add_image_size( 'one-column', 120, 9999, true ); //(cropped)
+	add_image_size( 'one-column', 120, 120, true ); //(cropped)
+	add_image_size( 'social', 700, 700, false ); //(not-cropped)
  }
  
  /* Dashboard - remove fields */
@@ -232,6 +281,7 @@ if ( function_exists( 'add_image_size' ) ) {
  	remove_meta_box( 'dashboard_secondary', 'dashboard', 'side' );
  	remove_meta_box( 'dashboard_incoming_links', 'dashboard', 'normal' );
  	remove_meta_box( 'dashboard_right_now', 'dashboard', 'normal' );
+ 	remove_meta_box ('dashboard_activity', 'dashboard', 'normal');
  } 
  
  // Hoook into the 'wp_dashboard_setup' action to register our function

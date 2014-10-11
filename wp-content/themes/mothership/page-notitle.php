@@ -8,7 +8,7 @@
  */
 
 get_header(); ?>
-<div id="content" class="eleven columns">
+<div id="content" class="large-11 columns">
 <?php if(have_posts()) : while(have_posts()) : the_post(); ?>
 <article>
 	<div class="post-content">
@@ -18,13 +18,13 @@ get_header(); ?>
 <?php endwhile; ?>
 <?php endif; ?>
 </div><!-- end of content -->
-	<div class="one columns offset-by-eleven">
+	<div class="large-1 columns offset-large-11">
 	<?php 
 	get_template_part('accordion', 'social');
 	?>
 	</div>
 	
-	<div class="eleven columns">
+	<div class="large-11 columns">
 	<?php 
 	//get_template_part('loop', 'news_feed');
 	?>

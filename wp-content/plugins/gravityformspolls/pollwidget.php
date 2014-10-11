@@ -22,58 +22,67 @@ class GFPollsPollWidget extends WP_Widget {
         extract( $args );
         echo $before_widget;
         $title = apply_filters('widget_title', $instance['title'] );
-		$formid= $instance['form_id'];
+		$form_id= $instance['form_id'];
 		
         if ( $title )
             echo $before_title . $title . $after_title;
-			
-		$showtitle = $instance["showtitle"];
-		$showtitle = strtolower($showtitle) == "1" ? "true" : "false";
+		$mode =  rgar($instance, "mode");	
+		$override_form_settings = rgar($instance, 'override_form_settings');
+		if ( "" === $override_form_settings )
+			$override_form_settings = true;
 		
-		$showdescription = $instance["showdescription"];
-		$showdescription = strtolower($showdescription) == "1" ? "true" : "false";
-		
-		$displayconfirmation = $instance["displayconfirmation"];
-		$displayconfirmation = strtolower($displayconfirmation) == "1" ? "true" : "false";
-		
-		$ajax = $instance["ajax"];
-		$ajax = strtolower($ajax) == "1" ? "true" : "false";
-		
-		$disable_scripts = $instance["disable_scripts"];
-		$disable_scripts = strtolower($disable_scripts) == "1" ? "true" : "false";
-		
-		$mode = $instance["mode"];
-		$style = $instance["style"];
-		
-		$add_numbers = $instance["add_numbers"];
-		$add_numbers_string =  $add_numbers == "1" ? "true" : "false";
-		
-		$display_results = $instance["display_results"];
-		$display_results_string =  $display_results == "1" ? "true" : "false";
-		
-		$show_results_link = $instance["show_results_link"];
-		$show_results_link_string =  $show_results_link == "1" ? "true" : "false";
-		
-		$show_percentages = $instance["show_percentages"];
-		$show_percentages_string =  $show_percentages == "1" ? "true" : "false";
-		
-		$show_counts= $instance["show_counts"];
-		$show_counts_string =  $show_counts == "1" ? "true" : "false";
-		
-		$block_repeat_voters = $instance["block_repeat_voters"];
+ 		if ( $override_form_settings ) {
+ 			$style = rgar($instance, "style");
+			$display_results = rgar($instance, "display_results");
+			$display_results_string =  $display_results == "1" ? "true" : "false";
+			$show_results_link = rgar($instance, "show_results_link");
+			$show_results_link_string =  $show_results_link == "1" ? "true" : "false";
+			$show_percentages =  rgar($instance, "show_percentages");
+			$show_percentages_string =  $show_percentages == "1" ? "true" : "false";
+			$show_counts = rgar($instance, "show_counts");
+			$show_counts_string =  $show_counts == "1" ? "true" : "false";
+			$block_repeat_voters = rgar($instance, "block_repeat_voters");
+			$cookie = $block_repeat_voters == "1" ? rgar($instance, "cookie") :  "";
 
-		$tabindex = $instance["tabindex"];
+			$displayconfirmation = rgar($instance, "displayconfirmation");
+			$displayconfirmation = $displayconfirmation == "1" ? "true" : "false";
+	
+ 			
+ 		} else {
+ 			$form = RGFormsModel::get_form_meta($form_id);
+			$style = GFPolls::get_form_setting($form, "gpollStyle");
+			$display_results = GFPolls::get_form_setting($form, "gpollDisplayResults");
+			$display_results_string =  $display_results ? "true" : "false";
+			$show_results_link = GFPolls::get_form_setting($form, "gpollShowResultsLink");
+			$show_results_link_string =  $show_results_link ? "true" : "false";
+			$show_percentages =  GFPolls::get_form_setting($form, "gpollShowPercentages");
+			$show_percentages_string =  $show_percentages ? "true" : "false";
+			$show_counts = GFPolls::get_form_setting($form, "gpollShowCounts");
+			$show_counts_string =  $show_counts ? "true" : "false";
+			$block_repeat_voters = GFPolls::get_form_setting($form, "gpollBlockRepeatVoters");
+			$cookie = $block_repeat_voters ?  GFPolls::get_form_setting($form, "gpollCookie") : "";
+			$displayconfirmation = "true";
+
+ 		}
+ 		$tabindex = rgar($instance, "tabindex");
+ 		$showtitle = rgar($instance, "showtitle"); 
+		$showtitle = $showtitle == "1" ? "true" : "false";
+	
+		$showdescription =  rgar($instance, "showdescription");
+		$showdescription = $showdescription == "1" ? "true" : "false";
+		$ajax = rgar($instance, "ajax");
+		$ajax = $ajax == "1" ? "true" : "false";
+		$disable_scripts = rgar($instance, "disable_scripts");
+		$disable_scripts = $disable_scripts == "1" ? "true" : "false";
 		
-		$cookie = $block_repeat_voters == "1" ? $instance["cookie"] :  "";
 		
-		$shortcode = "[gravityforms action=\"polls\" field=\"0\" id=\"{$formid}\" style=\"{$style}\" mode=\"{$mode}\" numbers=\"{$add_numbers_string}\" display_results=\"{$display_results_string}\" show_results_link=\"{$show_results_link_string}\" cookie=\"{$cookie}\" ajax=\"{$ajax}\" disable_scripts=\"{$disable_scripts}\" tabindex=\"{$tabindex}\" title=\"{$showtitle}\" description=\"{$showdescription}\" confirmation=\"{$displayconfirmation}\" percentages=\"{$show_percentages_string}\" counts=\"{$show_counts_string}\"]";
+		$shortcode = "[gravityforms action=\"polls\" field=\"0\" id=\"{$form_id}\" style=\"{$style}\" mode=\"{$mode}\" display_results=\"{$display_results_string}\" show_results_link=\"{$show_results_link_string}\" cookie=\"{$cookie}\" ajax=\"{$ajax}\" disable_scripts=\"{$disable_scripts}\" tabindex=\"{$tabindex}\" title=\"{$showtitle}\" description=\"{$showdescription}\" confirmation=\"{$displayconfirmation}\" percentages=\"{$show_percentages_string}\" counts=\"{$show_counts_string}\"]";
 		
 		
 		echo do_shortcode($shortcode);
-		
-		
+
         echo $after_widget;
-		return;
+
     }
 
     function update( $new_instance, $old_instance ) {
@@ -81,15 +90,17 @@ class GFPollsPollWidget extends WP_Widget {
         $instance = $old_instance;
         $instance["title"] = strip_tags( $new_instance["title"] );
         $instance["form_id"] = $new_instance["form_id"];
+        
+
+       	$instance["override_form_settings"] = $new_instance["override_form_settings"];
         $instance["showtitle"] = empty( $new_instance["showtitle"] ) ? "Poll" : $new_instance["showtitle"];
-		$instance["displayconfirmation"] = empty( $new_instance["displayconfirmation"] ) ? "0" : $new_instance["displayconfirmation"];
-        $instance["ajax"] = empty( $new_instance["ajax"] ) ? "0" : $new_instance["ajax"];
-        $instance["disable_scripts"] = empty( $new_instance["disable_scripts"] ) ? "0" : $new_instance["disable_scripts"];
-        $instance["showdescription"] = empty( $new_instance["showdescription"] ) ? "0" : $new_instance["showdescription"];
-        $instance["tabindex"] = empty( $new_instance["tabindex"] ) ? "0" : $new_instance["tabindex"];
 		$instance["mode"] = $new_instance["mode"];
+		$instance["ajax"] = empty( $new_instance["ajax"] ) ? "0" : $new_instance["ajax"];
+	    $instance["disable_scripts"] = empty( $new_instance["disable_scripts"] ) ? "0" : $new_instance["disable_scripts"];
+	    $instance["showdescription"] = empty( $new_instance["showdescription"] ) ? "0" : $new_instance["showdescription"];
+	    $instance["tabindex"] = empty( $new_instance["tabindex"] ) ? "0" : $new_instance["tabindex"];
+		$instance["displayconfirmation"] = empty( $new_instance["displayconfirmation"] ) ? "0" : $new_instance["displayconfirmation"];
 		$instance["style"] = $new_instance["style"];
-		$instance["add_numbers"] = empty( $new_instance["add_numbers"] ) ? "0" : $new_instance["add_numbers"];
 		$instance["display_results"] = empty( $new_instance["display_results"] ) ? "0" : $new_instance["display_results"];
 		$instance["show_results_link"] = empty( $new_instance["show_results_link"] ) ? "0" : $new_instance["show_results_link"];
 		$instance["show_percentages"] = empty( $new_instance["show_percentages"] ) ? "0" : $new_instance["show_percentages"];
@@ -97,7 +108,6 @@ class GFPollsPollWidget extends WP_Widget {
 		$instance["block_repeat_voters"] = empty( $new_instance["block_repeat_voters"] ) ? "0" : $new_instance["block_repeat_voters"];
 		$instance["cookie"] = $new_instance["cookie"];
 
-        
         return $instance;
     }
 
@@ -107,6 +117,9 @@ class GFPollsPollWidget extends WP_Widget {
 		if(!empty($forms)) {
 			$first_form_id = $forms[0]->id;
 		}
+		
+		$override_form_settings = rgar($instance, 'override_form_settings');
+		$widget_has_legacy_override_settings = "" === $override_form_settings && isset($instance["style"]);
         $instance = wp_parse_args( (array) $instance, array(
 			'title' => __("Poll", "gravityforms"), 
 			'tabindex' => '1', 
@@ -116,84 +129,117 @@ class GFPollsPollWidget extends WP_Widget {
 			'ajax' => '0',
 			'disable_scripts' => '0',
 			'form_id' => $first_form_id, 
-			'mode' => 'poll',
+			'mode' => 'results',
 			'style' => 'green',
-			'add_numbers' => '0',
 			'display_results' => '1',
 			'show_results_link' => '1',
 			'show_percentages' => '1',
 			'show_counts' => '1',
 			'block_repeat_voters' => '0',
-			'cookie' => ''
+			'cookie' => '',
+			'override_form_settings' => '0'
 
 			) );
-        ?>
 
-        <p>
+    	if ( $widget_has_legacy_override_settings  )
+    		$instance['override_form_settings']='1';
+       	
+        $override_form_ids = apply_filters('gpoll_widget_override' , array());
+        $form_id = $instance['form_id'];
+		
+ 		if (  $widget_has_legacy_override_settings || $override_form_settings ) {
+			$show_override_radio = true;
+			$show_override_settings = true;
+		} elseif (  in_array($form_id, $override_form_ids) && false === $widget_has_legacy_override_settings ) {
+			$show_override_radio = true;
+			$show_override_settings = false;
+		} else {
+			$show_override_radio = false;
+			$show_override_settings = false;
+		}
+
+        ?>
+		
+		<p>
             <label for="<?php echo $this->get_field_id( 'title' ); ?>"><?php _e("Title", "gravityforms"); ?>:</label>
             <input id="<?php echo $this->get_field_id( 'title' ); ?>" name="<?php echo $this->get_field_name( 'title' ); ?>" value="<?php echo $instance['title']; ?>" style="width:90%;" />
         </p>
-		<fieldset class="gpoll_fieldset">
-			<legend>Form Settings</legend>
-			<p>
-				<label for="<?php echo $this->get_field_id( 'form_id' ); ?>"><?php _e("Select a Form", "gravityforms"); ?>:</label>
-				<select id="<?php echo $this->get_field_id( 'form_id' ); ?>" name="<?php echo $this->get_field_name( 'form_id' ); ?>" style="width:90%;">
-					<?php
-						$forms = RGFormsModel::get_forms(1, "title");
-						foreach ($forms as $form) {
-							$selected = '';
-							if ($form->id == $instance['form_id'])
-								$selected = ' selected="selected"';
-							echo '<option value="'.$form->id.'" '.$selected.'>'.$form->title.'</option>';
-						}
-					?>
-				</select>
-			</p>
-			<p>
+
+		<p>
+			
+			<label for="<?php echo $this->get_field_id( 'form_id' ); ?>"><?php _e("Select a Form", "gravityforms"); ?>:</label>
+			<select class="gpoll_forms_dropdown" id="<?php echo $this->get_field_id( 'form_id' ); ?>" name="<?php echo $this->get_field_name( 'form_id' ); ?>" style="width:90%;" <?php if ( false === $widget_has_legacy_override_settings ) : ?>onchange="radioButtonsSelector = '#<?php echo $this->id ?>_gpoll_override_radio'; radioOffSelector = '#widget-<?php echo $this->id ?>-override_form_settings_0'; settingsSelector = '#<?php echo $this->id ?>_gpoll_overrides, #<?php echo $this->id . "_gpoll_override_radio"?>'; if (jQuery.inArray(parseInt(this.value), <?php echo json_encode($override_form_ids) ?>) >= 0 ) {jQuery(radioButtonsSelector).show(); } else { jQuery(settingsSelector).hide();}jQuery(radioOffSelector).trigger('click');"<?php endif ?>>
+				<?php
+					$forms = RGFormsModel::get_forms(1, "title");
+					foreach ($forms as $f) {
+						$form = RGFormsModel::get_form_meta($f->id);
+						$poll_fields = GFCommon::get_fields_by_type( $form, array( 'poll' ) );
+       					if ( false === empty ( $poll_fields ) ) {
+							$selected = $f->id == $instance['form_id'] ? 'selected="selected"' : "";
+							echo '<option value="'.$f->id.'" ' . $selected . '>'.$f->title.'</option>';
+       					}
+						
+					}
+				?>
+			</select>
+		</p>
 		
-				<input type="checkbox" name="<?php echo $this->get_field_name( 'showtitle' ); ?>" id="<?php echo $this->get_field_id( 'showtitle' ); ?>" <?php checked($instance['showtitle']); ?> value="1" /> <label for="<?php echo $this->get_field_id( 'showtitle' ); ?>"><?php _e("Display form title", "gravityforms"); ?></label><br/>
-				<input type="checkbox" name="<?php echo $this->get_field_name( 'showdescription' ); ?>" id="<?php echo $this->get_field_id( 'showdescription' ); ?>" <?php checked($instance['showdescription']); ?> value="1"/> <label for="<?php echo $this->get_field_id( 'showdescription' ); ?>"><?php _e("Display form description", "gravityforms"); ?></label><br/>
-				<input type="checkbox" name="<?php echo $this->get_field_name( 'displayconfirmation' ); ?>" id="<?php echo $this->get_field_id( 'displayconfirmation' ); ?>" <?php checked($instance['displayconfirmation']); ?> value="1"/> <label for="<?php echo $this->get_field_id( 'displayconfirmation' ); ?>"><?php _e("Display form confirmation", "gravityforms"); ?></label><br/>
-			</p>
-		</fieldset>
-		<fieldset class="gpoll_fieldset">
-			<legend>Poll Settings</legend>
+	
+
 			<p>
 				<label for="<?php echo $this->get_field_id( 'mode' ); ?>"><?php _e("Display Mode", "gravityformspolls"); ?>:</label>
-				<select id="<?php echo $this->get_field_id( 'mode' ); ?>" name="<?php echo $this->get_field_name( 'mode' ); ?>" style="width:90%;">
-					<option value="poll" <?php echo $instance['mode'] == "poll" ? 'selected="selected"' : '' ; ?>>Poll</option>
-					<option value="results" <?php echo $instance['mode'] == "results" ? 'selected="selected"' : '' ?>>Results</option>
+				<select id="<?php echo $this->get_field_id( 'mode' ); ?>" name="<?php echo $this->get_field_name( 'mode' ); ?>" style="width:90%;" onchange="if ('poll' === this.value) jQuery('#<?php echo $this->id ?>_gpoll_override_poll_settings, #<?php echo $this->id ?>_gpoll_form_settings').show('slow'); else jQuery('#<?php echo $this->id ?>_gpoll_override_poll_settings, #<?php echo $this->id ?>_gpoll_form_settings').hide('slow', function(){jQuery(this).css('display', 'none')}); ">
+					<option value="poll" <?php echo $instance['mode'] == "poll" ? 'selected="selected"' : '' ; ?>><?php _e("Poll", "gravityformspolls"); ?></option>
+					<option value="results" <?php echo $instance['mode'] == "results" ? 'selected="selected"' : '' ?>><?php _e("Results only", "gravityformspolls"); ?></option>
 				</select>
 			</p>
-			
-			<p>         
-				<input type="checkbox" name="<?php echo $this->get_field_name( 'display_results' ); ?>" id="<?php echo $this->get_field_id( 'display_results' ); ?>" <?php checked($instance['display_results']); ?> value="1" /> <label for="<?php echo $this->get_field_id( 'display_results' ); ?>"><?php _e("Display results after voting", "gravityformspolls"); ?></label><br/>
-			  
-		   
-				<input type="checkbox" name="<?php echo $this->get_field_name( 'show_results_link' ); ?>" id="<?php echo $this->get_field_id( 'show_results_link' ); ?>" <?php checked($instance['show_results_link']); ?> value="1" /> <label for="<?php echo $this->get_field_id( 'show_results_link' ); ?>"><?php _e("Show link to view results", "gravityformspolls"); ?></label><br/>
+			<div id="<?php echo $this->id ?>_gpoll_override_radio" style="<?php echo $show_override_radio ? "" : "display:none"   ?>">
+				<p>
+					<input type="radio" name="<?php echo $this->get_field_name( 'override_form_settings' ); ?>" value="0" <?php checked($instance['override_form_settings'], "0"); ?> id="<?php echo $this->get_field_id( 'override_form_settings' ) . "_0"; ?>" onclick="jQuery('#<?php echo $this->id ?>_gpoll_overrides').hide('slow');"> <label for="<?php echo $this->get_field_id( 'override_form_settings' ) . "_0"; ?>"><?php _e("Use form settings", "gravityformspolls"); ?></label><br>
+					<input type="radio" name="<?php echo $this->get_field_name( 'override_form_settings' ); ?>" value="1" <?php checked($instance['override_form_settings'], "1"); ?> id="<?php echo $this->get_field_id( 'override_form_settings' ) . "_1"; ?>" onclick="jQuery('#<?php echo $this->id ?>_gpoll_overrides').show('slow');"> <label for="<?php echo $this->get_field_id( 'override_form_settings' ) . "_1"; ?>"><?php _e("Override form settings", "gravityformspolls"); ?></label><br>
+				</p>
+			</div>
 				
-				<input type="checkbox" name="<?php echo $this->get_field_name( 'show_percentages' ); ?>" id="<?php echo $this->get_field_id( 'show_percentages' ); ?>" <?php checked($instance['show_percentages']); ?> value="1" /> <label for="<?php echo $this->get_field_id( 'show_percentages' ); ?>"><?php _e("Show percentages", "gravityformspolls"); ?></label><br/>
+			<div id="<?php echo $this->id ?>_gpoll_overrides" style="<?php echo $show_override_settings ? "" : "display:none"  ?>">	
 				
-				<input type="checkbox" name="<?php echo $this->get_field_name( 'show_counts' ); ?>" id="<?php echo $this->get_field_id( 'show_counts' ); ?>" <?php checked($instance['show_counts']); ?> value="1" /> <label for="<?php echo $this->get_field_id( 'show_counts' ); ?>"><?php _e("Show counts", "gravityformspolls"); ?></label><br/> 
+	    		
+	    		<p>
+					<strong><?php _e("Results Settings", "gravityformspolls"); ?></strong><br />
 				
-			</p>
-			<p>
-				<label for="<?php echo $this->get_field_id( 'style' ); ?>"><?php _e("Style", "gravityformspolls"); ?>:</label>
-				<select id="<?php echo $this->get_field_id( 'style' ); ?>" name="<?php echo $this->get_field_name( 'style' ); ?>" style="width:90%;">
-					<option value="green" <?php echo $instance['style'] == "green" ? 'selected="selected"' : '' ?>><?php _e("Green","gravityformspolls") ?></option>
-					<option value="blue" <?php echo $instance['style'] == "blue" ? 'selected="selected"' : '' ?>><?php _e("Blue","gravityformspolls") ?></option>
-					<option value="red" <?php echo $instance['style'] == "red" ? 'selected="selected"' : '' ?>><?php _e("Red","gravityformspolls") ?></option>
-					<option value="orange" <?php echo $instance['style'] == "orange" ? 'selected="selected"' : '' ?>><?php _e("Orange","gravityformspolls") ?></option>
-				</select>
-			</p>
-		</fieldset>	  
-			  <?php $cookie_expriation_div_id = $this->id . "_cookie_expriation" ?>
-			<fieldset class="gpoll_fieldset">
-				<legend>Repeat Voters</legend>
-					<input type="radio" name="<?php echo $this->get_field_name( 'block_repeat_voters' ); ?>" value="0" <?php checked($instance['block_repeat_voters'], "0"); ?> id="<?php echo $this->get_field_id( 'block_repeat_voters' ) . "_0"; ?>" onclick="jQuery('#<?php echo $cookie_expriation_div_id ?>').hide('slow');"> <label for="<?php echo $this->get_field_id( 'block_repeat_voters' ) . "_0"; ?>"><?php _e("Don't block repeat voting", "gravityformspolls"); ?></label><br>
-					<input type="radio" name="<?php echo $this->get_field_name( 'block_repeat_voters' ); ?>" value="1" <?php checked($instance['block_repeat_voters'], "1"); ?> id="<?php echo $this->get_field_id( 'block_repeat_voters' ) . "_1"; ?>" onclick="jQuery('#<?php echo $cookie_expriation_div_id ?>').show('slow');"> <label for="<?php echo $this->get_field_id( 'block_repeat_voters' ) . "_1"; ?>"><?php _e("Block repeat voting using cookie", "gravityformspolls"); ?></label><br>
+					<input type="checkbox" name="<?php echo $this->get_field_name( 'show_percentages' ); ?>" id="<?php echo $this->get_field_id( 'show_percentages' ); ?>" <?php checked($instance['show_percentages']); ?> value="1" /> <label for="<?php echo $this->get_field_id( 'show_percentages' ); ?>"><?php _e("Show percentages", "gravityformspolls"); ?></label><br/>
+							
+					<input type="checkbox" name="<?php echo $this->get_field_name( 'show_counts' ); ?>" id="<?php echo $this->get_field_id( 'show_counts' ); ?>" <?php checked($instance['show_counts']); ?> value="1" /> <label for="<?php echo $this->get_field_id( 'show_counts' ); ?>"><?php _e("Show counts", "gravityformspolls"); ?></label><br/> 
+				<p>
+					<label for="<?php echo $this->get_field_id( 'style' ); ?>"><?php _e("Style", "gravityformspolls"); ?>:</label>
+					<select id="<?php echo $this->get_field_id( 'style' ); ?>" name="<?php echo $this->get_field_name( 'style' ); ?>" style="width:90%;">
+						<option value="green" <?php echo $instance['style'] == "green" ? 'selected="selected"' : '' ?>><?php _e("Green","gravityformspolls") ?></option>
+						<option value="blue" <?php echo $instance['style'] == "blue" ? 'selected="selected"' : '' ?>><?php _e("Blue","gravityformspolls") ?></option>
+						<option value="red" <?php echo $instance['style'] == "red" ? 'selected="selected"' : '' ?>><?php _e("Red","gravityformspolls") ?></option>
+						<option value="orange" <?php echo $instance['style'] == "orange" ? 'selected="selected"' : '' ?>><?php _e("Orange","gravityformspolls") ?></option>
+					</select>
+				</p>
+				
+				<div id="<?php echo $this->id ?>_gpoll_override_poll_settings" style="<?php  echo   $instance['mode'] == "results" ? "display:none" : "";  ?>">
+					<p>
+					
+
+						<input type="checkbox" name="<?php echo $this->get_field_name( 'displayconfirmation' ); ?>" id="<?php echo $this->get_field_id( 'displayconfirmation' ); ?>" <?php checked($instance['displayconfirmation']); ?> value="1"/> <label for="<?php echo $this->get_field_id( 'displayconfirmation' ); ?>"><?php _e("Display form confirmation", "gravityforms"); ?></label><br/>
+							    
+						<input type="checkbox" name="<?php echo $this->get_field_name( 'display_results' ); ?>" id="<?php echo $this->get_field_id( 'display_results' ); ?>" <?php checked($instance['display_results']); ?> value="1" /> <label for="<?php echo $this->get_field_id( 'display_results' ); ?>"><?php _e("Display results of submitted poll fields", "gravityformspolls"); ?></label><br/>
+				   
+						<input type="checkbox" name="<?php echo $this->get_field_name( 'show_results_link' ); ?>" id="<?php echo $this->get_field_id( 'show_results_link' ); ?>" <?php checked($instance['show_results_link']); ?> value="1" /> <label for="<?php echo $this->get_field_id( 'show_results_link' ); ?>"><?php _e("Show link to view results", "gravityformspolls"); ?></label><br/>
+						
+					</p>
+				
+					<p>	
+					
+						<?php $cookie_expriation_div_id = $this->id . "_cookie_expriation" ?>
+						<strong><?php _e("Repeat Voters", "gravityformspolls"); ?>:</strong> <br />
+
+							<input type="radio" name="<?php echo $this->get_field_name( 'block_repeat_voters' ); ?>" value="0" <?php checked($instance['block_repeat_voters'], "0"); ?> id="<?php echo $this->get_field_id( 'block_repeat_voters' ) . "_0"; ?>" onclick="jQuery('#<?php echo $cookie_expriation_div_id ?>').hide('slow');"> <label for="<?php echo $this->get_field_id( 'block_repeat_voters' ) . "_0"; ?>"><?php _e("Don't block repeat voting", "gravityformspolls"); ?></label><br>
+							<input type="radio" name="<?php echo $this->get_field_name( 'block_repeat_voters' ); ?>" value="1" <?php checked($instance['block_repeat_voters'], "1"); ?> id="<?php echo $this->get_field_id( 'block_repeat_voters' ) . "_1"; ?>" onclick="jQuery('#<?php echo $cookie_expriation_div_id ?>').show('slow');"> <label for="<?php echo $this->get_field_id( 'block_repeat_voters' ) . "_1"; ?>"><?php _e("Block repeat voting using cookie", "gravityformspolls"); ?></label>
+					</p>	
 					<div id="<?php echo $cookie_expriation_div_id?>" <?php echo $instance['block_repeat_voters'] == '0' ? 'style="display:none;"' : '' ?>>
-						<br>
 						<label for="<?php echo $this->get_field_id( 'cookie' ); ?>"><?php _e("Expires:", "gravityformspolls"); ?></label>
 						<select id="<?php echo $this->get_field_id( 'cookie' ); ?>" name="<?php echo $this->get_field_name( 'cookie' ); ?>" style="width:90%;">
 							<?php
@@ -214,20 +260,29 @@ class GFPollsPollWidget extends WP_Widget {
 								}
 							?>
 						</select>
+					<br /><br />
 					</div>
-              
-			</fieldset>
-      
-        <p>
-            <a href="javascript: var obj = jQuery('.gf_widget_advanced'); if(!obj.is(':visible')) {var a = obj.show('slow');} else {var a = obj.hide('slow');}"><?php _e("advanced options", "gravityforms"); ?></a>
-        </p>
-        <p class="gf_widget_advanced" style="display:none;">
-            <input type="checkbox" name="<?php echo $this->get_field_name( 'ajax' ); ?>" id="<?php echo $this->get_field_id( 'ajax' ); ?>" <?php checked($instance['ajax']); ?> value="1"/> <label for="<?php echo $this->get_field_id( 'ajax' ); ?>"><?php _e("Enable AJAX", "gravityforms"); ?></label><br/>
-            <input type="checkbox" name="<?php echo $this->get_field_name( 'disable_scripts' ); ?>" id="<?php echo $this->get_field_id( 'disable_scripts' ); ?>" <?php checked($instance['disable_scripts']); ?> value="1"/> <label for="<?php echo $this->get_field_id( 'disable_scripts' ); ?>"><?php _e("Disable script output", "gravityforms"); ?></label><br/>
-            <label for="<?php echo $this->get_field_id( 'tabindex' ); ?>"><?php _e("Tab Index Start", "gravityforms"); ?>: </label>
-            <input id="<?php echo $this->get_field_id( 'tabindex' ); ?>" name="<?php echo $this->get_field_name( 'tabindex' ); ?>" value="<?php echo $instance['tabindex']; ?>" style="width:15%;" /><br/>
-            <small><?php _e("If you have other forms on the page (i.e. Comments Form), specify a higher tabindex start value so that your Gravity Form does not end up with the same tabindices as your other forms. To disable the tabindex, enter 0 (zero).", "gravityforms"); ?></small>
-        </p>
+					
+				</div>
+			</div>
+			<div id="<?php echo $this->id ?>_gpoll_form_settings" style="<?php  echo  $instance['mode'] == "results" ? "display:none" : ""; ?>">
+				<p>
+					<input type="checkbox" name="<?php echo $this->get_field_name( 'showtitle' ); ?>" id="<?php echo $this->get_field_id( 'showtitle' ); ?>" <?php checked($instance['showtitle']); ?> value="1" /> <label for="<?php echo $this->get_field_id( 'showtitle' ); ?>"><?php _e("Display form title", "gravityforms"); ?></label><br/>
+					<input type="checkbox" name="<?php echo $this->get_field_name( 'showdescription' ); ?>" id="<?php echo $this->get_field_id( 'showdescription' ); ?>" <?php checked($instance['showdescription']); ?> value="1"/> <label for="<?php echo $this->get_field_id( 'showdescription' ); ?>"><?php _e("Display form description", "gravityforms"); ?></label><br/>
+				</p>
+				<p>
+				<a href="javascript: var obj = jQuery('.gf_widget_advanced'); if(!obj.is(':visible')) {var a = obj.show('slow');} else {var a = obj.hide('slow');}"><?php _e("advanced options", "gravityforms"); ?></a>
+				</p>
+
+				<p class="gf_widget_advanced" style="display:none;">
+					<input type="checkbox" name="<?php echo $this->get_field_name( 'ajax' ); ?>" id="<?php echo $this->get_field_id( 'ajax' ); ?>" <?php checked($instance['ajax']); ?> value="1"/> <label for="<?php echo $this->get_field_id( 'ajax' ); ?>"><?php _e("Enable AJAX", "gravityforms"); ?></label><br/>
+					<input type="checkbox" name="<?php echo $this->get_field_name( 'disable_scripts' ); ?>" id="<?php echo $this->get_field_id( 'disable_scripts' ); ?>" <?php checked($instance['disable_scripts']); ?> value="1"/> <label for="<?php echo $this->get_field_id( 'disable_scripts' ); ?>"><?php _e("Disable script output", "gravityforms"); ?></label><br/>
+					<label for="<?php echo $this->get_field_id( 'tabindex' ); ?>"><?php _e("Tab Index Start", "gravityforms"); ?>: </label>
+					<input id="<?php echo $this->get_field_id( 'tabindex' ); ?>" name="<?php echo $this->get_field_name( 'tabindex' ); ?>" value="<?php echo $instance['tabindex']; ?>" style="width:15%;" /><br/>
+					<small><?php _e("If you have other forms on the page (i.e. Comments Form), specify a higher tabindex start value so that your Gravity Form does not end up with the same tabindices as your other forms. To disable the tabindex, enter 0 (zero).", "gravityforms"); ?></small>
+				</p>
+      		</div>
+        
 
     <?php
     }

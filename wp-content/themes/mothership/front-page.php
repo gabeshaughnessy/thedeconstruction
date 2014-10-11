@@ -9,15 +9,13 @@
  */
 ?>
 <?php get_header(); ?>
-<div id="content" class="eleven columns">
+<div id="content" class="large-11 columns">
 <?php if(have_posts()) : while(have_posts()) : the_post(); ?>
 <article>
 	<div class="post-content">
 		<?php the_content(); 
 		//echo do_shortcode('[fbcomments]');
-			//comments_template(); 
-		echo '<hr><h3>The Deconstruction Teams:</h3>';
-			get_template_part('loop', 'teams');
+		
 				?>
 	</div>
 
@@ -25,7 +23,7 @@
 <?php endwhile; ?>
 <?php endif; ?>
 </div>
-<div class="one columns offset-by-eleven">
+<div class="large-1 columns offset-large-11">
 <?php 
 get_template_part('accordion', 'social');
 ?>
@@ -33,10 +31,10 @@ get_template_part('accordion', 'social');
 
 <!-- end of content -->
 
-	</div><!-- end of main content container -->
+</div><!-- end of main content container -->
 
 <div class="post-footer row">
-	<div class="six columns">
+	<div class="large-6 columns">
 			<div class="title">
 				
 				<h5>Deconstruct: News</h5>
@@ -48,7 +46,7 @@ get_template_part('accordion', 'social');
 		?>
 	</div>
 
-	<div class="six columns ">
+	<div class="large-6 columns ">
 		<div class="title">
 			<h5>Deconstruct: Twitter</h5>
 			<hr>
@@ -59,5 +57,12 @@ get_template_part('accordion', 'social');
 		</div>
 	
 	</div>
+	<div class="row">
+		<div class="large-12 columns"><h2 >Deconstruction: Blog</h2>		<hr></div>
+
+		<?php get_template_part('loop', 'blog'); ?>
+		<div class="large-12 columns"><p><a class="more-link" href="/news">Read the Blog</a></p></div>
+	</div>
 </div>
+
 <?php get_footer(); ?>

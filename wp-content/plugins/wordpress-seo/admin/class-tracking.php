@@ -9,7 +9,11 @@ if ( !defined( 'WPSEO_VERSION' ) ) {
 }
 
 /**
- * Class that creates the tracking functionality for WP SEO, as the core class might be used in more plugins, it's checked for existence first.
+ * Class that creates the tracking functionality for WP SEO, as the core class might be used in more plugins,
+ * it's checked for existence first.
+ *
+ * NOTE: this functionality is opt-in. Disabling the tracking in the settings or saying no when asked will cause
+ * this file to not even be loaded.
  */
 if ( !class_exists( 'Yoast_Tracking' ) ) {
 	class Yoast_Tracking {
@@ -18,11 +22,6 @@ if ( !class_exists( 'Yoast_Tracking' ) ) {
 		 * Class constructor
 		 */
 		function __construct() {
-			// The tracking checks daily, but only sends new data every 7 days.
-			if ( !wp_next_scheduled( 'yoast_tracking' ) ) {
-				wp_schedule_event( time(), 'daily', 'yoast_tracking' );
-			}
-
 			add_action( 'yoast_tracking', array( $this, 'tracking' ) );
 		}
 
@@ -31,13 +30,13 @@ if ( !class_exists( 'Yoast_Tracking' ) ) {
 		 */
 		function tracking() {
 			// Start of Metrics
-			global $wpdb;
+			global $blog_id, $wpdb;
 
-			$options = get_option( 'wpseo' );
+			$hash = get_option( 'Yoast_Tracking_Hash' );
 
-			if ( !isset( $options['hash'] ) || empty( $options['hash'] ) ) {
-				$options['hash'] = md5( site_url() );
-				update_option( 'wpseo', $options );
+			if ( !isset( $hash ) || !$hash || empty( $hash ) ) {
+				$hash = md5( site_url() );
+				update_option( 'Yoast_Tracking_Hash', $hash );
 			}
 
 			$data = get_transient( 'yoast_tracking_cache' );
@@ -84,6 +83,9 @@ if ( !class_exists( 'Yoast_Tracking' ) ) {
 
 				$plugins = array();
 				foreach ( get_option( 'active_plugins' ) as $plugin_path ) {
+					if ( !function_exists( 'get_plugin_data' ) )
+						require_once( ABSPATH . 'wp-admin/includes/admin.php' );
+
 					$plugin_info = get_plugin_data( WP_PLUGIN_DIR . '/' . $plugin_path );
 
 					$slug           = str_replace( '/' . basename( $plugin_path ), '', $plugin_path );
@@ -98,12 +100,10 @@ if ( !class_exists( 'Yoast_Tracking' ) ) {
 
 				$data = array(
 					'site'     => array(
-						'hash'      => $options['hash'],
-						'url'       => site_url(),
-						'name'      => get_bloginfo( 'name' ),
+						'hash'      => $hash,
 						'version'   => get_bloginfo( 'version' ),
 						'multisite' => is_multisite(),
-						'users'     => count( get_users() ),
+						'users'     => $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(*) FROM $wpdb->users INNER JOIN $wpdb->usermeta ON ({$wpdb->users}.ID = {$wpdb->usermeta}.user_id) WHERE 1 = 1 AND ( {$wpdb->usermeta}.meta_key = %s )", 'wp_' . $blog_id . '_capabilities' ) ),
 						'lang'      => get_locale(),
 					),
 					'pts'      => $pts,

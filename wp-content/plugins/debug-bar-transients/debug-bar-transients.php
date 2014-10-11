@@ -1,7 +1,7 @@
 <?php
 /**
  * Plugin Name: Debug Bar Transients
- * Version: 0.3
+ * Version: 0.4
  * Description: Adds information about the WordPress Transient API to Debug Bar.
  * Author: Dominik Schilling
  * Author URI: http://wphelper.de/
@@ -12,7 +12,7 @@
  *
  * License: GPLv2 or later
  *
- *	Copyright (C) 2011-2012 Dominik Schilling
+ *	Copyright (C) 2011-2013 Dominik Schilling
  *
  *	This program is free software; you can redistribute it and/or
  *	modify it under the terms of the GNU General Public License
