@@ -1,4 +1,9 @@
 <?php
+
+if(!class_exists('GFForms')){
+    die();
+}
+
 class GFUpdate{
     public static function update_page(){
         if(!GFCommon::current_user_can_any("gravityforms_view_updates"))
@@ -26,7 +31,7 @@ class GFUpdate{
 
 
                 $message = __("There is a new version of Gravity Forms available.", "gravityforms");
-                if( $version_info["is_valid_key"] ){
+                if( rgar($version_info, "is_valid_key") ){
                     ?>
                     <div class="gf_update_outdated alert_yellow">
                         <?php echo $message . " " . sprintf(__("<p>You can update to the latest version automatically or download the update and install it manually. %sUpdate Automatically%s %sDownload Update%s", "gravityforms"), "</p><a class='button-primary' href='{$upgrade_url}'>", "</a>", "&nbsp;<a class='button' href='{$version_info["url"]}'>", "</a>"); ?>
@@ -76,4 +81,3 @@ class GFUpdate{
 
 
 }
-?>

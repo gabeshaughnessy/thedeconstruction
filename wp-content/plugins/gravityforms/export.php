@@ -1,5 +1,9 @@
 <?php
 
+if(!class_exists('GFForms')){
+    die();
+}
+
 class GFExport{
 
     private static $min_import_version = "1.3.12.3";
@@ -40,6 +44,7 @@ class GFExport{
 
             //removing the inputs for checkboxes (choices will be used during the import)
             foreach($forms as &$form){
+
                 foreach($form["fields"] as &$field){
                     $inputType = RGFormsModel::get_input_type($field);
 
@@ -67,20 +72,28 @@ class GFExport{
                         foreach($field["choices"] as &$choice)
                             unset($choice["value"]);
                     }
-
-                    // convert associative array to indexed
-                    if(isset($form['confirmations']))
-                        $form['confirmations'] = array_values($form['confirmations']);
-
-                    if(isset($form['notifications']))
-                        $form['notifications'] = array_values($form['notifications']);
-
                 }
+
+				// convert associative array to indexed
+				if(isset($form['confirmations']))
+					$form['confirmations'] = array_values($form['confirmations']);
+
+				if(isset($form['notifications'])){
+					$form['notifications'] = array_values($form['notifications']);
+
+					foreach( $form["notifications"] as &$notification ){
+						$notification["isActive"] = rgar( $notification, "isActive" ) ? "1" : "0";
+					}
+				}
+
+                $form = apply_filters( 'gform_export_form', $form );
+                $form = apply_filters( "gform_export_form_{$form['id']}", $form );
+
             }
 
             require_once("xml.php");
 
-             $options = array(
+            $options = array(
                 "version" => GFCommon::$version,
                 "forms/form/id" => array("is_hidden" => true),
                 "forms/form/nextFieldId" => array("is_hidden" => true),
@@ -157,6 +170,8 @@ class GFExport{
                 "forms/form/confirmations/confirmation/disableAutoformatting" => array("is_attribute" => true),
                 "forms/form/notifications/notification/id" => array("is_attribute" => true)
             );
+
+            $options = apply_filters( 'gform_export_options', $options, $forms );
 
             $serializer = new RGXML($options);
             $xml = $serializer->serialize("forms", $forms);
@@ -237,6 +252,7 @@ class GFExport{
         self::cleanup($forms);
 
         foreach($forms as $key => &$form){
+
             $title = $form["title"];
             $count = 2;
             while(!RGFormsModel::is_unique_title($title)){
@@ -251,14 +267,18 @@ class GFExport{
             $form["title"] = $title;
             $form["id"] = $form_id;
 
+            $form = GFFormsModel::trim_form_meta_values($form);
+
             if(isset($form['confirmations'])) {
                 $form['confirmations'] = self::set_property_as_key($form['confirmations'], 'id');
+                $form['confirmations'] = GFFormsModel::trim_conditional_logic_values($form['confirmations'], $form);
                 GFFormsModel::update_form_meta($form_id, $form['confirmations'], 'confirmations');
                 unset($form['confirmations']);
             }
 
             if(isset($form['notifications'])) {
                 $form['notifications'] = self::set_property_as_key($form['notifications'], 'id');
+                $form['notifications'] = GFFormsModel::trim_conditional_logic_values($form['notifications'], $form);
                 GFFormsModel::update_form_meta($form_id, $form['notifications'], 'notifications');
                 unset($form['notifications']);
             }
@@ -545,7 +565,10 @@ class GFExport{
 
         $row_counts = array();
         global $wpdb;
-        while($entry_count > 0){
+
+        $go_to_next_page = true;
+
+        while($go_to_next_page){
             $sql = "SELECT d.field_number as field_id, ifnull(l.value, d.value) as value
                     FROM {$wpdb->prefix}rg_lead_detail d
                     LEFT OUTER JOIN {$wpdb->prefix}rg_lead_detail_long l ON d.id = l.lead_detail_id
@@ -564,7 +587,8 @@ class GFExport{
             }
 
             $offset += $page_size;
-            $entry_count -= $page_size;
+
+            $go_to_next_page = count($results) == $page_size;
         }
 
         return $row_counts;
@@ -588,7 +612,7 @@ class GFExport{
         $form_id = $form["id"];
         $fields = $_POST["export_field"];
 
-        $start_date = empty($_POST["export_date_start"]) ? "" : self::get_gmt_date($_POST["export_date_start"] . " 00:00");
+        $start_date = empty($_POST["export_date_start"]) ? "" : self::get_gmt_date($_POST["export_date_start"] . " 00:00:00");
         $end_date = empty($_POST["export_date_end"]) ? "" : self::get_gmt_date($_POST["export_date_end"] . " 23:59:59");
 
         $search_criteria["status"] = "active";
@@ -608,7 +632,7 @@ class GFExport{
 
         $entry_count = GFAPI::count_entries($form_id, $search_criteria);
 
-        $page_size = 200;
+        $page_size = 100;
         $offset = 0;
 
         //Adding BOM marker for UTF-8
@@ -620,9 +644,14 @@ class GFExport{
         $field_rows = self::get_field_row_count($form, $fields, $entry_count);
 
         //writing header
+        $headers = array();
         foreach($fields as $field_id){
             $field = RGFormsModel::get_field($form, $field_id);
             $value = str_replace('"', '""', GFCommon::get_label($field, $field_id)) ;
+
+            GFCommon::log_debug("Header for field ID {$field_id}: {$value}");
+
+            $headers[$field_id] = $value;
 
             $subrow_count = isset($field_rows[$field_id]) ? intval($field_rows[$field_id]) : 0;
             if($subrow_count == 0){
@@ -633,6 +662,8 @@ class GFExport{
                     $lines .= '"' . $value . " " . $i . '"' . $separator;
                 }
             }
+
+            GFCommon::log_debug("Lines: {$lines}");
         }
         $lines = substr($lines, 0, strlen($lines)-1) . "\n";
 
@@ -662,7 +693,22 @@ class GFExport{
                             }
 
                             $value = !empty($long_text) ? $long_text : rgar($lead,$field_id);
+
+                            $field = RGFormsModel::get_field($form, $field_id);
+                            $input_type = RGFormsModel::get_input_type($field);
+
+                            if($input_type == "checkbox"){
+                                $value = GFFormsModel::is_checkbox_checked($field_id, $headers[$field_id], $lead, $form);
+                                if($value === false)
+                                    $value = "";
+                            }
+                            else if($input_type == "fileupload" && rgar($field,"multipleFiles") ){
+                                $value = !empty($value) ? implode(" , ", json_decode($value, true)) : "";
+                            }
+
                             $value = apply_filters("gform_export_field_value", $value, $form_id, $field_id, $lead);
+
+                            GFCommon::log_debug("Value for field ID {$field_id}: {$value}");
                         break;
                     }
 
@@ -683,13 +729,17 @@ class GFExport{
                     }
                     else{
                         $value = maybe_unserialize($value);
-                        if(is_array($value))
+                        if(is_array($value)){
                             $value = implode("|", $value);
+                        }
 
                         $lines .= '"' . str_replace('"', '""', $value) . '"' . $separator;
                     }
                 }
                 $lines = substr($lines, 0, strlen($lines)-1);
+
+                GFCommon::log_debug("Lines: {$lines}");
+
                 $lines.= "\n";
             }
 
