@@ -1,6 +1,5 @@
-<?php //check for newsfeed transient, if it exists, assign variable newfeed to it
+<?php 
 global $enable_transients;
-error_log('transients enabled:'.$enable_transients);
 if($enable_transients == true){
 $team_list = get_transient('team-list');
 
@@ -14,10 +13,10 @@ if($team_list == false){
 //if it doesn't exist:
 $team_list = '';
 $display_admins = false;
-$order_by = 'display_name'; // 'nicename', 'email', 'url', 'registered', 'display_name', or 'post_count'
-$role = 'team'; // 'subscriber', 'contributor', 'editor', 'author' - leave blank for 'all'
+$order_by = 'display_name'; 
+$role = 'team';
 $avatar_size = 260;
-$hide_empty = false; // hides authors with zero posts
+$hide_empty = false; 
 
 if(!empty($display_admins)) {
 	$blogusers = get_users('orderby='.$order_by.'&role='.$role);

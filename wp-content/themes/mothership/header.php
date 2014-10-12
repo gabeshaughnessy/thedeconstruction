@@ -53,7 +53,7 @@
 
 <?php //SOCIAL MEDIA METADATA 
 if(have_posts()) : while(have_posts()) : the_post();endwhile;endif;
-	echo getSocialTags($post);
+	//echo getSocialTags($post);
 ?>
 <?php //get the theme options to an array
 $theme_options = get_option('mothership_options');

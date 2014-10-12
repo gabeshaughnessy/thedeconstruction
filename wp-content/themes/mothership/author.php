@@ -8,7 +8,13 @@
  * @since The Deconstruction Mothership 1.0
  */
 ?>
-<?php get_header(); ?>
+<?php
+function author_year( $query ) { 
+        $query->set( 'year', '2014' );
+}
+add_action( 'pre_get_posts', 'author_year' );
+
+ get_header(); ?>
 <?php //set up the current Author 
 $curauth = (isset($_GET['author_name'])) ? get_user_by('slug', $author_name) : get_userdata(intval($author));
 $team_meta = get_user_meta($curauth->ID);
@@ -24,12 +30,6 @@ $team_url = $curauth->user_url;
 ?>
 
 <div id="content" class="eleven columns">
-<pre>
-<?php  
-//print_r($curauth);
-//print_r($team_meta);
-?>
-</pre>
 <div class="row">
 	<div class="team-image large-4 columns"><?php echo get_wp_user_avatar(get_the_author_meta('ID'), 'medium');  ?></div>
 	<div class="large-8 columns">
