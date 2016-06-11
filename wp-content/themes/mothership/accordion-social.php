@@ -9,6 +9,7 @@ global $post;
        $social_meta['page_content'] =  apply_filters('the_content', $posts_page->post_content);
      }
 
+//
 $social_meta = array();
 
   
