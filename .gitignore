@@ -17,6 +17,7 @@ index.php
 500.shtml
 decon-staging.esproj/
 .sass-cache/
+*/.sass-cache/
 *pureftp*
 *.DS_store
 # Wordpress core files

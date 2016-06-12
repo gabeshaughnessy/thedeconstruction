@@ -1,0 +1,493 @@
+
+// CUSTOM MIXINS ___________________________________
+@mixin boxShadow($horz: 0, $vert: 1px, $blur: 2px, $spread: 0, $color: rgba(0,0,0,1), $inset: "") {
+
+  -webkit-box-shadow:$horz $vert $blur $spread $color #{$inset};
+  -moz-box-shadow:$horz $vert $blur $spread $color #{$inset};
+  -o-box-shadow:$horz $vert $blur $spread $color #{$inset};
+  box-shadow:$horz $vert $blur $spread $color #{$inset};
+}
+@mixin noBoxShadow() {
+      -webkit-box-shadow: none;
+      -moz-box-shadow: none;
+      -o-box-shadow: none;
+      box-shadow: none;
+}
+@mixin textShadow($x: 0, $y: 0, $spread: 0, $color: rgba(0,0,0,.5), $x2: '', $y2: '', $spread2: '', $color2: '' ){
+  -webkit-text-shadow: $x $y $spread $color, #{$x2} #{$y2} #{$spread2} #{$color2};
+  -moz-text-shadow: $x $y $spread $color, #{$x2} #{$y2} #{$spread2} #{$color2};
+  -o-text-shadow: $x $y $spread $color, #{$x2} #{$y2} #{$spread2} #{$color2};
+  text-shadow: $x $y $spread $color, #{$x2} #{$y2} #{$spread2} #{$color2};
+}
+
+@mixin paperShadow($elevation : 1, $shadow-color: #aaa){
+  @if $elevation == 0 {
+    -webkit-box-shadow: 0 0px 0px 0 rgba($shadow-color, 0.14), 0 0px 0px 0 rgba($shadow-color, 0.12), 0 0px 0px  0px rgba($shadow-color, 0.2);
+    -moz-box-shadow: 0 0px 0px 0 rgba($shadow-color, 0.14), 0 0px 0px 0 rgba($shadow-color, 0.12), 0 0px 0px  0px rgba($shadow-color, 0.2);
+    -o-box-shadow: 0 0px 0px 0 rgba($shadow-color, 0.14), 0 0px 0px 0 rgba($shadow-color, 0.12), 0 0px 0px  0px rgba($shadow-color, 0.2);
+    box-shadow: 0 0px 0px 0 rgba($shadow-color, 0.14), 0 0px 0px 0 rgba($shadow-color, 0.12), 0 0px 0px  0px rgba($shadow-color, 0.2);
+   } @else if $elevation == 1 {
+      -webkit-box-shadow: 0 2px 2px 0 rgba($shadow-color, 0.14), 0 1px 5px 0 rgba($shadow-color, 0.12), 0 3px 1px -2px rgba($shadow-color, 0.2);
+      -moz-box-shadow: 0 2px 2px 0 rgba($shadow-color, 0.14), 0 1px 5px 0 rgba($shadow-color, 0.12), 0 3px 1px -2px rgba($shadow-color, 0.2);
+      -o-box-shadow: 0 2px 2px 0 rgba($shadow-color, 0.14), 0 1px 5px 0 rgba($shadow-color, 0.12), 0 3px 1px -2px rgba($shadow-color, 0.2);
+      box-shadow: 0 2px 2px 0 rgba($shadow-color, 0.14), 0 1px 5px 0 rgba($shadow-color, 0.12), 0 3px 1px -2px rgba($shadow-color, 0.2);
+   }
+   @else if $elevation == 2 {
+      -webkit-box-shadow: 0 4px 5px 0 rgba($shadow-color, 0.14), 0 1px 10px 0 rgba($shadow-color, 0.12), 0 2px 4px -1px rgba($shadow-color, 0.4);
+      -moz-box-shadow: 0 4px 5px 0 rgba($shadow-color, 0.14), 0 1px 10px 0 rgba($shadow-color, 0.12), 0 2px 4px -1px rgba($shadow-color, 0.4);
+      -o-box-shadow: 0 4px 5px 0 rgba($shadow-color, 0.14), 0 1px 10px 0 rgba($shadow-color, 0.12), 0 2px 4px -1px rgba($shadow-color, 0.4);
+      box-shadow: 0 4px 5px 0 rgba($shadow-color, 0.14), 0 1px 10px 0 rgba($shadow-color, 0.12), 0 2px 4px -1px rgba($shadow-color, 0.4);
+   }
+
+}
+@mixin animateShadow(){
+  @include transition(box-shadow 0.18s cubic-bezier(0.4, 0, 0.2, 1));
+}
+
+@mixin high-contrast-font {
+  -webkit-font-smoothing: antialiased;
+  // text-shadow: 1px 1px 3px rgba(0,0,0,0.7);
+}
+@mixin webkit-gradient($style: linear, $start: left bottom, $end: left top, $color1:"", $color2:"", $color3:"", $color4:"" ){
+background-image: -webkit-gradient($style, $start, $end, #{$color1}, #{$color2}, #{$color3}, #{$color4});
+}
+@mixin moz-linear-gradient($start: left bottom, $color1:"", $color2:"", $color3:"", $color4:"" ){
+    background-image: -moz-linear-gradient($start, #{$color1}, #{$color2}, #{$color3}, #{$color4});
+    }
+
+    @mixin gradient($g-color){
+      background-color: $g-color;
+      @include filter-gradient($g-color, $g-color, vertical);
+      @include background-image(linear-gradient(top, $g-color 0%,$g-color 100%));
+
+    }
+
+@mixin white-fade($percent){
+  background: #fff;
+  background: -moz-linear-gradient(top,  rgba(255,255,255,0) 0%, rgba(255,255,255,1) $percent);
+  background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(255,255,255,0)), color-stop($percent,rgba(255,255,255,1)));
+  background: -webkit-linear-gradient(top,  rgba(255,255,255,0) 0%,rgba(255,255,255,1) $percent);
+  background: -o-linear-gradient(top,  rgba(255,255,255,0) 0%,rgba(255,255,255,1) $percent);
+  background: -ms-linear-gradient(top,  rgba(255,255,255,0) 0%,rgba(255,255,255,1) $percent);
+  background: linear-gradient(to bottom,  rgba(255,255,255,0) 0%,rgba(255,255,255,1) $percent);
+  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#00ffffff', endColorstr='#ffffff',GradientType=0 );
+
+}
+
+@mixin gradient-border($color : rgba(100,100,100,1)){
+
+    border-width: 3px;
+    border-style: solid;
+    -webkit-border-image:
+      -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(255,255,255,0)), color-stop(50%,$color), color-stop(100%,rgba(255,255,255,0)));
+    -webkit-border-image:
+      -webkit-linear-gradient(top,  rgba(255,255,255,0) 0%,$color 50%,rgba(255,255,255,0) 100%);
+    -moz-border-image:
+      -moz-linear-gradient(top,  rgba(255,255,255,0) 0%, $color 50%, rgba(255,255,255,0) 100%);
+    -o-border-image:
+      -o-linear-gradient(top,  rgba(255,255,255,0) 0%,$color 50%,rgba(255,255,255,0) 100%);
+    border-image:
+      linear-gradient(to bottom,  rgba(255,255,255,0) 0%,$color 50%,rgba(255,255,255,0) 100%);
+
+}
+
+@mixin icon-font-raquo {
+    content: "\bb";
+    font-family: $icon-font-family;
+    font-size: 0.7em;
+    line-height: 1;
+    color: inherit;
+}
+
+//BUTTONS
+@mixin mixin-button {
+    @extend %button;
+    border: none;
+    cursor: pointer;
+    user-select: none;
+    vertical-align: middle;
+    white-space: nowrap;
+    text-transform: uppercase;
+    margin: 0;
+    display: block;
+    transition: background-color 0.3s ease 0s;
+}
+
+@mixin tenpx-top-button {
+    float: left;
+    margin-top: -10px;
+    border-top: 10px solid $light-blue;
+
+    &.dark-blue{
+        border-top-color: $light-blue;
+        @include dark-blue;
+        &.transparent{ background-color: rgba($dark-blue, 1.0); }
+        &:hover {
+            background-color: lighten($dark-blue, 5%);
+        }
+    }
+
+    &.light-blue{
+        border-top-color: $dark-blue;
+        @include light-blue;
+        &.transparent{ background-color: rgba($light-blue, 1.0); }
+        &:hover {
+            background-color: lighten($light-blue, 5%);
+        }
+    }
+
+    &.teal {
+        border-top-color: $light-blue;
+        @include teal;
+        &.transparent{ background-color: rgba($teal, 1.0); }
+        &:hover {
+            background-color: lighten($teal, 5%);
+        }
+    }
+
+    &.purple {
+        border-top-color: $dark-blue;
+        @include purple;
+        &.transparent{ background-color: rgba($purple, 1.0); }
+        &:hover {
+            background-color: lighten($purple, 5%);
+        }
+    }
+    &.light-orange {
+        border-top-color: $light-orange;
+        @include light-orange;
+        &.transparent{ background-color: rgba($light-orange, 1.0); }
+        &:hover {
+            background-color: lighten($light-orange, 5%);
+        }
+    }
+    &.dark-orange {
+        border-top-color: $dark-orange;
+        @include dark-orange;
+        &.transparent{ background-color: rgba($dark-orange, 1.0); }
+        &:hover {
+            background-color: lighten($dark-orange, 5%);
+        }
+    }
+    &.green {
+        border-top-color: $light-blue;
+        @include green;
+        &.transparent{ background-color: rgba($green, 1.0); }
+        &:hover {
+            background-color: lighten($green, 5%);
+        }
+    }
+    &.mint {
+        border-top-color: $green;
+        @include mint;
+        &.transparent{ background-color: rgba($mint, 1.0); }
+        &:hover {
+            background-color: lighten($mint, 5%);
+        }
+    }
+
+
+
+    &.slice-white{
+        border-top-color: white;
+     }
+    &.slice-teal{
+       border-top-color: $teal;
+     }
+    &.slice-light-blue{
+        border-top-color: $light-blue;
+     }
+    &.slice-dark-blue{
+        border-top-color: $dark-blue;
+     }
+    &.slice-purple{
+        border-top-color: $purple;
+     }
+    &.slice-green{
+        border-top-color: $green;
+     }
+    &.slice-mint{
+        border-top-color: $mint;
+     }
+    &.slice-light-gray{
+        border-top-color: $light-gray;
+     }
+    &.slice-medium-gray{
+       border-top-color: $medium-gray;
+     }
+    &.slice-dark-gray{
+        border-top-color: $dark-gray;
+     }
+    &.slice-dark-orange {
+        border-top-color: $dark-orange;
+    }
+    &.slice-red {
+        border-top-color: $red;
+    }
+
+
+
+
+}//@mixin tenpx-top-button
+
+
+
+@mixin thin-rule-button {
+    border: 2px solid;
+    border-color: #fff;
+    color: #fff;
+
+    &.teal {
+        background-color: rgba($teal, 0.1);
+        color: #fff !important;
+        &:hover {
+            background-color: white;
+            color: $teal !important;
+        }
+    }
+
+    &.light-blue {
+        background-color: rgba($light-blue, 0.1);
+        &:hover {
+            background-color: white;
+            color: $light-blue;
+        }
+    }
+
+    &.dark-blue {
+        background-color: rgba($dark-blue, 0.1);
+        &:hover {
+            background-color: white;
+            color: $dark-blue;
+        }
+    }
+
+    &.purple {
+        background-color: rgba($purple, 0.1);
+        &:hover {
+            background-color: white;
+            color: $purple;
+        }
+    }
+    &.white {
+        background-color: rgba(255, 255, 255, 1.0);
+        color: $dark-blue;
+        &:hover {
+            background-color: rgba(255, 255, 255, 0.05);
+            color: #FFF;
+        }
+    }
+
+}//@mixin thin-rule-button
+
+
+
+@mixin block-banner-button {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    font-family: $base-font-family;
+
+    &.purple {
+        @include purple;
+        &:hover{ @include light-blue; }
+    }
+    &.dark-blue {
+        @include dark-blue;
+        &:hover{ @include teal; }
+    }
+    &.teal {
+        @include teal;
+        &:hover{ @include dark-blue; }
+    }
+    &.light-blue {
+        @include light-blue;
+        &:hover{ @include purple; }
+    }
+
+}
+
+@mixin follow-icons {
+  .follow-icon{
+      display: block;
+      float: left;
+      height: 24px;
+      width: 24px;
+      background: url('../compressed-images/icons/social-sprite-square.svg') no-repeat 0px 0px;
+      &.rss {
+          background-position: 0px -146px;
+      }
+      &.community {
+          background-position: 0px 0px;
+      }
+      &.facebook {
+          background-position: 0px -49px;
+      }
+      &.twitter {
+          background-position: 0px -196px;
+      }
+      &.linkedin{
+          background-position: 0px -96px;
+      }
+      &.youtube{
+          background-position: 0px -246px;
+      }
+  }
+  .footer-links a:hover .follow-icon{
+      &.rss{
+          background-position: 0px -171px;
+      }
+      &.community {
+          background-position: 0px -25px;
+      }
+      &.facebook{
+          background-position: 0px -73px;
+      }
+      &.twitter {
+          background-position: 0px -221px;
+      }
+      &.linkedin {
+          background-position: 0px -121px;
+      }
+      &.youtube {
+          background-position: 0px -271px;
+      }
+  }
+}//@mixin follow-icons
+
+//menuArrow
+//Small triangular arrow made of css border
+@mixin menuArrow($color, $width, $position, $direction, $zindex){
+    content:"";
+    border-width: $width+px;
+    border-color: $color rgba($color,0) rgba($color,0) $color;
+
+    border-style: solid;
+    position:absolute;
+
+    @if $direction == 'left'{
+      @include transform(rotate(-45deg) translateZ(1px));
+    }
+    @if $direction == 'right'{
+      @include transform(rotate(135deg) translateZ(1px));
+    }
+    @if $direction == 'up'{
+      @include transform(rotate(45deg) translateZ(1px));
+    }
+    @if $direction == 'down'{
+      @include transform(rotate(-135deg) translateZ(1px));
+    }
+
+    @if $position == 'right'{
+      right:1-$width+px;
+    }
+    @if $position == 'left'{
+      left:1-$width+px;
+    }
+    margin-top: $width+px;
+    z-index: $zindex;
+    @include transition(all, .2s);
+}
+@mixin noSelectHighlight {
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -o-user-select: none;
+    user-select: none;
+}
+
+//DEVELOPER MIXINS - for use in development, these make all our lives easier.
+
+@mixin pointbreak { //this is a DevTeam utility-mixin to help people like Keanu see breakpoints in development
+    border-width: 6px;
+    border-style: dotted; //1400px;
+    @media screen and (max-width: $fullwidth-break){ border-style: solid; }//1200px;
+    @media screen and (max-width: $tablet-break){ border-style: dashed; }//1024px;
+    @media screen and (max-width: $medium-break){ border-style: solid; }//768px;
+    @media screen and (max-width: $phone-break){ border-style: dotted; }//480px;
+    border-color: #FF0000;
+}
+
+@mixin nodeInserted{
+
+
+  @-moz-keyframes nodeInserted {
+      from {
+          opacity: .99;
+      }
+      to {
+          opacity: 1;
+      }
+  }
+
+  @-webkit-keyframes nodeInserted {
+      from {
+          opacity: .99;
+      }
+      to {
+          opacity: 1;
+      }
+  }
+
+
+
+  @-o-keyframes nodeInserted {
+      from {
+          opacity: .99;
+      }
+      to {
+          opacity: 1;
+      }
+  }
+
+  @keyframes nodeInserted {
+      from {
+          opacity: .99;
+      }
+      to {
+          opacity: 1;
+      }
+  }
+}
+
+@mixin animateNewNode{
+
+  -o-animation-duration: 0.01s;
+  -moz-animation-duration: 0.01s;
+  -webkit-animation-duration: 0.01s;
+  animation-duration: .01s;
+  -o-animation-name: nodeInserted;
+  -moz-animation-name: nodeInserted;
+  -webkit-animation-name: nodeInserted;
+  animation-name: nodeInserted;
+
+}
+
+
+@mixin flexbox() {
+ display: -webkit-box;
+ display: -moz-box;
+ display: -ms-flexbox;
+ display: -webkit-flex;
+ display: flex;
+}
+
+@mixin flex($values) {
+ -webkit-box-flex: $values;
+ -moz-box-flex:  $values;
+ -webkit-flex:  $values;
+ -ms-flex:  $values;
+ flex:  $values;
+}
+
+@mixin order($val) {
+ -webkit-box-ordinal-group: $val;  
+ -moz-box-ordinal-group: $val;     
+ -ms-flex-order: $val;     
+ -webkit-order: $val;  
+ order: $val;
+}
+
+
+

@@ -1,0 +1,134 @@
+// Typography
+$sans-serif: helvetica;
+$serif: georgia;
+$base-font-family: helvetica, sans-serif;
+$header-font-family: helvetica, sans-serif;
+$heading-font-family: $header-font-family;
+$bold-font-family:helvetica, sans-serif;
+$serif-font-family: georgia, sans-serif;
+$print-font-family: $base-font-family;
+
+// Sizes
+$base-font-size: 1em;
+$base-line-height: $base-font-size * 1.5;
+$unitless-line-height: $base-line-height / ($base-line-height * 0 + 1); // Strip units from line-height: https://developer.mozilla.org/en-US/docs/Web/CSS/line-height#Prefer_unitless_numbers_for_line-height_values
+$heading-line-height: $base-font-size * 1.25;
+$base-border-radius: 3px;
+$base-spacing: $base-line-height * 1;
+$small-spacing: $base-spacing / 2;
+$base-z-index: 0;
+
+
+
+// Animations
+$base-duration: 150ms;
+$base-timing: ease;
+
+//Grayscales
+$fff:               #FFF;           //only defined to catch typos; you can use old-skool websafe 'white' as well
+$light-gray:        #EEE;
+$border-gray:       #DDD;
+$dark-border-gray:    #CCC;
+$earl-gray:         #A8AEB1;
+$medium-gray:       #7D7D7D;
+$gray:              #4D4D4F;
+$dark-gray:         #1E1E1E;
+//Brand Colors: Primary
+$purple:            #5A2BAD;
+$teal:              #00A1B6;
+$light-blue:        #0188E2;
+$blue:              #477DCA;        // a "medium" blue was needed for various contrast issues, cascades to $base-accent-color and others
+$dark-blue:         #021677;
+//Brand Colors: Secondary
+$pink:              #D0118C;
+$red:               #EE0000;
+$dark-orange:       #FC6600;
+$light-orange:      #FF9800;
+$yellow:            #FFC200;
+$green:             #87C540;
+$mint:              #30B886;
+
+//Promotional/Tertiary
+$magenta:           $pink;
+
+$action-color: $blue;
+
+
+//  Putting colors to use
+
+// Border color
+
+$base-border-color: $border-gray;
+$base-border: 1px solid $base-border-color;
+
+// Background Color
+$base-body-color: $fff;
+$base-background-color: white;
+$secondary-background-color: tint($base-border-color, 75%);
+
+
+// Font Colors
+$base-font-color: $dark-gray;
+$base-accent-color: $blue;
+
+// Link Colors
+$base-link-color: $base-accent-color;
+$hover-link-color: darken($base-accent-color, 15);
+$base-button-color: $base-link-color;
+$hover-button-color: $hover-link-color;
+
+
+
+
+// thoughtbot alert colors
+$light-red: lighten($red, 45%);
+$light-yellow: lighten($yellow, 45%);
+$light-green: lighten($mint, 45%);
+
+// Flash Colors
+$alert-color: $light-yellow;
+$error-color: $light-red;
+$notice-color: $light-yellow;
+$success-color: $light-green;
+
+//Sass lists for colors, assosciated with a post-type. Use in lists like:
+
+
+//@each $post-type in $decon-colors {
+        //$label : nth($post-type, 3);
+        //$hex : nth($post-type, 2);
+        //$color : nth($post-type, 1);
+        // &.#{$color}{
+            //background-color: $hex;
+           // background-image: url(../compressed-images/icons/post-type-icons/white/#{$label}.svg);
+        //}
+   // }
+
+
+$decon-colors:
+    ("purple" $purple "video"),
+    ("teal" $teal "datasheet"),
+    ("light-blue" $light-blue "whitepaper"),
+    ("blue" $blue "undefined"),
+    ("dark-blue" $dark-blue "customerstory"),
+    ("pink" $pink "casestudy"),
+    ("red" $red "analystreport"),
+    ("dark-orange" $dark-orange "ondemandwebcast"),
+    ("orange" $dark-orange "ondemandwebcast"),
+    ("light-orange" $light-orange "undefined"),
+    ("yellow" $yellow "undefined"),
+    ("green" $green "infographic" ),
+    ("mint" $mint "ebook"),
+    ("gray" $gray "resourcekit"),
+    ("purple" $purple "post"),
+    ("earl-gray" $earl-gray "event"),
+    ("dark-gray" $dark-border-gray "add-on"),
+    ("blue" $blue "presentation"),
+    ("blue" $blue "externallink");
+
+
+// Forms
+$form-box-shadow: inset 0 1px 3px rgba(#000, 0.06);
+$form-box-shadow-focus: $form-box-shadow, 0 0 5px adjust-color($action-color, $lightness: -5%, $alpha: -0.3);
+
+

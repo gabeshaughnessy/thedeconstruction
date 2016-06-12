@@ -1,0 +1,957 @@
+/**
+ * Table of Contents:
+ *
+ * 1.0 - Header, Footer
+ * 2.0 - Patterns
+ * 3.0 -
+ * 4.0 -
+ * ----------------------------------------------------------------------------
+ */
+
+/**
+ * 1.0 Header, Footer
+ * ----------------------------------------------------------------------------
+ */
+
+.page-wrapper{
+    max-width: $page-width; //sets the max width of the site for big screens
+    margin-left: auto;
+    margin-right: auto;
+    background-color: #fff;
+    z-index: 0;
+    clear: both;
+    overflow : hidden;
+    position: relative;
+    @media screen and (max-width : 782px){
+        padding-top: 0;
+    }
+}
+body{
+    background-color: $border-gray;
+}
+//bump the body down to accomodate the wordpress admin bar
+body.admin-bar{
+    padding-top: 32px;
+    .page-wrapper{
+        overflow: visible;
+    }
+    @media screen and (max-width : 782px){
+        padding-top: 0;
+        .page-wrapper{
+            padding-top : 46px;
+        }
+    }
+
+}
+
+
+/**
+ * 2.0 Patterns
+ * ----------------------------------------------------------------------------
+ */
+// Moved into app.scss directly, we don't need all patterns in the homepage
+// @import "../patterns/all-patterns";
+
+
+
+/**
+ * 3.0 TEXTURE - dynamically load background images with the has-texture class
+ * ----------------------------------------------------------------------------
+ */
+
+.has-texture{
+    @include transition (opacity, .3s, ease-in);
+    opacity: 0;
+    &.texture{
+        opacity: 1;
+    }
+}
+.bg-image{
+    background-size: 100%; //legacy support
+    background-size: cover;
+    background-image: url($preload-hero-image);
+    background-repeat:  repeat;
+    display: block;
+    width: 100%;
+    height: 100%;
+    float: left;
+    z-index: -1;
+    position : absolute;
+    &.default-preload{background-image: url($preload-hero-image);}
+    &.purple-preload{background-image: url($preload-hero-image-purple);}
+    &.dark-blue-preload{background-image: url($preload-hero-image-dark-blue);}
+    &.teal-preload{background-image: url($preload-hero-image-teal);}
+    &.orange-preload{background-image: url($preload-hero-image-orange);}
+    &.blue-preload{background-image: url($preload-hero-image-blue);}
+    &.light-blue-preload{background-image: url($preload-hero-image-light-blue);}
+    &.mint-preload{background-image: url($preload-hero-image-mint);}
+    &.green-preload{background-image: url($preload-hero-image-green);}
+
+
+}
+
+
+
+ /**
+ * 3.5.2 Color - color-associations for Post Type iconography in Resource Library
+ * -------------------------------------------*/
+.cpt-icon-key {
+    background-repeat: no-repeat;
+    background-size: 60%;
+    background-position: center center;
+
+/*
+//from VARIABLES
+//Resource library COLOR-KEY:
+*/
+
+    @each $post-type in $jive-colors {
+        $label : nth($post-type, 3);
+        $hex : nth($post-type, 2);
+         &.#{$label}{
+            background-color: $hex;
+            background-image: url(../compressed-images/icons/post-type-icons/white/#{$label}.svg);
+        }
+    }
+
+}//.cpt-icon-key
+
+
+
+/**
+ * 4.0 GRID
+ * ----------------------------------------------------------------------------
+ Most of the Grid setup happens in Neat (scss/thoughtbot/neat) but the actual grid styles are applied here
+ */
+
+
+// Alternating 6 column Rows
+.alternating{
+    float: left;
+    padding: 2em 0;
+    width: 100%;
+
+    @media screen and (min-width: $tablet-break){
+        &:nth-child(even){
+
+            .large-6{
+
+                &:first-child{
+                    float: right;
+                    margin-right: 0;
+                }
+                &:last-child{
+                    float: left;
+                    margin-right: 2.35765%;
+                }
+
+            }
+
+        }
+    }
+}
+
+ .column, .columns{
+    float: left;
+    display: block;
+ }
+.large-11 {
+    @include span-columns(11 of 12);
+    @media screen and (max-width : $tablet-break){}
+}
+.large-10 {
+    @include span-columns(10 of 12);
+    @media screen and (max-width : $tablet-break){
+        @include span-columns(12 of 12);
+    }
+}
+.large-9 {
+    @include span-columns(9 of 12);
+    @media screen and (max-width : $tablet-break){
+        @include span-columns(12 of 12);
+    }
+}
+.large-8 {
+    @include span-columns(8 of 12);
+    @media screen and (max-width : $tablet-break){
+        @include span-columns(12 of 12);
+    }
+}
+.large-7 {
+    @include span-columns(7 of 12);
+    @media screen and (max-width : $tablet-break){
+        @include span-columns(12 of 12);
+    }
+}
+.large-6 {
+    @include span-columns(6);
+    @media screen and (max-width : $tablet-break){
+        @include span-columns(12 of 12);
+    }
+}
+.large-5 {
+    @include span-columns(5 of 12);
+    @media screen and (max-width : $tablet-break){
+         @include span-columns(12 of 12);
+    }
+}
+.large-4 {
+    @include span-columns(4 of 12);
+    @media screen and (max-width : $tablet-break){
+        @include span-columns(12 of 12);
+    }
+}
+.large-3 {
+    @include span-columns(3 of 12);
+    @media screen and (max-width : $tablet-break){
+        @include span-columns(12 of 12);
+    }
+}
+.large-2 {
+    @include span-columns(2 of 12);
+    @media screen and (max-width : $tablet-break){
+        @include span-columns(12 of 12);
+    }
+}
+.large-1 {
+    @include span-columns(1 of 12);
+    @media screen and (max-width : $tablet-break){
+        @include span-columns(12 of 12);
+    }
+}
+
+
+//new MEDIUM column span classes: retain columns at 'tablet'(769<>1023), go full-width at the 'medium' (768) breakpoint
+
+.medium-10 {
+    @include span-columns(10 of 12);
+    @media screen and (max-width : $medium-break){
+        @include span-columns(12 of 12);
+    }
+}
+.medium-9 {
+    @include span-columns(9 of 12);
+    @media screen and (max-width : $medium-break){
+        @include span-columns(12 of 12);
+    }
+}
+.medium-8 {
+    @include span-columns(8 of 12);
+    @media screen and (max-width : $medium-break){
+        @include span-columns(12 of 12);
+    }
+}
+.medium-7 {
+    @include span-columns(7 of 12);
+    @media screen and (max-width : $medium-break){
+        @include span-columns(12 of 12);
+    }
+}
+.medium-6 {
+    @include span-columns(6);
+    @media screen and (max-width : $medium-break){
+        @include span-columns(12 of 12);
+    }
+}
+.medium-5 {
+    @include span-columns(5 of 12);
+    @media screen and (max-width : $medium-break){
+        @include span-columns(12 of 12);
+    }
+}
+.medium-4 {
+    @include span-columns(4 of 12);
+    @media screen and (max-width : $medium-break){
+        @include span-columns(12 of 12);
+    }
+}
+.medium-3 {
+    @include span-columns(3 of 12);
+    @media screen and (max-width : $medium-break){
+        @include span-columns(12 of 12);
+    }
+}
+.medium-2 {
+    @include span-columns(2 of 12);
+    @media screen and (max-width : $medium-break){
+        @include span-columns(12 of 12);
+    }
+}
+
+.columns + .columns, .column + .column{
+    &[class*=large]{
+        @media screen and (max-width: $tablet-break){
+            margin-top: 1em;
+        }
+    }
+    &[class*=medium]{
+        @media screen and (max-width: $medium-break){
+            margin-top: 1em;
+        }
+    }
+}
+
+@media screen and (min-width:1025px){
+    .shift-large{
+        @include shift();
+    }
+    .large-shift-1{
+        @include shift();
+    }
+    .large-shift-2{
+        @include shift(2);
+    }
+    .large-shift-3{
+        @include shift(3);
+    }
+    .large-shift-4{
+        @include shift(4);
+    }
+    .large-shift-5{
+        @include shift(5);
+    }
+    .large-shift-6{
+        @include shift(6);
+    }
+    .large-shift-7{
+        @include shift(7);
+    }
+    .large-shift-8{
+        @include shift(8);
+    }
+    .large-shift-9{
+        @include shift(9);
+    }
+    .large-shift-10{
+        @include shift(10);
+    }
+    .large-shift-11{
+        @include shift(11);
+    }
+}
+
+@media screen and (max-width: $tablet-break){
+    .shift-medium{
+        @media screen and (min-width:1025px){
+            @include shift();
+        }
+    }
+    .medium-shift-2{
+        @include shift(2);
+    }
+    .medium-shift-3{
+        @include shift(3);
+    }
+    .medium-shift-4{
+        @include shift(4);
+    }
+    .medium-shift-5{
+        @include shift(5);
+    }
+    .medium-shift-6{
+        @include shift(6);
+    }
+    .medium-shift-7{
+        @include shift(7);
+    }
+    .medium-shift-8{
+        @include shift(8);
+    }
+    .medium-shift-9{
+        @include shift(9);
+    }
+    .medium-shift-10{
+        @include shift(10);
+    }
+    .medium-shift-11{
+        @include shift(11);
+    }
+}
+
+
+
+
+
+
+
+
+
+/**
+ * 4.5 Layout,Positioning & Visibility Classes
+ * ----------------------------------------------------------------------------
+ */
+
+ .flex-grid{
+    list-style: none;
+    margin: auto;
+    padding: auto;
+    display: -webkit-flex;
+    display: flex;
+    &.center{
+        -webkit-justify-content:center;
+        justify-content: center;
+    }
+    &.flex-wrap{
+        -webkit-flex-wrap: wrap;
+        flex-wrap: wrap;
+    }
+ }
+ .lte-ie9{
+    .flex-grid{
+        display: auto;
+        > *{
+            float: left;
+        }
+    }
+ }
+
+.clearfix {
+    @include clearfix;
+}
+.assistive-text{
+    display: none;
+}
+.hide{
+    display: none;
+}
+.hide-for-tablet{
+    @media screen and (max-width: $tablet-break){
+        display : none !important;
+    }
+}
+.hide-for-medium{
+    @media screen and (max-width: $medium-break){
+        display : none !important;
+    }
+}
+.hide-for-mobile{
+    @media screen and (max-width: $tablet-break){
+        display : none !important;
+    }
+}
+.hide-for-small{
+    @media screen and (max-width: $phone-break){
+        display : none !important;
+    }
+}
+.relative{
+    position : relative;
+}
+
+.is-campaign-landing{
+    .hide-for-campaign-landing {
+        display: none;
+        &.active-tab { display: none; }
+    }
+}
+
+
+.show-for-campaign-landing {
+    display: none;
+}
+.is-campaign-landing{
+    .show-for-campaign-landing{
+        display: initial;
+    }
+}
+
+
+
+.show-for-tablet-and-below {
+    display: none !important;
+    @media screen and (max-width: $tablet-break){
+        display: block !important;
+    }
+}
+.hide-for-tablet-and-below {
+    @media screen and (max-width: $tablet-break){
+        display: none !important;
+    }
+}
+
+
+
+
+.show-for-medium-and-small {
+    display: none !important;
+    @media screen and (max-width: $medium-break){
+        display: block !important;
+    }
+}
+.hide-for-medium-and-small {
+    @media screen and (max-width: $medium-break){
+         display: none !important;
+    }
+}
+.show-for-mobile-only {
+    display: none !important;
+    @media screen and (max-width: $tablet-break){
+        display: block !important;
+    }
+
+}
+.show-for-small-only {
+    display: none !important;
+    @media screen and (max-width: $phone-break){
+        display: block !important;
+    }
+
+}
+
+.show-with-mobile-menu{
+    display: none !important;
+    @media screen and (max-width: $menu-break){
+        display: block !important;
+    }
+}
+
+.hide-for-small{
+    @media screen and (max-width: $phone-break){
+        display: none !important;
+    }
+}
+
+
+
+
+.one-half{
+    @media screen and (min-width: $phone-break){
+        float: left;
+        display : block;
+        box-sizing: border-box;
+        width: 50%;
+        padding-right:1em;
+    }
+}
+
+//split text into columns with these classes
+.two-column {
+        @media screen and (min-width: $tablet-break){
+        @include columns(2);
+      }
+  }
+.three-column { //split paragraphs into two-columns with this class
+        @media screen and (min-width: $tablet-break){
+        @include columns(3);
+      }
+  }
+.four-column { //split paragraphs into two-columns with this class
+        @media screen and (min-width: $tablet-break){
+        @include columns(4);
+      }
+  }
+
+// HELPER CLASSES FOR DISPLAY
+.block{
+    display: block;
+}
+.inline-block{
+    display: inline-block;
+}
+.inline{
+    display: inline;
+}
+
+// HELPER CLASSES FOR GENERAL PADDING
+.margin-horizontal{
+    margin: 0 2em;
+    }
+.margin-vertical{
+    margin: 2em 0;
+    }
+.margin-top{
+    margin-top: 3em;
+    }
+.margin-right{
+    margin-right: 2em;
+    }
+.margin-bottom{
+    margin-bottom: 3em;
+    }
+.margin-left{
+    margin-left: 2em;
+    }
+
+// HELPER CLASSES FOR GENERAL PADDING
+.pad-horizontal{
+    padding: 0 2em;
+    }
+.pad-vertical{
+    padding-top: 2em;
+    padding-bottom: 2.5em;
+    }
+.pad-top{
+    padding-top: 2em;
+    }
+.pad-right{
+    padding-right: 2em;
+    }
+.pad-bottom{
+    padding-bottom: 2em;
+    }
+.pad-left{
+    padding-left: 2em;
+    }
+.pad-both{
+    padding: 2em;
+}
+.no-pad{
+    padding: 0 !important;
+}
+
+//DEFAULT WORDPRESS IMAGE ALIGNMENT CLASSES:
+.alignleft{
+    float: left;
+    margin: 0 1em 1em 0;
+}
+.alignright{
+    float: right;
+    margin: 0 0 1em 1em;
+}
+.aligncenter{
+    text-align: center;
+    margin: 0 auto 1em;
+    display: block;
+    @include clearfix;
+}
+.alignnone{
+    @include clearfix;
+}
+
+//source ordering classes
+.large-right{
+    float: left;
+    @media screen and (min-width: $tablet-break){
+        float: right;
+    }
+}
+@media screen and (min-width: $tablet-break){
+    //full-width centered text has a bit of padding for large screens
+    .outer.container > {
+        .description, .slide-content {
+            padding: 0 8%;
+        }
+    }
+    .outer.container.center-text > {
+        p {
+            padding: 0 8%;
+        }
+    }
+}
+
+
+/**
+ * 4.6379   CSS TABLES: divs as tables
+ * ----------------------------------------------------------------------------
+ */
+
+ .csstable {
+    border-collapse: collapse;
+    display: table;
+    table-layout: fixed;
+    width: 100%;
+    &.break-medium {
+        @media screen and (max-width: $medium-break){ display: block; float: left; }
+    }
+    .cssrow {
+        display: table-row;
+        width: 100%;
+        &.break-medium {
+            @media screen and (max-width: $medium-break){ display: block; }
+        }
+        .csscell {
+            display: table-cell;
+            vertical-align: middle;
+
+            &.break-medium {
+                @media screen and (max-width: $medium-break){ display: block; width: 100%; float:left; margin-bottom: 1em; }
+            }
+
+            &.align-bottom{
+                vertical-align: bottom;
+            }
+            &.align-top{
+                vertical-align: top;
+            }
+
+        }
+    }
+}
+
+
+
+
+
+
+/**
+ * 4.75 Content Container Base Position, Padding and Margin + hard-break-clearfix
+ * ----------------------------------------------------------------------------
+ */
+ //Containers
+.container{
+    &.outer{
+        @include outer-container;
+        @media screen and (max-width: ($oversized-break + 40)){
+            padding-left: .75em;
+            padding-right: .75em;
+        }
+    }
+    &.main{
+        width: 100%;
+        float:left;
+    }
+}
+
+main{
+    h2 + *, h3 + *, h4 + * {
+        margin-top: .5em;//adds a top margin to all content following a header.
+    }
+}
+
+ .content{
+    padding-top: 2em;
+    padding-bottom: 3em;
+    &.with-sidebar{
+        .main{
+            @include span-columns(9);
+            @media screen and (max-width: $tablet-break){
+                @include span-columns(12);
+            }
+        }
+        .sidebar{
+            @include span-columns(3);
+            @media screen and (max-width: $tablet-break){
+                @include span-columns(12);
+            }
+        }
+    }
+ }
+ .float-container{
+    float: left;
+    width: 100%;
+    @include clearfix;
+ }
+ .row {
+    padding-bottom: 2em;
+    float: left;
+    width: 100%;
+    @include clearfix;
+ }
+
+.hard-break-clear-both {
+    clear: both;
+}
+
+
+/**
+ * 5.0 Type - alignment and spacing utility classes
+ * ----------------------------------------------------------------------------
+ */
+ .center-text {
+    text-align: center;
+ }
+ .center-text-on-mobile{
+    @media screen and (max-width: $tablet-break){
+       text-align: center;
+    }
+ }
+ .center-text-on-desktop{
+    @media screen and (min-width: $tablet-break){
+       text-align: center;
+    }
+ }
+ .center-text-at-full-width{
+    text-align:center;
+ }
+ @media screen and (min-width: $tablet-break){
+    .large-6{
+        .center-text-at-full-width{
+            text-align: initial;
+         }
+    }
+
+    }
+ .left-text {
+    text-align : left;
+ }
+ .right-text {
+    text-align : right;
+ }
+
+ .lowercase{
+    text-transform: none;
+ }
+ .caption-text, .wp-caption-text{
+    font-style: italic;
+    text-align: center;
+    color: #7D7D7D;
+ }
+.subheading{
+    font-size: 1.2em;
+    color: $gray;
+    padding-bottom: .5em;
+}
+
+.quote p{
+    &:before{
+        content : "\201c";
+        display: inline;
+    }
+    &:after{
+        content : "\201d";
+        display: inline;
+    }
+
+}
+strong{
+    opacity: .95;
+}
+
+
+ /**
+ * 5.25 Links - Call to action
+ * ----------------------------------------------------------------------------
+ for the .cta class base definition, look in thoughtbot/base/_buttons.scss
+ */
+
+
+
+ .cta{
+    text-transform : uppercase;
+    @media screen and (max-width : $phone-break){
+        font-size: .9em;
+    }
+ }
+ .section-cta{
+    width:100%;
+    float:left;
+    clear: both;
+    font-family: $bold-font-family;
+    text-align:center;
+    text-transform:uppercase;
+    color: $teal;
+    padding: 2em 0;
+ }
+ .external-link {
+    &:after {
+    content: "\2197";
+    font-family: $icon-font-family;
+    display: inline-block;
+    color: inherit;
+    font-size: .7em;
+    vertical-align: middle;
+    margin: 0 0.3em 0.25em;
+    line-height: 1;
+  }
+}
+.pseudo-link{
+    @extend .cta;
+    color: $light-blue;
+}
+.share-link-icon{
+     &:after {
+    content: "\279a";
+    font-family: $icon-font-family;
+    display: inline-block;
+    color: inherit;
+    font-size: .7em;
+    vertical-align: middle;
+    margin: 0 0 0.4em 0.3em;
+    line-height: 1;
+  }
+}
+
+
+
+
+
+
+/**
+ * 5.5 Lists - list formatting styles
+ * ----------------------------------------------------------------------------
+ */
+ @import "classes_lists";
+
+
+
+/**
+ * 6 Utility
+ * ----------------------------------------------------------------------------
+ */
+
+.anchor{
+    display: block;
+    float: left;
+    margin-top: -80px;
+    position: relative;
+}
+
+
+/**
+ * 6.5 Color - use color classes and inheritance to apply color schemes
+ * ----------------------------------------------------------------------------
+ */
+.white{
+    @include white;
+ }
+.teal{
+   @include teal;
+ }
+.blue{
+    @include blue;
+}
+.light-blue{
+    @include light-blue;
+ }
+.dark-blue{
+    @include dark-blue;
+ }
+.purple{
+    @include purple;
+ }
+.light-gray{
+    @include light-gray;
+ }
+.medium-gray{
+    @include medium-gray;
+ }
+.dark-gray{
+    @include dark-gray;
+ }
+.green{
+    @include green;
+ }
+.mint{
+    @include mint;
+ }
+.pink{
+    @include pink;
+}
+
+// Text colors can override background defaults
+@each $color in $decon-colors {
+    $color-name : nth($color, 1);
+    $color-value : nth($color, 2);
+    .text-#{$color-name}{
+        color : $color-value;
+    }
+}
+.text-light-gray{color: $light-gray;}
+.text-medium-gray{color: $medium-gray;}
+
+
+// border color helpers
+.border{border : 1px solid $border-gray;}
+.border-bottom{border-bottom: 1px solid $border-gray;}
+.border-top{border-top: 1px solid $border-gray;}
+@each $color in $jive-colors {
+    $color-name : nth($color, 1);
+    $color-value : nth($color, 2);
+    .border-#{$color-name}{
+        border-color : $color-value;
+    }
+}
+.border-light-gray{border-color : $light-gray;}
+.border-medium-gray{border-color : $medium-gray;}
+.border.top.thick{ border-top-width: 12px;}
+.border.bottom.thick{ border-bottom-width: 12px;}
