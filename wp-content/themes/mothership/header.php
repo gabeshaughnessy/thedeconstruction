@@ -1,4 +1,6 @@
 <?php
+
+global $show_menu;
 /**
  * The Header for our theme.
  *
@@ -66,7 +68,9 @@ $theme_options = get_option('mothership_options');
 ?>
 <body <?php body_class(); ?>>
 
+
 <header class="row">
+	<?php if ($show_menu !== false){ ?>
 	<div id="top-nav">
 		<?php 
 		if(!is_author() ){
@@ -77,6 +81,7 @@ $theme_options = get_option('mothership_options');
 		}
 		?>
 	</div>
+	<?php } ?>
 	
 	
 	<?php 
@@ -97,6 +102,7 @@ $theme_options = get_option('mothership_options');
 		<?php   }
 }//end is author ?>
 </header>
+
 <div id="main-content-area" class="row">
 <?php } ?>
 	
