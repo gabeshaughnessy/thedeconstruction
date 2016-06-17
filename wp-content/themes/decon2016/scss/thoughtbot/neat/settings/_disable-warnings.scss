@@ -4,7 +4,7 @@
 ///
 /// @type Bool
 
-$disable-warnings: false !default;
+$disable-warnings: true !default;
 
 @mixin -neat-warn($message) {
   @if $disable-warnings == false {
