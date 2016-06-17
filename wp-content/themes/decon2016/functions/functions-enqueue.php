@@ -6,7 +6,7 @@ automatically compiled into functions-concat.php
 
 
 add_action('wp_enqueue_scripts', 'decon_theme_enqueue');
-add_action('admin_enqueue_scripts', 'decon_admin_enqueue');
+//add_action('admin_enqueue_scripts', 'decon_admin_enqueue');
 
 $decon_style_dir_stats = stat(get_template_directory().'/css');
 $css_version = $decon_style_dir_stats['mtime'];

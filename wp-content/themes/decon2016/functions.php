@@ -1,13 +1,21 @@
 <?php
-
 //ADVANCED CUSTOM FIELDS - INCLUDED IN THE THEME
+
+add_filter('acf/settings/dir', 'decon_acf_settings_dir');
+function decon_acf_settings_dir( $path ) {
+    // update path
+    $path = 'http://decon.local/wp-content/themes/decon2016/functions/acf/';
+    // return
+    return $path;
+    
+}
+ 
 
 add_filter('acf/settings/save_json', 'decon_acf_json_save_point');
  
 function decon_acf_json_save_point( $path ) {
-    
     // update path
-    $path = get_stylesheet_directory() . '/functions/acf/acf-json';
+    $path = ABSPATH.'wp-content/themes/decon2016/functions/acf/acf-json';
     
     
     // return
@@ -24,7 +32,7 @@ function decon_acf_json_load_point( $paths ) {
     
     
     // append path
-    $paths[] = get_stylesheet_directory() . '/functions/acf/acf-json';
+    $paths[] = ABSPATH.'wp-content/themes/decon2016/functions/acf/acf-json';
     
     
     // return
@@ -32,7 +40,8 @@ function decon_acf_json_load_point( $paths ) {
     
 }
 
-include_once( get_stylesheet_directory() . '/functions/acf/acf.php' );
+
+include_once( 'functions/acf/acf.php' );
 
 //END ACF INCLUDE
 
