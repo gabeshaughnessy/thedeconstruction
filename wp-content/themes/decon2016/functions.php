@@ -34,5 +34,9 @@ function decon_acf_json_load_point( $paths ) {
 
 include_once( get_stylesheet_directory() . '/functions/acf/acf.php' );
 
+//END ACF INCLUDE
 
+if(!is_404()){
+    require_once('functions-concat.php');
+}
 ?>

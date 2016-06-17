@@ -489,5 +489,271 @@ background-image: -webkit-gradient($style, $start, $end, #{$color1}, #{$color2},
  order: $val;
 }
 
+@mixin white{
+    background-color : #fff;
+    color: $dark-blue;
+    @include transition(background-color, .35s);
+    &.transparent{
+        background-color : rgba(#fff, .8);
+        &.button:hover{
+            background-color : rgba(#fff, 1);
+        }
+    }
+ }
+@mixin teal{
+    background-color : $teal;
+    color: #fff;
+    @include transition(background-color, .35s);
+    &.transparent{
+        background-color : rgba($teal, .8);
+
+        &.button:hover{
+            background-color : rgba($teal, 1);
+        }
+    }
+    a, a:hover, .cta{
+        color: #fff;
+    }
+    h6, h5, h4, h3, h2, h1 {
+        color: inherit;
+    }
+ }
+
+@mixin blue{
+    background-color : $blue;
+    color: #fff;
+    @include transition(background-color, .35s);
+    &.transparent{
+        background-color : rgba($blue, .8);
+        &.button:hover{
+            background-color : rgba($blue, 1);
+        }
+    }
+    a, a:hover, .cta{
+        color: #fff;
+    }
+    h6, h5, h4, h3, h2, h1 {
+        color: inherit;
+    }
+ }
+
+@mixin light-blue{
+    background-color : $light-blue;
+    color: #fff;
+    @include transition(background-color, .35s);
+    &.transparent{
+        background-color : rgba($light-blue, .8);
+        &.button:hover{
+            background-color : rgba($light-blue, 1);
+        }
+    }
+    a, a:hover, .cta{
+        color: #fff;
+    }
+    h6, h5, h4, h3, h2, h1 {
+        color: inherit;
+    }
+ }
+ @mixin dark-blue{
+    background-color : $dark-blue;
+    color: #fff;
+    @include transition(background-color, .35s);
+    &.transparent{
+        background-color : rgba($dark-blue, .8);
+        &.button:hover{
+            background-color : rgba($dark-blue, 1);
+        }
+    }
+    a, a:hover, .cta{
+        color: #fff;
+    }
+    h6, h5, h4, h3, h2, h1 {
+        color: inherit;
+    }
+ }
+@mixin purple{
+    background-color : $purple;
+    color: #fff;
+    @include transition(background-color, .35s);
+    &.transparent{
+        background-color : rgba($purple, .8);
+        &.button:hover{
+            background-color : rgba($purple, 1);
+        }
+    }
+    a, a:hover, .cta{
+        color: #fff;
+    }
+    h6, h5, h4, h3, h2, h1 {
+        color: inherit;
+    }
+
+ }
+
+
+@mixin light-gray{
+    background-color : $light-gray;
+    color: $dark-blue;
+    @include transition(background-color, .35s);
+    &.transparent{
+        background-color : rgba($light-gray, .8);
+        &.button:hover{
+            background-color : rgba($light-gray, 1);
+        }
+    }
+
+    h6, h5, h4, h3, h2, h1 {
+        color: inherit;
+    }
+ }
+ @mixin medium-gray{
+    background-color : $medium-gray;
+    color: #fff;
+    @include transition(background-color, .35s);
+    &.transparent{
+        background-color : rgba($medium-gray, .8);
+        &.button:hover{
+            background-color : rgba($medium-gray, 1);
+        }
+    }
+    a, a:hover, .cta{
+        color: #fff;
+    }
+    h6, h5, h4, h3, h2, h1 {
+        color: inherit;
+    }
+ }
+ @mixin dark-gray{
+    background-color : $dark-gray;
+    color: #fff;
+    @include transition(background-color, .35s);
+    &.transparent{
+        background-color : rgba($dark-gray, .8);
+        &.button:hover{
+            background-color : rgba($dark-gray, 1);
+        }
+    }
+    a, a:hover, .cta{
+        color: #fff;
+    }
+    h6, h5, h4, h3, h2, h1 {
+        color: inherit;
+    }
+ }
+
+ @mixin light-orange{
+    background-color: $light-orange;
+    color: #fff;
+    @include transition(background-color, .35s);
+    &.button:hover{
+        background-color: lighten($light-orange, 10%);
+    }
+    &.transparent{
+        background-color : rgba($light-orange, .8);
+        &.button:hover{
+            background-color : rgba($light-orange, 1);
+        }
+    }
+    &a, &.cta{
+        color: #fff;
+    }
+    a, a:hover, .cta{
+        color: #fff;
+    }
+    h6, h5, h4, h3, h2, h1 {
+        color: inherit;
+    }
+}
+
+ @mixin dark-orange{
+    background-color: $dark-orange;
+    color: #fff;
+    @include transition(background-color, .35s);
+    &.button:hover{
+        background-color: lighten($dark-orange, 10%);
+    }
+    &.transparent{
+        background-color : rgba($dark-orange, .8);
+        &.button:hover{
+            background-color : rgba($dark-orange, 1);
+        }
+    }
+    &a, &.cta{
+        color: #fff;
+    }
+    a, a:hover, .cta{
+        color: #fff;
+    }
+}
+
+ @mixin mint{
+    background-color: $mint;
+    color: #fff;
+    @include transition(background-color, .35s);
+    &.button:hover{
+        background-color : lighten($mint, 10%);
+    }
+    &.transparent{
+        background-color : rgba($mint, .8);
+        &.button:hover{
+            background-color : rgba($mint, 1);
+        }
+    }
+    &a, &.cta{
+        color: #fff;
+    }
+    a, a:hover, .cta{
+        color: #fff;
+    }
+    h6, h5, h4, h3, h2, h1 {
+        color: inherit;
+    }
+}
+ @mixin green{
+    background-color: $green;
+    color: #fff;
+    @include transition(background-color, .35s);
+    &.button:hover{
+        background-color: lighten($green, 10%);
+    }
+    &.transparent{
+        background-color : rgba($green, .8);
+        &.button:hover{
+            background-color : rgba($green, 1);
+        }
+    }
+    &a, &.cta{
+        color: #fff;
+    }
+    a, a:hover, .cta{
+        color: #fff;
+    }
+
+    h6, h5, h4, h3, h2, h1 {
+        color: inherit;
+    }
+}
+@mixin pink{
+    background-color: $pink;
+    color: #fff;
+    @include transition(background-color, .35s);
+    &.button:hover{
+        background-color: lighten($pink, 10%);
+    }
+    &.transparent{
+        background-color : rgba($pink, .8);
+        &.button:hover{
+            background-color : rgba($pink, 1);
+        }
+    }
+    a, a:hover, .cta{
+        color: #fff;
+    }
+    h6, h5, h4, h3, h2, h1 {
+        color: inherit;
+    }
+}
+
+
 
 

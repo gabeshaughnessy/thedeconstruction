@@ -42,6 +42,27 @@ module.exports = function(grunt) {
       src: ['functions/*.php', 'functions/custom-post-types/*.php'],
       dest: 'functions-concat.php'
     },
+    patternsphp: {
+      options: {
+        separator: '',
+      },
+      src: ['patterns/*.php'],
+      dest: 'all-patterns.php'
+    },
+    components: {
+      options: {
+        separator: '',
+      },
+      src: ['components/*.php'],
+      dest: 'all-components.php'
+    },
+    patternsjs: {
+      options: {
+        separator: '',
+      },
+      src: ['js/patterns/*.js'],
+      dest: 'js/patterns.js'
+    },
     dist: {
       options: {
         separator: ';',
@@ -65,7 +86,8 @@ module.exports = function(grunt) {
     },
       dist: {
         files: {
-          'js/app.min.js': ['js/app.js']
+          'js/app.min.js': ['js/app.js'],
+          'js/patterns.min.js': ['js/patterns.js']
         }
       }
   });
@@ -92,7 +114,7 @@ module.exports = function(grunt) {
     },
     grunt: { files: ['Gruntfile.js'] },
     scripts: {
-      files: ['Gruntfile.js', 'js/patterns/*.js', 'js/modules/*.js', 'functions.php', 'functions/*.php'],
+      files: ['Gruntfile.js', 'patterns/*.php', 'components/*.php', 'js/patterns/*.js', 'js/modules/*.js', 'functions.php', 'functions/*.php'],
       tasks: ['concat']
     },
     compress: {

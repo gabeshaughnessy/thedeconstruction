@@ -1,6 +1,6 @@
 @charset "UTF-8";
-$column: golden-ratio(1em, 3) !default; // Column width
-$gutter: golden-ratio(1em, 1) !default; // Gutter between each two columns
+$column: 1em !default; // Column width
+$gutter: 1em !default; // Gutter between each two columns
 $grid-columns: 12 !default; // Total number of columns in the grid
 $max-width: em(1400) !default; // Max-width of the outer container
 $border-box-sizing: true !default; // Makes all elements have a border-box layout

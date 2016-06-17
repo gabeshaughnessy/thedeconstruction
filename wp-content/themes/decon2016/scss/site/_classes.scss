@@ -2,7 +2,7 @@
  * Table of Contents:
  *
  * 1.0 - Header, Footer
- * 2.0 - Patterns
+ * 2.0 - Grid
  * 3.0 -
  * 4.0 -
  * ----------------------------------------------------------------------------
@@ -46,80 +46,7 @@ body.admin-bar{
 
 
 /**
- * 2.0 Patterns
- * ----------------------------------------------------------------------------
- */
-// Moved into app.scss directly, we don't need all patterns in the homepage
-// @import "../patterns/all-patterns";
-
-
-
-/**
- * 3.0 TEXTURE - dynamically load background images with the has-texture class
- * ----------------------------------------------------------------------------
- */
-
-.has-texture{
-    @include transition (opacity, .3s, ease-in);
-    opacity: 0;
-    &.texture{
-        opacity: 1;
-    }
-}
-.bg-image{
-    background-size: 100%; //legacy support
-    background-size: cover;
-    background-image: url($preload-hero-image);
-    background-repeat:  repeat;
-    display: block;
-    width: 100%;
-    height: 100%;
-    float: left;
-    z-index: -1;
-    position : absolute;
-    &.default-preload{background-image: url($preload-hero-image);}
-    &.purple-preload{background-image: url($preload-hero-image-purple);}
-    &.dark-blue-preload{background-image: url($preload-hero-image-dark-blue);}
-    &.teal-preload{background-image: url($preload-hero-image-teal);}
-    &.orange-preload{background-image: url($preload-hero-image-orange);}
-    &.blue-preload{background-image: url($preload-hero-image-blue);}
-    &.light-blue-preload{background-image: url($preload-hero-image-light-blue);}
-    &.mint-preload{background-image: url($preload-hero-image-mint);}
-    &.green-preload{background-image: url($preload-hero-image-green);}
-
-
-}
-
-
-
- /**
- * 3.5.2 Color - color-associations for Post Type iconography in Resource Library
- * -------------------------------------------*/
-.cpt-icon-key {
-    background-repeat: no-repeat;
-    background-size: 60%;
-    background-position: center center;
-
-/*
-//from VARIABLES
-//Resource library COLOR-KEY:
-*/
-
-    @each $post-type in $jive-colors {
-        $label : nth($post-type, 3);
-        $hex : nth($post-type, 2);
-         &.#{$label}{
-            background-color: $hex;
-            background-image: url(../compressed-images/icons/post-type-icons/white/#{$label}.svg);
-        }
-    }
-
-}//.cpt-icon-key
-
-
-
-/**
- * 4.0 GRID
+ * 2.0 GRID
  * ----------------------------------------------------------------------------
  Most of the Grid setup happens in Neat (scss/thoughtbot/neat) but the actual grid styles are applied here
  */
@@ -524,23 +451,6 @@ body.admin-bar{
     }
 }
 
-//split text into columns with these classes
-.two-column {
-        @media screen and (min-width: $tablet-break){
-        @include columns(2);
-      }
-  }
-.three-column { //split paragraphs into two-columns with this class
-        @media screen and (min-width: $tablet-break){
-        @include columns(3);
-      }
-  }
-.four-column { //split paragraphs into two-columns with this class
-        @media screen and (min-width: $tablet-break){
-        @include columns(4);
-      }
-  }
-
 // HELPER CLASSES FOR DISPLAY
 .block{
     display: block;
@@ -744,7 +654,7 @@ main{
 
 
 /**
- * 5.0 Type - alignment and spacing utility classes
+ * 3 Type - alignment and spacing utility classes
  * ----------------------------------------------------------------------------
  */
  .center-text {
@@ -809,7 +719,7 @@ strong{
 
 
  /**
- * 5.25 Links - Call to action
+ * 4 Links - Call to action
  * ----------------------------------------------------------------------------
  for the .cta class base definition, look in thoughtbot/base/_buttons.scss
  */
@@ -835,7 +745,6 @@ strong{
  .external-link {
     &:after {
     content: "\2197";
-    font-family: $icon-font-family;
     display: inline-block;
     color: inherit;
     font-size: .7em;
@@ -851,7 +760,6 @@ strong{
 .share-link-icon{
      &:after {
     content: "\279a";
-    font-family: $icon-font-family;
     display: inline-block;
     color: inherit;
     font-size: .7em;
@@ -867,10 +775,63 @@ strong{
 
 
 /**
- * 5.5 Lists - list formatting styles
+ * 5 Lists - list formatting styles
  * ----------------------------------------------------------------------------
  */
- @import "classes_lists";
+article ul{
+    list-style-position: inside;
+    margin-left: 0;
+}
+.featured{
+    list-style-type : none;
+    li{
+        border-top: 1px solid $light-gray;
+        line-height: 2;
+
+        &:before{
+            content :"\002022";
+            color: $teal;
+            margin: 0 .5em ;
+        }
+        &:last-child{
+            border-bottom: 1px solid $light-gray;
+            margin-bottom: 1em;
+
+        }
+    }
+ }
+ .disc {
+    list-style-type: disc;
+    margin: 0 0 1em 1.5em;
+ }
+ .circle {
+    list-style-type: circle;
+    margin: 0 0 1em 1.5em;
+ }
+ .square{
+    list-style-type: square;
+    margin: 0 0 1em 1.5em;
+ }
+ .decimal {
+    list-style-type: decimal;
+    margin: 0 0 1em 1.5em;
+ }
+ .lower-alpha{
+    list-style-type: lower-alpha;
+    margin: 0 0 1em 1.5em;
+ }
+ .upper-alpha{
+    list-style-type: upper-alpha;
+    margin: 0 0 1em 1.5em;
+ }
+ .lower-roman{
+    list-style-type: lower-roman;
+    margin: 0 0 1em 1.5em;
+ }
+ .upper-roman{
+    list-style-type: upper-roman;
+    margin: 0 0 1em 1.5em;
+ }
 
 
 
@@ -888,7 +849,7 @@ strong{
 
 
 /**
- * 6.5 Color - use color classes and inheritance to apply color schemes
+ * 7 Color - use color classes and inheritance to apply color schemes
  * ----------------------------------------------------------------------------
  */
 .white{
