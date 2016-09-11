@@ -12,7 +12,7 @@ global $show_menu;
 $show_menu = true;
 ?>
 <?php get_header(); ?>
-<div id="content" class="large-9 columns">
+<div id="content" class="large-11 columns">
 <?php if(have_posts()) : while(have_posts()) : the_post(); ?>
 <article>
 	<div class="post-content">
