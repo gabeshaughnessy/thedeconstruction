@@ -25,8 +25,6 @@ $social_meta = array();
         //linked in share link format: 
         // http://www.linkedin.com/shareArticle?mini=true&url={articleUrl}&title={articleTitle}&summary={articleSummary}&source={articleSource}
 
-        $social_meta['googleplus_url'] = "https://plus.google.com/share?url=";
-        //google+ documentation: https://developers.google.com/+/web/share/
 
         $social_meta['facebook_url'] = "https://www.facebook.com/sharer/sharer.php?u=";
         //facebook documentation: https://developers.facebook.com/docs/plugins/share-button/
@@ -36,11 +34,6 @@ $social_meta = array();
   <li class="facebook">
     <div class="title">
       <a onclick="javascript:window.open(this.href,'', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=600,width=600'); return false; " class="icon jv_facebook" title="Share on Facebook" href="<?php echo $social_meta['facebook_url'].urlencode(get_permalink($post->ID)); ?>"><h5>Facebook</h5></a>
-    </div>
-  </li>
-  <li class="google">
-    <div class="title">
-      <a onclick="javascript:window.open(this.href,'','menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=600,width=600'); return false;" class="icon decon_googleplus" title="Share on Google+" href="<?php echo $social_meta['googleplus_url'].urlencode(get_permalink($post->ID)); ?>"><h5>Google+</h5></a>
     </div>
   </li>
   <li class="twitter">
