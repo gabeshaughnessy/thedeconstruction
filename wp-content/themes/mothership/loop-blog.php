@@ -32,7 +32,7 @@ global $more;
 $more = 0;
 $blogfeed_posts .= '<article>';
 $blogfeed_posts .= '<div class="post-title"><h3><a href="'.get_permalink().'"title="View the Post">'.get_the_title().'</a></h3>';
- $blogfeed_posts .= '<div class="row"><div class="team-image large-1 columns">'.get_wp_user_avatar(get_the_author_meta("ID"), 'thumbnail').'</div><p class="author large-11 columns end"><em>posted by: </em><a href="'.get_author_posts_url(get_the_author_meta("ID")).'" title="view profile">'.get_the_author_meta('display_name').' </a> on '.the_date("F j, Y", "<em>","</em>", false).'</p></div></div>';	
+ $blogfeed_posts .= '<div class="row"><div class="team-image large-1 columns">'.get_avatar(get_the_author_meta("ID"), 'thumbnail').'</div><p class="author large-11 columns end"><em>posted by: </em><a href="'.get_author_posts_url(get_the_author_meta("ID")).'" title="view profile">'.get_the_author_meta('display_name').' </a> on '.the_date("F j, Y", "<em>","</em>", false).'</p></div></div>';	
 $blogfeed_posts .= '<div class="post-content">'.apply_filters("the_content",get_the_content( "Read More &rArr;" )).'</div>';
 $blogfeed_posts .= '<div class="share-section"><p class="share-text">Share:</p>'.socialAccordion($blogfeed).'</div>';
 $blogfeed_posts .= '<hr></article>';
